@@ -1,21 +1,29 @@
-.headerBar { /* styles for the header bar component */
+.headerBar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
+
   padding: 16px 14px 10px;
+  padding-top: calc(16px + env(safe-area-inset-top));
+
+  background: var(--bg);
 }
 
-.headerSide {/* styles for left and right sides of the header */
+.headerSide {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.headerRight { /* styles specific to the right side of the header */
+.headerRight {
   justify-content: flex-end;
 }
 
-.pageTitle { /* styles for the page title in the center of the header */
+.pageTitle {
   justify-self: center;
   font-weight: 900;
   font-size: 22px;
@@ -23,14 +31,14 @@
   line-height: 1;
 }
 
-.iconBtn { /* styles for icon buttons (e.g. profile, notifications) */
+.iconBtn {
   border: none;
   background: transparent;
   padding: 0;
   cursor: pointer;
 }
 
-.iconCircle { /* styles for the circular background of icons */
+.iconCircle {
   width: 44px;
   height: 44px;
   display: grid;
@@ -42,14 +50,14 @@
   overflow: hidden;
 }
 
-.iconImg { /* styles for the icon images inside the circular backgrounds */
+.iconImg {
   width: 22px;
   height: 22px;
   object-fit: contain;
   display: block;
 }
 
-.backBtn { /* styles for the back button variant of the left icon */
+.backBtn {
   border: none;
   background: var(--panel2);
   border-radius: 999px;
@@ -58,4 +66,32 @@
   box-shadow: var(--shadow);
   font-weight: 800;
   color: var(--text);
+}
+
+.iconBtnBadge {
+  position: relative;
+}
+
+.notifBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+
+  background: #ef4444;
+  color: white;
+
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  border: 2px solid var(--bg);
 }

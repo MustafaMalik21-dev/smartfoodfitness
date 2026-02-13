@@ -2,7 +2,7 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
 
   width: min(360px, 92%);
   height: 74px;
@@ -37,9 +37,6 @@
 
 .navItem.active { /* styles for the active navigation item */
   color: #0f766e;
-}
-.pageShell.settingsShell {  /* extra bottom padding for settings page to avoid overlap with nav */
-  padding-bottom: calc(16px + 74px + 30px) !important;
 }
 
 html[data-mode="dark"] .bottomNav { /* dark mode styles for bottom nav */

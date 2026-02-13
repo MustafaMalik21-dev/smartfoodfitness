@@ -1,18 +1,30 @@
+/* PageShell.css */
+
 .pageShell {
   height: 100%;
-  min-height: 100%;  /* ensures it fills the container */
-  background: var(--bg); 
-  overflow-y: auto;  /* allows scrolling */
-  -webkit-overflow-scrolling: touch;  
-  padding-bottom: calc(16px + 74px + 24px); /* space for navbar */
-  box-sizing: border-box; 
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  box-sizing: border-box;
 }
 
 .pageBody {
-  max-width: 420px; /* typical mobile width */
-  margin: 0 auto; /* center horizontally */
-  padding: 8px 14px 0; /* top and side padding */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 14px;
+  padding-bottom: calc(16px + 74px + 24px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+.pageShell.settingsShell .pageBody {
+  padding-bottom: calc(16px + 74px + 30px + env(safe-area-inset-bottom));
 }
