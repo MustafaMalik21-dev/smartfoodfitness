@@ -1,0 +1,491 @@
+.eePage {
+  min-height: 100vh;
+  background: #d9d9d9;
+  padding-bottom: 84px;
+}
+
+.eeTop {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px 14px 10px;
+}
+
+.eeBackBtn {
+  justify-self: start;
+  border: none;
+  background: #efefef;
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 700;
+}
+
+.eeTitle {
+  justify-self: center;
+  font-weight: 900;
+  font-size: 20px;
+  color: #0b84ff;
+  text-align: center;
+}
+
+.eeSearchBtn {
+  justify-self: end;
+  border: none;
+  background: #bfbfbf;
+  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+  font-size: 16px;
+}
+
+.eeBody {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.eeTabs {
+  background: #bfbfbf;
+  border-radius: 14px;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.eeTab {
+  border: none;
+  background: transparent;
+  padding: 8px 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 11px;
+  color: #0b84ff;
+  opacity: 0.75;
+}
+
+.eeTabOn {
+  background: #f5f5f5;
+  opacity: 1;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.eeHint {
+  text-align: center;
+  font-weight: 800;
+  color: #111827;
+  opacity: 0.75;
+  font-size: 12px;
+}
+
+.eeErr {
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+  color: #b91c1c;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.eeRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eeRowHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eeRowTitle {
+  font-weight: 900;
+  color: #0b84ff;
+  font-size: 12px;
+}
+
+.eeSeeAll {
+  border: none;
+  background: transparent;
+  color: #0b84ff;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.eeHScroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.eeTile {
+  width: 140px;
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.eeTileImg {
+  width: 140px;
+  height: 120px;
+  background: #f5f5f5;
+  border-radius: 18px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.eeTileImgEl {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.eeTileName {
+  font-weight: 900;
+  font-size: 12px;
+  margin-top: 8px;
+  color: #111827;
+}
+
+.eeTileMeta {
+  font-weight: 800;
+  font-size: 11px;
+  opacity: 0.75;
+  margin-top: 2px;
+  color: #111827;
+}
+
+.eeSearchOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: 18px;
+}
+
+.eeSearchPanel {
+  width: min(460px, 100%);
+  max-height: 85vh;
+  background: #d9d9d9;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.eeSearchTop {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 14px 14px 10px;
+}
+
+.eeCloseBtn {
+  justify-self: start;
+  border: none;
+  background: #efefef;
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 700;
+}
+
+.eeSearchTitle {
+  justify-self: center;
+  font-weight: 900;
+  color: #0b84ff;
+}
+
+.eeSearchSpacer {
+  width: 44px;
+  height: 44px;
+  justify-self: end;
+}
+
+.eeSearchBox {
+  margin: 0 14px 10px;
+  background: #bfbfbf;
+  border-radius: 14px;
+  height: 40px;
+  display: grid;
+  grid-template-columns: 36px 1fr 36px;
+  align-items: center;
+  padding: 0 6px;
+}
+
+.eeSearchIcon {
+  text-align: center;
+  opacity: 0.8;
+}
+
+.eeSearchInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-weight: 800;
+  color: #111827;
+}
+
+.eeClear {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.eeSearchResults {
+  overflow: auto;
+  padding: 6px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eeSearchRow {
+  border: none;
+  cursor: pointer;
+  background: #efefef;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+  text-align: left;
+}
+
+.eeMiniImg {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #f5f5f5;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.eeMiniImgEl {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.eeMiniName {
+  font-weight: 900;
+  color: #111827;
+  font-size: 12px;
+}
+
+.eeMiniMeta {
+  font-weight: 800;
+  opacity: 0.75;
+  margin-top: 2px;
+  font-size: 11px;
+  color: #111827;
+}
+
+.eeModal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.eeModalBg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  border: none;
+}
+
+.eeModalCard {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: 85vh;
+  overflow: auto;
+  background: #efefef;
+  border-radius: 18px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.30);
+  padding: 14px;
+}
+
+.eeModalHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.eeModalTitle {
+  font-weight: 900;
+  color: #0b84ff;
+}
+
+.eeX {
+  border: none;
+  background: #ffffff;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+}
+
+.eeModalBody {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eeModalImgs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.eeModalImgBox {
+  width: 160px;
+  height: 120px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f5f5f5;
+  flex: 0 0 auto;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+}
+
+.eeModalImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.eeBlock {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.eeBlockTitle {
+  font-weight: 900;
+  color: #0b84ff;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.eeBlockText {
+  color: #111827;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.eeTwoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.eePills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.eePill {
+  background: #efefef;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 900;
+  font-size: 11px;
+  color: #111827;
+}
+
+/* Dark mode */
+html[data-mode="dark"] .eePage,
+html[data-mode="dark"] .eeSearchPanel {
+  background: var(--bg);
+}
+
+html[data-mode="dark"] .eeBackBtn,
+html[data-mode="dark"] .eeCloseBtn,
+html[data-mode="dark"] .eeSearchRow,
+html[data-mode="dark"] .eeModalCard,
+html[data-mode="dark"] .eeBlock {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .eeTitle,
+html[data-mode="dark"] .eeRowTitle,
+html[data-mode="dark"] .eeSeeAll,
+html[data-mode="dark"] .eeSearchTitle,
+html[data-mode="dark"] .eeModalTitle,
+html[data-mode="dark"] .eeBlockTitle {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .eeHint,
+html[data-mode="dark"] .eeTileName,
+html[data-mode="dark"] .eeTileMeta,
+html[data-mode="dark"] .eeMiniName,
+html[data-mode="dark"] .eeMiniMeta,
+html[data-mode="dark"] .eeBlockText {
+  color: var(--text);
+}
+
+html[data-mode="dark"] .eeTabs,
+html[data-mode="dark"] .eeSearchBox {
+  background: var(--panel2);
+}
+
+html[data-mode="dark"] .eeTab {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .eeTabOn {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .eeSearchBtn {
+  background: var(--panel2);
+}
+
+html[data-mode="dark"] .eeTileImg,
+html[data-mode="dark"] .eeMiniImg,
+html[data-mode="dark"] .eeModalImgBox {
+  background: var(--panel2);
+}
+
+html[data-mode="dark"] .eePill {
+  background: var(--panel2);
+  color: var(--text);
+}

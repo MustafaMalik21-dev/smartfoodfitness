@@ -1,0 +1,271 @@
+/* src/pages/WorkoutPlans.css */
+
+.wpPage {
+  min-height: 100vh;
+  background: #d9d9d9;
+  padding-bottom: 84px;
+}
+
+.wpTop {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px 14px 10px;
+}
+
+.wpBackBtn {
+  justify-self: start;
+  border: none;
+  background: #efefef;
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 800;
+}
+
+.wpTitle {
+  justify-self: center;
+  font-weight: 900;
+  font-size: 20px;
+  color: #0b84ff;
+}
+
+.wpTopSpacer {
+  width: 44px;
+  height: 44px;
+  justify-self: end;
+}
+
+.wpBody {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wpHint {
+  text-align: center;
+  font-size: 12px;
+  color: #111827;
+  opacity: 0.85;
+}
+
+/* --- NEW: segmented controls (recipes-style) --- */
+.wpSegWrap {
+  background: #bfbfbf;
+  border-radius: 14px;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.wpSegWrap4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.wpSegBtn {
+  border: none;
+  background: transparent;
+  padding: 8px 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 11px;
+  color: #0b84ff;
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wpSegBtnOn {
+  background: #f5f5f5;
+  opacity: 1;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* --- FIX: card layout (no overlap) --- */
+.wpCard {
+  background: #efefef;
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  gap: 14px;
+  align-items: start;
+}
+
+.wpCardTop {
+  grid-column: 1 / 2;
+}
+
+.wpPlanTitle {
+  font-weight: 900;
+  color: #0b84ff;
+}
+
+.wpPlanSub {
+  color: #0b84ff;
+  opacity: 0.9;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.wpProsCons {
+  grid-column: 1 / 2;
+  font-size: 13px;
+  color: #111827;
+}
+
+.wpPro,
+.wpCon {
+  margin: 6px 0;
+}
+
+.wpMore {
+  border: 0;
+  background: transparent;
+  color: #0b84ff;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 0;
+}
+
+.wpMetaCol {
+  grid-column: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wpMeta {
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 900;
+  font-size: 12px;
+  text-align: center;
+  color: #111827;
+}
+
+.wpDetails {
+  grid-column: 1 / 2;
+  margin-top: 6px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+  color: #111827;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.wpDetailsLine + .wpDetailsLine {
+  margin-top: 6px;
+}
+
+.wpViewPlan {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 10px;
+  border: 0;
+  background: #ffffff;
+  color: #0b84ff;
+  font-weight: 900;
+  padding: 10px 12px;
+  border-radius: 999px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+
+.wpMsg {
+  text-align: center;
+  font-weight: 800;
+  color: #111827;
+  opacity: 0.75;
+  font-size: 12px;
+}
+
+.wpErr {
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+  color: #b91c1c;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+/* Small screens: stack meta under content */
+@media (max-width: 380px) {
+  .wpCard {
+    grid-template-columns: 1fr;
+  }
+  .wpMetaCol {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .wpMeta {
+    flex: 1 1 110px;
+  }
+  .wpDetails {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Dark mode */
+html[data-mode="dark"] .wpPage {
+  background: var(--bg);
+}
+
+html[data-mode="dark"] .wpBackBtn,
+html[data-mode="dark"] .wpCard,
+html[data-mode="dark"] .wpDetails {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .wpTitle,
+html[data-mode="dark"] .wpPlanTitle,
+html[data-mode="dark"] .wpMore {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .wpHint,
+html[data-mode="dark"] .wpProsCons,
+html[data-mode="dark"] .wpDetails,
+html[data-mode="dark"] .wpMsg {
+  color: var(--text);
+}
+
+html[data-mode="dark"] .wpMeta,
+html[data-mode="dark"] .wpViewPlan {
+  background: var(--panel2);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .wpSegWrap {
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .wpSegBtn {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .wpSegBtnOn {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}

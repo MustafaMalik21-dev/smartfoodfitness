@@ -1,0 +1,61 @@
+.headerBar { /* styles for the header bar component */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px 14px 10px;
+}
+
+.headerSide {/* styles for left and right sides of the header */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headerRight { /* styles specific to the right side of the header */
+  justify-content: flex-end;
+}
+
+.pageTitle { /* styles for the page title in the center of the header */
+  justify-self: center;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.iconBtn { /* styles for icon buttons (e.g. profile, notifications) */
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.iconCircle { /* styles for the circular background of icons */
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  font-size: 20px;
+  overflow: hidden;
+}
+
+.iconImg { /* styles for the icon images inside the circular backgrounds */
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.backBtn { /* styles for the back button variant of the left icon */
+  border: none;
+  background: var(--panel2);
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  font-weight: 800;
+  color: var(--text);
+}

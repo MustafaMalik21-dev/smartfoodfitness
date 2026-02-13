@@ -1,0 +1,133 @@
+.bottomNav { /* styles for the bottom navigation bar */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 16px;
+
+  width: min(360px, 92%);
+  height: 74px;
+
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.18);
+
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  padding: 0 10px;
+  box-sizing: border-box;
+
+  backdrop-filter: blur(6px);
+}
+
+.navItem { /* styles for individual navigation items */
+  height: 56px; 
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  color: #111827;
+  border-radius: 999px;
+  gap: 6px;
+}
+
+.navIcon { /* styles for the navigation icons */
+  width: 26px;
+  height: 26px;
+}
+
+.navItem.active { /* styles for the active navigation item */
+  color: #0f766e;
+}
+.pageShell.settingsShell {  /* extra bottom padding for settings page to avoid overlap with nav */
+  padding-bottom: calc(16px + 74px + 30px) !important;
+}
+
+html[data-mode="dark"] .bottomNav { /* dark mode styles for bottom nav */
+  background: rgba(22, 26, 34, 0.78);
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+html[data-mode="dark"] .navItem { /*  dark mode styles for nav items */
+  color: var(--muted);
+}
+
+html[data-mode="dark"] .navItem.active { /* dark mode active nav item */
+  color: var(--primary);
+}
+.navIcon { /* styles for the navigation icons */
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  display: block;
+}
+.navIconWrap { /* nav item icon background */
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+}
+.navLabel { /*  styles for nav item labels */
+  font-weight: 800;
+  font-size: 12px;
+  color: #8faae5;
+  line-height: 1;
+}
+
+.navItem.active .navIconWrap { /* active nav item background */
+  background: var(--panel2);
+}
+
+.navItem.active .navLabel { /* active nav item label color */
+  color: #0b84ff;
+}
+.pageTitle { /* styles for the page title in the center of the header */
+  color: var(--primary);
+}
+ 
+.iconCircle { /* styles for the circular background of icons */
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+}
+
+.backBtn { /* styles for the back button variant of the left icon */
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.iconImg { /* styles for the icon images inside the circular backgrounds */
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.iconBtnBadge { /* badge container for icon buttons */
+  position: relative;
+}
+
+.notifBadge { /* notification badge on icon buttons */
+  position: absolute;
+  top: -4px;
+  right: -4px;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+
+  background: #ef4444;
+  color: white;
+
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  border: 2px solid var(--bg);
+}

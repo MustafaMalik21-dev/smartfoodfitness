@@ -1,0 +1,263 @@
+.fitnessBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bigPill {
+  border: 0;
+  background: #efefef;
+  color: #0b84ff;
+  font-weight: 800;
+  padding: 14px 16px;
+  border-radius: 999px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+
+.card {
+  background: #efefef;
+  border-radius: 22px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+}
+
+.cardTitle {
+  font-weight: 900;
+  color: #0b84ff;
+  margin-bottom: 10px;
+}
+
+.cardSub {
+  color: #111827;
+  font-size: 13px;
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.smallPill {
+  width: 100%;
+  border: 0;
+  background: white;
+  color: #0b84ff;
+  font-weight: 900;
+  padding: 12px 14px;
+  border-radius: 999px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+
+/* ---- Calendar ---- */
+
+.calWrap {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.calArrow {
+  border: 0;
+  background: white;
+  border-radius: 999px;
+  width: 44px;
+  height: 34px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 900;
+  color: #111827;
+  font-size: 18px;
+}
+
+.calSelectors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.calSelect {
+  width: 100%;
+  border: 0;
+  background: white;
+  border-radius: 999px;
+  height: 34px;
+  padding: 0 12px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 900;
+  color: #111827;
+  outline: none;
+  appearance: none;
+}
+
+.calGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calDow {
+  text-align: center;
+  font-weight: 900;
+  color: #0b84ff;
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.calCell {
+  border: 0;
+  background: white;
+  border-radius: 14px;
+  height: 44px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  justify-items: center;
+  padding: 6px 4px;
+  color: #111827;
+  font-weight: 900;
+  position: relative;
+}
+
+.calCellOff {
+  opacity: 0.45;
+}
+
+.calCellOn {
+  background: #0b84ff;
+  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.18);
+}
+
+.calCellOn .calDay {
+  color: #ffffff;
+}
+
+.calDay {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.calDotIcon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  opacity: 0.95;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.18));
+}
+
+.calDotSpacer {
+  width: 14px;
+  height: 14px;
+}
+
+.calSelected {
+  margin-top: 12px;
+  background: white;
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.calSelectedTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.calSelectedDate {
+  font-weight: 900;
+  color: #111827;
+  font-size: 12px;
+}
+
+.calSelectedBadge {
+  background: #efefef;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 900;
+  font-size: 11px;
+  color: #0b84ff;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.10);
+}
+
+.calSelectedBadgeOff {
+  color: #111827;
+  opacity: 0.7;
+}
+
+.calSelectedTitle {
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #111827;
+  opacity: 0.9;
+}
+
+.calSelectedTitleOn {
+  color: #0b84ff;
+  opacity: 1;
+}
+
+/* DARK MODE */
+html[data-mode="dark"] .bigPill,
+html[data-mode="dark"] .card {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .cardSub {
+  color: var(--text);
+  opacity: 0.9;
+}
+
+html[data-mode="dark"] .smallPill {
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+html[data-mode="dark"] .calArrow,
+html[data-mode="dark"] .calSelect,
+html[data-mode="dark"] .calCell,
+html[data-mode="dark"] .calSelected {
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+html[data-mode="dark"] .calDow {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .calCellOn {
+  background: var(--primary);
+}
+
+html[data-mode="dark"] .calSelectedBadge {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .calSelectedBadgeOff {
+  color: var(--text);
+  opacity: 0.75;
+}
+
+html[data-mode="dark"] .calSelectedDate {
+  color: var(--text);
+}
+
+html[data-mode="dark"] .calSelectedTitle {
+  color: var(--text);
+  opacity: 0.9;
+}
+
+html[data-mode="dark"] .calSelectedTitleOn {
+  color: var(--primary);
+  opacity: 1;
+}

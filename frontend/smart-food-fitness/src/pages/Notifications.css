@@ -1,0 +1,229 @@
+.notifShell { /* FULL PAGE SHELL */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.notifTop {/* TOP BAR */
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px 10px;
+}
+
+.notifTitle { /* page title */
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--primary);
+}
+
+.notifBackBtn { /* back button */
+  border: none;
+  cursor: pointer;
+  background: var(--panel2);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 800;
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.notifIconBtn { /* icon button */
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.notifIconCircle { /* icon background circle */
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  font-size: 20px;
+}
+
+.notifBody { /* SCROLLING BODY */
+  flex: 1 1 auto;
+  min-height: 0; /* for flexbox scrolling */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 8px 14px 0;
+  box-sizing: border-box;
+  padding-bottom: 96px;
+}
+
+.notifHint { /* hint text */
+  color: var(--muted);
+  font-weight: 700;
+  padding: 10px 2px;
+}
+
+.notifList { /* notification list */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notifCard { /* individual notification card */
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 10px;
+  align-items: start;
+  background: var(--panel);
+  border-radius: 18px;
+  padding: 12px 12px;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.notifCardUnread { /* unread notification highlight */
+  outline: 2px solid rgba(11, 132, 255, 0.25);
+}
+
+.notifLeftIcon { /* left icon circle */
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.notifMain { /* main content area */
+  min-width: 0;
+}
+
+.notifCardTop { /* title and time row */
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.notifCardTitleRow { /* title and dot */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.notifDot { /* unread dot */
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--primary);
+  flex: 0 0 auto;
+}
+
+.notifCardTitle { /* notification title */
+  font-weight: 900;
+  color: var(--text);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notifCardTime { /* time stamp */
+  font-size: 11px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.notifCardMsg { /* message body */
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.9;
+  line-height: 1.35;
+}
+
+.notifCardFooter { /* footer row */
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge { /* badge label */
+  font-size: 11px;
+  font-weight: 900;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.badgeUnread { /* unread badge outline */
+  outline: 1px solid rgba(11, 132, 255, 0.35);
+}
+
+.badgeRead { /* read badge style */
+  opacity: 0.75;
+}
+
+.notifTap { /* tap to read label */
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 800;
+}
+.notifIconImg { /* right icon image */
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.notifLeftIconImg { /* left icon image */
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.notifFilters { /* filter button row */
+  width: 100%;
+  background: var(--panel2);
+  border-radius: 999px;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  box-shadow: var(--shadow);
+  margin-bottom: 10px;
+}
+
+.notifFilter { /* individual filter button */
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 8px 6px;
+  font-weight: 900;
+  font-size: 11px;
+  color: var(--primary);
+  opacity: 0.75;
+}
+
+.notifFilterOn { /* active filter button */
+  background: var(--panel);
+  opacity: 1;
+  box-shadow: var(--shadow);
+}

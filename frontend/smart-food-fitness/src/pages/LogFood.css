@@ -1,0 +1,464 @@
+.logFoodPage {
+  min-height: 100vh;
+  background: #d9d9d9;
+  padding-bottom: 84px;
+}
+
+.logFoodTop {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px 14px 10px;
+}
+
+.logFoodBackBtn {
+  justify-self: start;
+  border: none;
+  background: #efefef;
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 700;
+}
+
+.logFoodTitle {
+  justify-self: center;
+  font-weight: 900;
+  font-size: 22px;
+  color: #0b84ff;
+}
+
+.logFoodTopSpacer {
+  justify-self: end;
+  width: 44px;
+  height: 44px;
+}
+
+.logFoodBody {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logFoodSearch {
+  background: #bfbfbf;
+  border-radius: 14px;
+  height: 40px;
+  display: grid;
+  grid-template-columns: 36px 1fr 36px;
+  align-items: center;
+  padding: 0 6px;
+}
+
+.logFoodSearchIcon,
+.logFoodMic {
+  text-align: center;
+  opacity: 0.75;
+}
+
+.logFoodSearchInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-weight: 700;
+  color: #111827;
+}
+
+.logFoodTabs {
+  background: #bfbfbf;
+  border-radius: 14px;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.logFoodTab {
+  border: none;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 800;
+  color: #0b84ff;
+  opacity: 0.7;
+}
+
+.logFoodTab.isActive {
+  background: #f5f5f5;
+  opacity: 1;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.logFoodInlineErr {
+  font-weight: 800;
+  color: #dc2626;
+  padding: 0 2px;
+}
+
+.logFoodTable {
+  background: #d0d0d0;
+  border-radius: 16px;
+  padding: 10px 10px 8px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.logFoodHead {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 34px;
+  gap: 10px;
+  padding: 6px 6px;
+  font-size: 12px;
+  font-weight: 900;
+  color: #0b84ff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.logFoodRows {
+  max-height: 420px;
+  overflow: auto;
+  padding-top: 6px;
+}
+
+.logFoodEmpty {
+  padding: 12px 6px;
+  font-weight: 800;
+  opacity: 0.75;
+}
+
+.logFoodRow {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 34px;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 6px;
+  font-size: 12px;
+  color: #111827;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.logFoodRow .cell {
+  min-width: 0;
+}
+
+.logFoodRow .c {
+  text-align: center;
+}
+
+.logFoodRow .r {
+  text-align: right;
+}
+
+
+.nameCell {
+  white-space: normal;
+  line-height: 1.15;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  display: box;
+  box-orient: vertical;
+  line-clamp: 2;
+
+  overflow: hidden;
+}
+
+.addBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  background: #efefef;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.logFoodActions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.logFoodActionBtn {
+  border: none;
+  background: #efefef;
+  border-radius: 999px;
+  padding: 16px 10px;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 900;
+  color: #111827;
+}
+
+/* ======================
+   Modal
+   ====================== */
+
+.lfModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 999;
+}
+
+.lfModalCard {
+  width: 100%;
+  max-width: 420px;
+  background: #f5f5f5;
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+  padding: 14px;
+}
+
+.lfModalTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lfModalTitle {
+  font-weight: 900;
+  color: #0b84ff;
+}
+
+.lfModalClose {
+  border: none;
+  background: #efefef;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 900;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+}
+
+.lfModalName {
+  margin-top: 10px;
+  font-weight: 900;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.lfModalGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.lfModalImg {
+  width: 120px;
+  height: 120px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.lfModalImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lfModalImgPh {
+  font-size: 34px;
+  opacity: 0.75;
+}
+
+.lfField {
+  display: grid;
+  gap: 6px;
+}
+
+.lfLabel {
+  font-size: 12px;
+  font-weight: 900;
+  color: #0b84ff;
+}
+
+.lfInput {
+  height: 42px;
+  border-radius: 14px;
+  border: none;
+  outline: none;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  padding: 0 10px;
+  font-weight: 900;
+}
+
+.lfMacros {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.lfMacroRow {
+  display: flex;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 8px 10px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  font-weight: 900;
+  color: #111827;
+  font-size: 12px;
+}
+
+.lfModalBtns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.lfBtnSecondary {
+  height: 46px;
+  border-radius: 18px;
+  border: none;
+  background: #efefef;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+  font-weight: 900;
+}
+
+.lfBtnPrimary {
+  height: 46px;
+  border-radius: 18px;
+  border: none;
+  background: #0b84ff;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  font-weight: 900;
+}
+
+.lfBtnPrimary:disabled,
+.lfBtnSecondary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+/* =========================
+   Dark mode overrides
+   ========================= */
+
+html[data-mode="dark"] .logFoodPage {
+  background: var(--bg);
+}
+
+html[data-mode="dark"] .logFoodBackBtn,
+html[data-mode="dark"] .logFoodActionBtn,
+html[data-mode="dark"] .addBtn {
+  background: var(--panel2);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  border-color: var(--border);
+}
+
+html[data-mode="dark"] .logFoodTitle {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .logFoodSearch {
+  background: var(--panel2);
+}
+
+html[data-mode="dark"] .logFoodSearchInput {
+  color: var(--text);
+}
+
+html[data-mode="dark"] .logFoodTabs {
+  background: var(--panel2);
+}
+
+html[data-mode="dark"] .logFoodTab {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .logFoodTab.isActive {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .logFoodTable {
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .logFoodHead {
+  color: var(--primary);
+  border-bottom-color: var(--border);
+}
+
+html[data-mode="dark"] .logFoodRow {
+  color: var(--text);
+  border-bottom-color: var(--border);
+}
+
+/* =========================
+   Modal dark mode
+   ========================= */
+
+html[data-mode="dark"] .lfModalOverlay {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+html[data-mode="dark"] .lfModalCard {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .lfModalTitle {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .lfModalClose {
+  background: var(--panel2);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .lfModalName {
+  color: var(--text);
+}
+
+html[data-mode="dark"] .lfModalImg {
+  background: var(--panel2);
+}
+
+html[data-mode="dark"] .lfInput {
+  background: var(--panel2);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+html[data-mode="dark"] .lfMacroRow {
+  background: var(--panel2);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+html[data-mode="dark"] .lfBtnSecondary {
+  background: var(--panel2);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .lfBtnPrimary {
+  background: var(--primary);
+  color: #ffffff;
+}
