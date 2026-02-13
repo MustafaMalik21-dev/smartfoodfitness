@@ -27,6 +27,7 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
             .anyRequest().authenticated()
         )
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -38,3 +39,4 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 }
+
