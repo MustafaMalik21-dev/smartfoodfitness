@@ -7,35 +7,43 @@ import "./Dashboard.css";
 import StreakIcon from "../assets/Streakicon.png";
 import { getUserId } from "../auth/authStorage";
 
-
-
-function clamp(n, min, max) { // clamp number between min and max
+function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-function toNumber(v) { // convert value to number or 0
-  const n = Number(v); 
-  return Number.isFinite(n) ? n : 0; // return 0 if not a finite number
+function toNumber(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
 }
 
-function percentFromCurrentGoal(current, goal) { // calculate percentage from current and goal values
-  if (!goal || goal <= 0) return 0;
-  return clamp((current / goal) * 100, 0, 100); // clamp between 0 and 100
+function percentFromCurrentGoal(current, goal) {
+  const c = Math.max(0, toNumber(current));
+  const g = Math.max(0, toNumber(goal));
+  if (!g) return 0;
+  return clamp((c / g) * 100, 0, 100);
 }
 
 function formatInt(n) {
-  return Math.round(toNumber(n)).toString(); // format number as integer string
+  return Math.round(toNumber(n)).toString();
 }
 
-function formatMacroLine(name, current, goal) { // format macro nutrient line
-  return `${name} - ${formatInt(current)}g / ${formatInt(goal)}g`; // e.g., "Protein - 120g / 150g"
+function capCurrentToGoal(current, goal) {
+  const c = Math.max(0, toNumber(current));
+  const g = Math.max(0, toNumber(goal));
+  if (g > 0) return Math.min(c, g);
+  return c;
 }
 
-function Donut({ percent, size = 160, stroke = 18, labelLeft, labelRight }) { // Donut chart component
+function formatMacroLine(name, current, goal) {
+  const displayCurrent = capCurrentToGoal(current, goal);
+  return `${name} - ${formatInt(displayCurrent)}g / ${formatInt(Math.max(0, toNumber(goal)))}g`;
+}
+
+function Donut({ percent, size = 160, stroke = 18, labelLeft, labelRight }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
-  const p = clamp(toNumber(percent), 0, 100); 
-  const offset = c * (1 - p / 100); // calculate stroke offset for percentage
+  const p = clamp(toNumber(percent), 0, 100);
+  const offset = c * (1 - p / 100);
 
   return (
     <div className="donutWrap" style={{ width: size, height: size }}>
@@ -71,8 +79,8 @@ function Donut({ percent, size = 160, stroke = 18, labelLeft, labelRight }) { //
   );
 }
 
-function MiniRing({ current, goal, colorVar = "--primary" }) { // Mini progress ring component
-  const p = percentFromCurrentGoal(current, goal); // calculate percentage
+function MiniRing({ current, goal, colorVar = "--primary" }) {
+  const p = percentFromCurrentGoal(current, goal);
   const size = 60;
   const stroke = 10;
   const r = (size - stroke) / 2;
@@ -98,19 +106,18 @@ function MiniRing({ current, goal, colorVar = "--primary" }) { // Mini progress 
   );
 }
 
-
-export default function Dashboard() { // Dashboard page
+export default function Dashboard() {
   const navigate = useNavigate();
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const userId = getUserId();
 
-  useEffect(() => { // data loading effect
-    let cancelled = false; 
+  useEffect(() => {
+    let cancelled = false;
     if (!userId) return;
 
-    async function load() { // load dashboard data
+    async function load() {
       try {
         setLoading(true);
         const res = await apiClient.get(`/api/dashboard-summary/user/${userId}`, {
@@ -126,17 +133,17 @@ export default function Dashboard() { // Dashboard page
 
     load();
 
-    const poll = setInterval(load, 15000); // poll every 15 seconds
+    const poll = setInterval(load, 15000);
 
-    const onFocus = () => load(); 
+    const onFocus = () => load();
     const onVisibility = () => {
-      if (document.visibilityState === "visible") load(); 
-    }; 
+      if (document.visibilityState === "visible") load();
+    };
 
-    window.addEventListener("focus", onFocus); // add focus event listener
-    document.addEventListener("visibilitychange", onVisibility); // add visibility change listener
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibility);
 
-    return () => { // cleanup on unmount
+    return () => {
       cancelled = true;
       clearInterval(poll);
       window.removeEventListener("focus", onFocus);
@@ -144,29 +151,31 @@ export default function Dashboard() { // Dashboard page
     };
   }, [userId]);
 
-  const view = useMemo(() => { // prepare view data
+  const view = useMemo(() => {
     const d = dashboard ?? {};
 
-    const caloriesGoal = toNumber(d.caloriesGoal); // daily calorie goal
-    const caloriesTotal = toNumber(d.totalCalories);
-    const caloriesRemaining = toNumber(d.caloriesRemaining);
-    const caloriesPercent =
-      toNumber(d.caloriesPercent) > 0
-        ? toNumber(d.caloriesPercent)   // use provided percent if valid
-        : percentFromCurrentGoal(caloriesTotal, caloriesGoal); // calculate percent consumed
+    const caloriesGoal = Math.max(0, toNumber(d.caloriesGoal));
+    const caloriesTotal = Math.max(0, toNumber(d.totalCalories));
 
-    const proteinsGoal = toNumber(d.proteinsGoal);
-    const proteinsTotal = toNumber(d.totalProteins);
+    const remainingRaw = caloriesGoal - caloriesTotal;
+    const caloriesRemaining = Math.max(0, remainingRaw);
+    const overBy = Math.max(0, -remainingRaw);
+    const isOver = overBy > 0;
 
-    const carbsGoal = toNumber(d.carbsGoal);
-    const carbsTotal = toNumber(d.totalCarbs);
+    const caloriesPercent = caloriesGoal > 0 ? clamp((caloriesTotal / caloriesGoal) * 100, 0, 100) : 0;
 
-    const fatsGoal = toNumber(d.fatsGoal);
-    const fatsTotal = toNumber(d.totalFats);
+    const proteinsGoal = Math.max(0, toNumber(d.proteinsGoal));
+    const proteinsTotal = Math.max(0, toNumber(d.totalProteins));
 
-    const currentStreakDays = toNumber(d.currentStreakDays);
-    const workoutsLast7Days = toNumber(d.workoutsLast7Days);
-    const totalWorkouts = toNumber(d.totalWorkouts);
+    const carbsGoal = Math.max(0, toNumber(d.carbsGoal));
+    const carbsTotal = Math.max(0, toNumber(d.totalCarbs));
+
+    const fatsGoal = Math.max(0, toNumber(d.fatsGoal));
+    const fatsTotal = Math.max(0, toNumber(d.totalFats));
+
+    const currentStreakDays = Math.max(0, toNumber(d.currentStreakDays));
+    const workoutsLast7Days = Math.max(0, toNumber(d.workoutsLast7Days));
+    const totalWorkouts = Math.max(0, toNumber(d.totalWorkouts));
 
     const macroRows = [
       { label: "Protein", current: proteinsTotal, goal: proteinsGoal, colorVar: "--dashProtein" },
@@ -178,7 +187,9 @@ export default function Dashboard() { // Dashboard page
       caloriesGoal,
       caloriesTotal,
       caloriesRemaining,
-      caloriesPercent,
+      caloriesPercent: clamp(caloriesPercent, 0, 100),
+      isOver,
+      overBy,
       macroRows,
       currentStreakDays,
       workoutsLast7Days,
@@ -202,36 +213,18 @@ export default function Dashboard() { // Dashboard page
           <div className="calorieCardInner">
             <div className="macroLeft">
               <div className="macroLine">
-                <MiniRing
-                  current={view.macroRows[0].current}
-                  goal={view.macroRows[0].goal}
-                  colorVar={view.macroRows[0].colorVar}
-                />
-                <div className="macroText">
-                  {formatMacroLine("Protein", view.macroRows[0].current, view.macroRows[0].goal)}
-                </div>
+                <MiniRing current={view.macroRows[0].current} goal={view.macroRows[0].goal} colorVar={view.macroRows[0].colorVar} />
+                <div className="macroText">{formatMacroLine("Protein", view.macroRows[0].current, view.macroRows[0].goal)}</div>
               </div>
 
               <div className="macroLine">
-                <MiniRing
-                  current={view.macroRows[1].current}
-                  goal={view.macroRows[1].goal}
-                  colorVar={view.macroRows[1].colorVar}
-                />
-                <div className="macroText">
-                  {formatMacroLine("Carbs", view.macroRows[1].current, view.macroRows[1].goal)}
-                </div>
+                <MiniRing current={view.macroRows[1].current} goal={view.macroRows[1].goal} colorVar={view.macroRows[1].colorVar} />
+                <div className="macroText">{formatMacroLine("Carbs", view.macroRows[1].current, view.macroRows[1].goal)}</div>
               </div>
 
               <div className="macroLine">
-                <MiniRing
-                  current={view.macroRows[2].current}
-                  goal={view.macroRows[2].goal}
-                  colorVar={view.macroRows[2].colorVar}
-                />
-                <div className="macroText">
-                  {formatMacroLine("Fat", view.macroRows[2].current, view.macroRows[2].goal)}
-                </div>
+                <MiniRing current={view.macroRows[2].current} goal={view.macroRows[2].goal} colorVar={view.macroRows[2].colorVar} />
+                <div className="macroText">{formatMacroLine("Fat", view.macroRows[2].current, view.macroRows[2].goal)}</div>
               </div>
             </div>
 
@@ -242,8 +235,8 @@ export default function Dashboard() { // Dashboard page
               </div>
 
               <div className="calRemaining">
-                <span className="calRemainingLabel">Calories Remaining :</span>
-                <span className="calRemainingValue"> {formatInt(view.caloriesRemaining)} kcal</span>
+                <span className="calRemainingLabel">{view.isOver ? "Over by :" : "Calories Remaining :"}</span>
+                <span className="calRemainingValue"> {view.isOver ? formatInt(view.overBy) : formatInt(view.caloriesRemaining)} kcal</span>
               </div>
 
               <div className="donutTitle">Daily Calorie Goal Progress</div>
@@ -267,9 +260,7 @@ export default function Dashboard() { // Dashboard page
 
         <div className="tipCard">
           <div className="tipLabel">Daily Tip:</div>
-          <div className="tipText">
-            {loading ? "" : "Try to hit your protein goal early in the day to stay consistent."}
-          </div>
+          <div className="tipText">{loading ? "" : "Try to hit your protein goal early in the day to stay consistent."}</div>
         </div>
 
         <div className="dashStatsTiny">
