@@ -1,9 +1,12 @@
 package com.mustafa.smartfoodfitness.dto;
 
+import java.util.Set;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+
 
 public class UpdateUserProfileRequest {
 
@@ -30,8 +33,11 @@ public class UpdateUserProfileRequest {
 
     private String experienceLevel;
 
-    // ✅ ADD THIS
     private Boolean onboardingComplete;
+    
+    private Set<String> aims;
+
+
 
     public String getDisplayName() { 
         return displayName; 
@@ -96,12 +102,17 @@ public class UpdateUserProfileRequest {
         this.experienceLevel = experienceLevel; 
     }
 
-    // ✅ ADD THESE
     public Boolean getOnboardingComplete() {
         return onboardingComplete;
     }
 
     public void setOnboardingComplete(Boolean onboardingComplete) {
         this.onboardingComplete = onboardingComplete;
+    }
+    public Set<String> getAims() { 
+        return aims; 
+    }
+    public void setAims(Set<String> aims) { 
+        this.aims = aims; 
     }
 }

@@ -1,6 +1,8 @@
 package com.mustafa.smartfoodfitness.controller;
 
 import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.mustafa.smartfoodfitness.dto.CreateUserProfileRequest;
+import com.mustafa.smartfoodfitness.dto.UpdateAimsRequest;
 import com.mustafa.smartfoodfitness.dto.UpdateSelectedWorkoutPlanRequest;
 import com.mustafa.smartfoodfitness.dto.UpdateUserProfileRequest;
 import com.mustafa.smartfoodfitness.dto.UserProfileResponse;
@@ -79,13 +82,17 @@ public class UserProfileController {
         userProfile.setUpdatedAt(Instant.now());
 
         if (request.getOnboardingComplete() != null) {
-        userProfile.setOnboardingComplete(request.getOnboardingComplete());
+            userProfile.setOnboardingComplete(request.getOnboardingComplete());
+        }
+        if (request.getAims() != null) {
+            userProfile.setAims(request.getAims());
         }
 
         userProfile.setUpdatedAt(Instant.now());
 
         UserProfile saved = userProfileRepository.save(userProfile);
         return toResponse(saved);
+        
     }
 
     @GetMapping("/{id}") // handle HTTP GET requests to retrieve a specific user profile by its ID, validating that the profile exists and returning a response DTO representing the user profile to the client when they access the relevant endpoint in the application
@@ -128,6 +135,34 @@ public class UserProfileController {
         UserProfile saved = userProfileRepository.save(userProfile);
         return toResponse(saved);
     }
+    @PutMapping("/{id}/aims")
+    public UserProfileResponse updateAims(
+            @PathVariable @NonNull Long id,
+            @RequestBody UpdateAimsRequest request
+    ) {
+        UserProfile userProfile = userProfileRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
+
+        Set<String> cleaned = new LinkedHashSet<>();
+        if (request != null && request.getAims() != null) {
+            for (String a : request.getAims()) {
+                if (a == null) continue;
+                String s = a.trim();
+                if (!s.isEmpty()) cleaned.add(s);
+            }
+        }
+
+        if (cleaned.size() > 9) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can select a maximum of 9 aims.");
+        }
+
+        userProfile.setAims(cleaned);
+        userProfile.setUpdatedAt(Instant.now());
+
+        UserProfile saved = userProfileRepository.save(userProfile);
+        return toResponse(saved);
+    }
+
 
     private UserProfileResponse toResponse(UserProfile saved) { // convert a UserProfile entity to a UserProfileResponse DTO by mapping the relevant fields from the entity to the response object, allowing for a clean separation between the internal data model and the data exposed to clients when they access the relevant endpoints in the application
         UserProfileResponse response = new UserProfileResponse();
@@ -146,6 +181,7 @@ public class UserProfileController {
         response.setUpdatedAt(saved.getUpdatedAt());
         response.setSelectedWorkoutPlanId(saved.getSelectedWorkoutPlanId());
         response.setOnboardingComplete(saved.getOnboardingComplete());
+        response.setAims(saved.getAims());
         return response;
     }
 }

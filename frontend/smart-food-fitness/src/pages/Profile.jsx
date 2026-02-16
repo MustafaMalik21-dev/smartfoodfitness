@@ -1,3 +1,4 @@
+// src/pages/Profile.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
@@ -86,10 +87,52 @@ function normalizeUnit(u, fallback) {
   return x || (fallback ?? "");
 }
 
+function aimColorClass(color) {
+  const c = (color || "").toLowerCase();
+  if (c === "red") return "aimChipRed";
+  if (c === "green") return "aimChipGreen";
+  if (c === "yellow") return "aimChipYellow";
+  if (c === "blue") return "aimChipBlue";
+  if (c === "purple") return "aimChipPurple";
+  return "aimChipBlue";
+}
+
+const ALL_AIMS = [
+  { key: "lose_weight", label: "Lose Weight", color: "red" },
+  { key: "gain_muscle", label: "Gain Muscle", color: "purple" },
+  { key: "get_fitter", label: "Get Fitter", color: "blue" },
+  { key: "build_strength", label: "Build Strength", color: "yellow" },
+  { key: "increase_steps", label: "Increase Steps", color: "green" },
+  { key: "better_sleep", label: "Better Sleep", color: "purple" },
+  { key: "more_energy", label: "More Energy", color: "yellow" },
+  { key: "eat_healthier", label: "Eat Healthier", color: "green" },
+  { key: "drink_more_water", label: "Drink More Water", color: "blue" },
+  { key: "reduce_sugar", label: "Reduce Sugar", color: "red" },
+  { key: "reduce_snacking", label: "Reduce Snacking", color: "red" },
+  { key: "meal_prep", label: "Meal Prep", color: "green" },
+  { key: "track_calories", label: "Track Calories", color: "blue" },
+  { key: "hit_protein", label: "Hit Protein Goal", color: "purple" },
+  { key: "balanced_macros", label: "Balanced Macros", color: "yellow" },
+  { key: "run_5k", label: "Run a 5K", color: "blue" },
+  { key: "run_10k", label: "Run a 10K", color: "blue" },
+  { key: "cycle_more", label: "Cycle More", color: "green" },
+  { key: "swim_more", label: "Swim More", color: "green" },
+  { key: "stretch_daily", label: "Stretch Daily", color: "yellow" },
+  { key: "improve_mobility", label: "Improve Mobility", color: "yellow" },
+  { key: "better_posture", label: "Better Posture", color: "yellow" },
+  { key: "reduce_stress", label: "Reduce Stress", color: "purple" },
+  { key: "mindful_eating", label: "Mindful Eating", color: "green" },
+  { key: "cook_more", label: "Cook More", color: "green" },
+  { key: "avoid_takeaway", label: "Avoid Takeaways", color: "red" },
+  { key: "consistency", label: "Be Consistent", color: "blue" },
+  { key: "weekly_workouts", label: "3 Workouts/Week", color: "blue" },
+  { key: "increase_flex", label: "Increase Flexibility", color: "yellow" },
+  { key: "improve_health", label: "Improve Health", color: "green" },
+];
 
 export default function Profile() {
   const navigate = useNavigate();
-  
+
   const userId = getUserId();
   const PROFILE_PIC_KEY = useMemo(() => `sff_profile_pic_user_${userId}`, [userId]);
 
@@ -107,12 +150,18 @@ export default function Profile() {
 
   const [heightPref, setHeightPref] = useState(() => loadHeightPref());
 
+  const [aims, setAims] = useState([]);
+  const [aimsOpen, setAimsOpen] = useState(false);
+  const [aimsSaving, setAimsSaving] = useState(false);
+  const [aimsErr, setAimsErr] = useState("");
+
+  const showAvatarHint = !photoDataUrl;
+
   useEffect(() => {
     const t = setInterval(() => {
       const latest = loadHeightPref();
       setHeightPref((prev) => (prev === latest ? prev : latest));
     }, 300);
-
     return () => clearInterval(t);
   }, []);
 
@@ -136,6 +185,9 @@ export default function Profile() {
       setStreak(sRes.data);
       setLatestWeight(wRes.data);
 
+      const fromProfile = Array.isArray(pRes.data?.aims) ? pRes.data.aims : [];
+      setAims(fromProfile);
+
       setIsEditing(false);
       setDraft(null);
     } catch {
@@ -144,6 +196,7 @@ export default function Profile() {
       setLatestWeight(null);
       setIsEditing(false);
       setDraft(null);
+      setAims([]);
       setErrorMsg("Could not load profile.");
     } finally {
       setLoading(false);
@@ -168,13 +221,13 @@ export default function Profile() {
     setDraft({
       displayName: profile.displayName ?? "",
       age: profile.age ?? "",
-      gender: profile.gender ?? "",
-      activityLevel: profile.activityLevel ?? "",
+      gender: (profile.gender ?? "").toString(),
+      activityLevel: (profile.activityLevel ?? "").toString(),
       heightValue: profile.heightValue ?? "",
       heightUnit: normalizeUnit(profile.heightUnit, "ft"),
       weightValue: lwVal ?? profile.weightValue ?? "",
       weightUnit: normalizeUnit(lwUnit ?? profile.weightUnit, "kg"),
-      experienceLevel: profile.experienceLevel ?? "",
+      experienceLevel: (profile.experienceLevel ?? "").toString(),
     });
 
     setIsEditing(true);
@@ -230,6 +283,9 @@ export default function Profile() {
       const res = await apiClient.put(`/api/user-profile/${userId}`, profilePayload);
       setProfile(res.data);
 
+      const fromProfile = Array.isArray(res.data?.aims) ? res.data.aims : aims;
+      setAims(fromProfile);
+
       setIsEditing(false);
       setDraft(null);
 
@@ -254,6 +310,37 @@ export default function Profile() {
     } finally {
       setSaving(false);
     }
+  }
+
+  async function saveAims(nextAims) {
+    setAimsSaving(true);
+    setAimsErr("");
+    try {
+      const res = await apiClient.put(`/api/user-profile/${userId}/aims`, {
+        aims: nextAims,
+      });
+      const savedAims = Array.isArray(res.data?.aims) ? res.data.aims : nextAims;
+      setAims(savedAims);
+    } catch {
+      setAimsErr("Could not save aims. Check backend validation / endpoint path.");
+    } finally {
+      setAimsSaving(false);
+    }
+  }
+
+  function toggleAim(label) {
+    const exists = aims.includes(label);
+    let next = aims;
+
+    if (exists) {
+      next = aims.filter((x) => x !== label);
+    } else {
+      if (aims.length >= 9) return;
+      next = [...aims, label];
+    }
+
+    setAims(next);
+    saveAims(next);
   }
 
   function onPickPhoto(e) {
@@ -312,6 +399,12 @@ export default function Profile() {
     };
   }, [profile, streak, latestWeight, heightPref]);
 
+  const aimMeta = useMemo(() => {
+    const m = new Map();
+    ALL_AIMS.forEach((a) => m.set(a.label, a));
+    return m;
+  }, []);
+
   return (
     <div className="pageShell">
       <div className="profileTopBar">
@@ -343,6 +436,8 @@ export default function Profile() {
             <input type="file" accept="image/*" onChange={onPickPhoto} style={{ display: "none" }} />
           </label>
 
+          {showAvatarHint ? <div className="profileAvatarHint">Click above to add profile picture</div> : null}
+
           {errorMsg ? <div className="profileError">{errorMsg}</div> : null}
         </div>
 
@@ -361,11 +456,16 @@ export default function Profile() {
             {!isEditing ? (
               <div className="pTileValue">{loading ? "…" : view.experienceLevel}</div>
             ) : (
-              <input
-                className="pInput"
+              <select
+                className="pSelect"
                 value={draft?.experienceLevel ?? ""}
                 onChange={(e) => setDraft((d) => ({ ...d, experienceLevel: e.target.value }))}
-              />
+              >
+                <option value="">—</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+              </select>
             )}
           </div>
 
@@ -403,7 +503,11 @@ export default function Profile() {
             {!isEditing ? (
               <div className="pTileValue">{loading ? "…" : view.gender}</div>
             ) : (
-              <input className="pInput" value={draft?.gender ?? ""} onChange={(e) => setDraft((d) => ({ ...d, gender: e.target.value }))} />
+              <select className="pSelect" value={draft?.gender ?? ""} onChange={(e) => setDraft((d) => ({ ...d, gender: e.target.value }))}>
+                <option value="">—</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
             )}
           </div>
 
@@ -412,11 +516,16 @@ export default function Profile() {
             {!isEditing ? (
               <div className="pTileValue">{loading ? "…" : view.activityLevel}</div>
             ) : (
-              <input
-                className="pInput"
+              <select
+                className="pSelect"
                 value={draft?.activityLevel ?? ""}
                 onChange={(e) => setDraft((d) => ({ ...d, activityLevel: e.target.value }))}
-              />
+              >
+                <option value="">—</option>
+                <option value="Low">Low</option>
+                <option value="Moderate">Moderate</option>
+                <option value="High">High</option>
+              </select>
             )}
           </div>
 
@@ -441,15 +550,66 @@ export default function Profile() {
         </div>
 
         <div className="profileGoalsCard">
-          <div className="profileGoalsTitle">Goals</div>
-          <div className="profileGoalsChips">
-            <span className="goalChip goalChipRed">Get Fit</span>
-            <span className="goalChip goalChipRed">Lose Weight</span>
-            <span className="goalChip goalChipGreen">Healthier</span>
-            <span className="goalChip goalChipYellow">Strength</span>
-            <span className="goalChip goalChipGreen">Fitness</span>
-            <span className="goalChip goalChipYellow">Steps</span>
+          <div className="profileGoalsTitleRow">
+            <div className="profileGoalsTitle">Aims</div>
+            <button className="aimsAddBtn" type="button" onClick={() => setAimsOpen((v) => !v)} aria-label="Choose aims">
+              +
+            </button>
           </div>
+
+          {aims.length === 0 ? (
+            <div className="aimsEmpty">Add up to 9 aims</div>
+          ) : (
+            <div className="profileGoalsChips">
+              {aims.map((label) => {
+                const meta = aimMeta.get(label);
+                const c = aimColorClass(meta?.color || "blue");
+                return (
+                  <span key={label} className={`goalChip ${c}`}>
+                    {label}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
+          {aimsOpen ? (
+            <div className="aimsPickerInline">
+              <div className="aimsPickerTop">
+                <div className="aimsPickerTitle">Choose Aims ({aims.length}/9)</div>
+                <button className="aimsPickerClose" type="button" onClick={() => setAimsOpen(false)}>
+                  Done
+                </button>
+              </div>
+
+              <div className="aimsInlineList">
+                {ALL_AIMS.map((a) => {
+                  const selected = aims.includes(a.label);
+                  const c = aimColorClass(a.color);
+                  return (
+                    <button
+                      key={a.key}
+                      type="button"
+                      className={`aimPick ${selected ? "aimPickOn" : ""}`}
+                      onClick={() => toggleAim(a.label)}
+                      disabled={!selected && aims.length >= 9}
+                    >
+                      <span className={`aimDot ${c}`} />
+                      <span className="aimPickText">{a.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {aimsErr ? <div className="aimsErr">{aimsErr}</div> : null}
+
+              <div className="aimsPickerFooter">
+                <div className="aimsPickerHint">
+                  {aimsSaving ? "Saving..." : aims.length >= 9 ? "Max selected" : "Tap to select / unselect"}
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

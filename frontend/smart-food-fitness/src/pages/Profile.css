@@ -38,7 +38,7 @@
 .profileAvatarBlock {
   display: grid;
   place-items: center;
-  gap: 10px;
+  gap: 6px;
 }
 
 .profileAvatarCircle {
@@ -61,6 +61,13 @@
 
 .profileAvatarPlaceholder {
   font-size: 44px;
+}
+
+.profileAvatarHint {
+  font-weight: 900;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--text) 75%, transparent);
+  text-align: center;
 }
 
 .profileError {
@@ -126,11 +133,22 @@
   gap: 8px;
 }
 
+
 .profileGoalsCard {
   background: var(--panel);
   border-radius: 18px;
   padding: 12px 12px 14px;
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.profileGoalsTitleRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .profileGoalsTitle {
@@ -138,7 +156,27 @@
   font-size: 12px;
   color: var(--primary);
   text-align: center;
-  margin-bottom: 10px;
+}
+
+.aimsAddBtn {
+  border: none;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: var(--panel2);
+  color: var(--primary);
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+}
+
+.aimsAddBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
 }
 
 .profileGoalsChips {
@@ -159,14 +197,209 @@
   color: var(--text);
 }
 
-.goalChipRed {
+.aimsEmpty {
+  font-weight: 900;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  text-align: center;
+  padding: 6px 0 2px;
+}
+
+.aimChipRed {
   color: #ef4444;
 }
 
-.goalChipGreen {
+.aimChipGreen {
   color: #22c55e;
 }
 
-.goalChipYellow {
+.aimChipYellow {
   color: #f59e0b;
+}
+
+.aimChipBlue {
+  color: #0b84ff;
+}
+
+.aimChipPurple {
+  color: #a855f7;
+}
+
+.aimsPickerInline {
+  margin-top: 12px;
+  background: var(--panel2);
+  border-radius: 18px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  overflow: hidden;
+}
+
+.aimsPickerTop {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.aimsPickerTitle {
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.aimsPickerClose {
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.aimsInlineList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  overflow: auto;
+  max-height: min(45vh, 340px);
+  padding: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.aimPick {
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-weight: 900;
+  font-size: 12px;
+  background: var(--panel2);
+  box-shadow: var(--shadow);
+  text-align: left;
+
+  display: grid;
+  grid-template-columns: 10px 1fr;
+  gap: 10px;
+  align-items: center;
+
+  color: var(--text);
+  opacity: 0.92;
+  transition: transform 120ms ease, filter 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.aimPick:active {
+  transform: translateY(1px);
+  filter: brightness(0.98);
+}
+
+.aimPickText {
+  line-height: 1.1;
+}
+
+.aimDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.aimDot.aimChipRed {
+  background: #ef4444;
+}
+.aimDot.aimChipGreen {
+  background: #22c55e;
+}
+.aimDot.aimChipYellow {
+  background: #f59e0b;
+}
+.aimDot.aimChipBlue {
+  background: #0b84ff;
+}
+.aimDot.aimChipPurple {
+  background: #a855f7;
+}
+
+.aimPickOn {
+  background: #0b84ff;
+  border-color: rgba(11, 132, 255, 0.55);
+  color: #ffffff;
+  opacity: 1;
+}
+
+.aimPickOn .aimDot {
+  background: #ffffff;
+  position: relative;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+.aimPickOn .aimDot::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.aimPick .aimDot.aimChipRed {
+  color: #ef4444;
+}
+.aimPick .aimDot.aimChipGreen {
+  color: #22c55e;
+}
+.aimPick .aimDot.aimChipYellow {
+  color: #f59e0b;
+}
+.aimPick .aimDot.aimChipBlue {
+  color: #0b84ff;
+}
+.aimPick .aimDot.aimChipPurple {
+  color: #a855f7;
+}
+
+.aimsErr {
+  margin-top: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.aimsPickerFooter {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.aimsPickerHint {
+  font-weight: 900;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  text-align: center;
+}
+
+@media (max-width: 380px) {
+  .profileTopBar {
+    grid-template-columns: 80px 1fr 100px;
+  }
+
+  .profileTitle {
+    font-size: 20px;
+  }
+
+  .profileGoalsChips {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .aimsInlineList {
+    grid-template-columns: 1fr;
+    max-height: min(50vh, 360px);
+  }
 }

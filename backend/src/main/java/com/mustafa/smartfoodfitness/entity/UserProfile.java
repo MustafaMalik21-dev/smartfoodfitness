@@ -1,14 +1,20 @@
 package com.mustafa.smartfoodfitness.entity;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
 // Define the UserProfile entity with fields for user goals reference, selected workout plan ID, email, display name, age, height value and unit, weight value and unit
 @Entity
 @Table(name = "user_profile")
@@ -29,6 +35,11 @@ public class UserProfile {
 
     @Column(nullable = false)
     private String displayName;
+    
+    @ElementCollection
+    @CollectionTable(name = "user_profile_aims", joinColumns = @JoinColumn(name = "user_profile_id"))
+    @Column(name = "aim")
+    private Set<String> aims = new HashSet<>();
 
     private Integer age;
 
@@ -181,4 +192,13 @@ public class UserProfile {
     public void setOnboardingComplete(Boolean onboardingComplete) { 
         this.onboardingComplete = onboardingComplete; 
     }
+    
+    public Set<String> getAims() {
+    return aims;
+    }
+
+    public void setAims(Set<String> aims) {
+        this.aims = aims;
+    }
+
 }

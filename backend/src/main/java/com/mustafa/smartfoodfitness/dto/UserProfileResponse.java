@@ -1,6 +1,7 @@
 package com.mustafa.smartfoodfitness.dto;
 // Define the UserProfileResponse DTO with fields for user profile details such as ID, email, display name, age, height, weight
 import java.time.Instant;
+import java.util.Set;
 
 public class UserProfileResponse {
 
@@ -26,6 +27,9 @@ public class UserProfileResponse {
     private String experienceLevel;
     
     private Boolean onboardingComplete;
+
+    private Set<String> aims;
+
 
     public Long getId() {
         return id;
@@ -146,6 +150,13 @@ public class UserProfileResponse {
 
     public void setOnboardingComplete(Boolean onboardingComplete) {
         this.onboardingComplete = onboardingComplete;
+    }
+
+    public Set<String> getAims() { 
+        return aims; 
+    }
+    public void setAims(Set<String> aims) { 
+        this.aims = aims; 
     }
 
 }
