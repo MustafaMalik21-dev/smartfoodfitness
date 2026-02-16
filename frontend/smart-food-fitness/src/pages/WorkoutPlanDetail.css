@@ -1,7 +1,10 @@
 .wpdPage {
-  min-height: 100vh;
-  background: #d9d9d9;
-  padding-bottom: 84px;
+  height: 100%;
+  background: var(--bg);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: calc(84px + env(safe-area-inset-bottom) + 16px);
 }
 
 .wpdTop {

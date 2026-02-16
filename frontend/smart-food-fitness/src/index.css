@@ -11,6 +11,7 @@ body {
   align-items: center;
   color: var(--text);
   font-size: calc(16px * var(--app-scale));
+  overflow: hidden;
 }
 
 :root {
@@ -43,10 +44,25 @@ html[data-textsize="large"] { zoom: 1.08; }
 
 #root {
   width: 390px;
-  height: min(844px, 96vh);
+  height: min(844px, 96svh);
   max-width: 100vw;
-  max-height: 100vh;
+  max-height: 100svh;
   overflow: hidden;
   border-radius: 28px;
   background: var(--bg);
+}
+.appLayout {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.appViewport {
+  height: 100%;
+  min-height: 0;
+}
+
+.appViewport > * {
+  height: 100%;
+  min-height: 0;
 }

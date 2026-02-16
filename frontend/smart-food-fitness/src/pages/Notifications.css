@@ -1,26 +1,28 @@
-.notifShell { /* FULL PAGE SHELL */
-  display: flex;
-  flex-direction: column;
+.notifShell {
   height: 100%;
   box-sizing: border-box;
 }
 
-.notifTop {/* TOP BAR */
-  flex: 0 0 auto;
-
+.notifTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 14px 10px;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(6px);
 }
 
-.notifTitle { /* page title */
+.notifTitle {
   font-weight: 800;
   font-size: 22px;
   color: var(--primary);
 }
 
-.notifBackBtn { /* back button */
+.notifBackBtn {
   border: none;
   cursor: pointer;
   background: var(--panel2);
@@ -31,14 +33,14 @@
   color: var(--text);
 }
 
-.notifIconBtn { /* icon button */
+.notifIconBtn {
   border: none;
   background: transparent;
   padding: 0;
   cursor: pointer;
 }
 
-.notifIconCircle { /* icon background circle */
+.notifIconCircle {
   width: 44px;
   height: 44px;
   display: grid;
@@ -49,33 +51,33 @@
   font-size: 20px;
 }
 
-.notifBody { /* SCROLLING BODY */
-  flex: 1 1 auto;
-  min-height: 0; /* for flexbox scrolling */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+.notifIconImg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.notifBody {
   max-width: 420px;
   width: 100%;
   margin: 0 auto;
   padding: 8px 14px 0;
-  box-sizing: border-box;
-  padding-bottom: 96px;
 }
 
-.notifHint { /* hint text */
+.notifHint {
   color: var(--muted);
   font-weight: 700;
   padding: 10px 2px;
 }
 
-.notifList { /* notification list */
+.notifList {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.notifCard { /* individual notification card */
+.notifCard {
   width: 100%;
   border: none;
   cursor: pointer;
@@ -90,11 +92,11 @@
   text-align: left;
 }
 
-.notifCardUnread { /* unread notification highlight */
+.notifCardUnread {
   outline: 2px solid rgba(11, 132, 255, 0.25);
 }
 
-.notifLeftIcon { /* left icon circle */
+.notifLeftIcon {
   width: 44px;
   height: 44px;
   border-radius: 999px;
@@ -105,25 +107,32 @@
   font-size: 20px;
 }
 
-.notifMain { /* main content area */
+.notifLeftIconImg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.notifMain {
   min-width: 0;
 }
 
-.notifCardTop { /* title and time row */
+.notifCardTop {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
 }
 
-.notifCardTitleRow { /* title and dot */
+.notifCardTitleRow {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-.notifDot { /* unread dot */
+.notifDot {
   width: 8px;
   height: 8px;
   border-radius: 999px;
@@ -131,7 +140,7 @@
   flex: 0 0 auto;
 }
 
-.notifCardTitle { /* notification title */
+.notifCardTitle {
   font-weight: 900;
   color: var(--text);
   font-size: 13px;
@@ -140,13 +149,13 @@
   text-overflow: ellipsis;
 }
 
-.notifCardTime { /* time stamp */
+.notifCardTime {
   font-size: 11px;
   color: var(--muted);
   flex: 0 0 auto;
 }
 
-.notifCardMsg { /* message body */
+.notifCardMsg {
   margin-top: 6px;
   font-size: 12px;
   color: var(--text);
@@ -154,14 +163,14 @@
   line-height: 1.35;
 }
 
-.notifCardFooter { /* footer row */
+.notifCardFooter {
   margin-top: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.badge { /* badge label */
+.badge {
   font-size: 11px;
   font-weight: 900;
   padding: 5px 10px;
@@ -171,34 +180,21 @@
   color: var(--text);
 }
 
-.badgeUnread { /* unread badge outline */
+.badgeUnread {
   outline: 1px solid rgba(11, 132, 255, 0.35);
 }
 
-.badgeRead { /* read badge style */
+.badgeRead {
   opacity: 0.75;
 }
 
-.notifTap { /* tap to read label */
+.notifTap {
   font-size: 11px;
   color: var(--muted);
   font-weight: 800;
 }
-.notifIconImg { /* right icon image */
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  display: block;
-}
 
-.notifLeftIconImg { /* left icon image */
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  display: block;
-}
-
-.notifFilters { /* filter button row */
+.notifFilters {
   width: 100%;
   background: var(--panel2);
   border-radius: 999px;
@@ -210,7 +206,7 @@
   margin-bottom: 10px;
 }
 
-.notifFilter { /* individual filter button */
+.notifFilter {
   border: none;
   background: transparent;
   cursor: pointer;
@@ -222,7 +218,7 @@
   opacity: 0.75;
 }
 
-.notifFilterOn { /* active filter button */
+.notifFilterOn {
   background: var(--panel);
   opacity: 1;
   box-shadow: var(--shadow);

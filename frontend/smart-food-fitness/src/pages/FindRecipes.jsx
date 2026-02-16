@@ -187,7 +187,7 @@ export default function FindRecipes() {
   const activeTab = TOP_TABS.find((x) => x.key === tab) || TOP_TABS[2];
 
   return (
-    <div className="recipesPage">
+    <div className="pageShell">
       <div className="recipesTopBar">
         <button className="recipesBackBtn" type="button" onClick={() => navigate("/food")}>
           Back
@@ -200,7 +200,7 @@ export default function FindRecipes() {
         </button>
       </div>
 
-      <div className="recipesBody">
+      <div className="pageBody recipesBody">
         <div className="recipesTabs">
           {TOP_TABS.map((t) => (
             <button

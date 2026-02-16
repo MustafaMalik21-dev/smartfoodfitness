@@ -161,7 +161,7 @@ export default function LogFood() {
   }
 
   return (
-    <div className="logFoodPage">
+    <div className="pageShell">
       <div className="logFoodTop">
         <button className="logFoodBackBtn" type="button" onClick={() => navigate("/food")}>
           Back
@@ -170,7 +170,7 @@ export default function LogFood() {
         <div className="logFoodTopSpacer" />
       </div>
 
-      <div className="logFoodBody">
+      <div className="pageBody logFoodBody">
         <div className="logFoodSearch">
           <span className="logFoodSearchIcon">🔍</span>
           <input

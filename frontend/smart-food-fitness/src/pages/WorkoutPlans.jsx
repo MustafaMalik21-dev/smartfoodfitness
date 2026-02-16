@@ -1,4 +1,3 @@
-// src/pages/WorkoutPlans.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
@@ -54,7 +53,7 @@ export default function WorkoutPlans() {
   }, [params]);
 
   return (
-    <div className="wpPage">
+    <div className="pageShell">
       <div className="wpTop">
         <button className="wpBackBtn" type="button" onClick={() => navigate("/fitness")}>
           Back
@@ -65,10 +64,8 @@ export default function WorkoutPlans() {
         <div className="wpTopSpacer" />
       </div>
 
-      <div className="wpBody">
+      <div className="pageBody wpBody">
         <div className="wpHint">Choose a plan to fit your experience and goals</div>
-
-        {/* Segmented control: Level (top 3) */}
         <div className="wpSegWrap" role="tablist" aria-label="Level filter">
           {["Beginner", "Intermediate", "Advanced"].map((x) => (
             <button
@@ -87,7 +84,6 @@ export default function WorkoutPlans() {
           ))}
         </div>
 
-        {/* Segmented control: Goal (bottom 4) */}
         <div className="wpSegWrap wpSegWrap4" role="tablist" aria-label="Goal filter">
           {["Strength", "Muscle Gain", "Fat Loss", "General Fitness"].map((x) => (
             <button

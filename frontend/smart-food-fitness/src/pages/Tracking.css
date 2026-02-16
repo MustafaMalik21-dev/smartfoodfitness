@@ -4,12 +4,6 @@
   flex-direction: column;
 }
 
-.trackBody { /* scroll container */
-  flex: 1;
-  overflow-y: auto;
-  padding-bottom: 120px; /* space for bottom button */
-}
-
 .trackTabs { /* daily/weekly/monthly toggle */
   width: 100%;
   background: var(--panel);

@@ -1,9 +1,8 @@
-.recipesPage {
-  min-height: 100%;
-  background: #d9d9d9;
-  padding-bottom: 84px;
+.recipesBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
-
 .recipesTopBar {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -41,14 +40,7 @@
   font-size: 16px;
 }
 
-.recipesBody {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 8px 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+
 
 .recipesTabs {
   background: #bfbfbf;

@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "./ExerciseEncyclopedia.css";
+import "../styles/PageShell.css";
 
-/* ===== IMPORT YOUR ICONS ===== */
 import ChestIcon from "../assets/Chesticon.png";
 import CoreIcon from "../assets/Coreicon.png";
 import LegsIcon from "../assets/Legsicon.png";
@@ -197,7 +197,7 @@ export default function ExerciseEncyclopedia() {
   }, [detail, active]);
 
   return (
-    <div className="eePage">
+    <div className="pageShell">
       <div className="eeTop">
         <button className="eeBackBtn" type="button" onClick={() => navigate("/fitness")}>
           Back
@@ -210,7 +210,7 @@ export default function ExerciseEncyclopedia() {
         </button>
       </div>
 
-      <div className="eeBody">
+      <div className="pageBody eeBody">
         <div className="eeTabs">
           <button
             type="button"

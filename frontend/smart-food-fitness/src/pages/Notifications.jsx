@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import apiClient from "../api/apiClient";
-
+import "../styles/PageShell.css";
 import PFP from "../assets/PFP.png";
 import NotifBell from "../assets/NotifBell.png";
 import Dumbellicon from "../assets/Dumbellicon.png";
@@ -139,7 +139,7 @@ export default function Notifications() { // Notifications page
         </button>
       </div>
 
-      <div className="notifBody">
+      <div className="pageBody notifBody">
         <div className="notifFilters" role="tablist" aria-label="Notification filters">
           <button
             type="button"

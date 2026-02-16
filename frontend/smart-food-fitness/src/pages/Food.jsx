@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import { useAuth } from "../auth/useAuth";
 import HeaderBar from "../components/HeaderBar";
+import "../styles/PageShell.css";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts";
 import "./Food.css";
 
@@ -75,10 +76,10 @@ export default function Food() {
   }, [totals, goals]);
 
   return (
-    <div className="foodPage">
+    <div className="pageShell">
       <HeaderBar title="Food" left="profile" right="notifications" />
 
-      <div className="foodBody">
+      <div className="pageBody foodBody">
         <button className="foodPrimaryBtn" type="button" onClick={() => navigate("/food/log")}>
           Log Food
         </button>

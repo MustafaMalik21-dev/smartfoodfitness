@@ -23,8 +23,8 @@ import RequireOnboarding from "./auth/RequireOnboarding";
 
 function AppLayout() {
   return (
-    <div style={{ height: "100%", position: "relative" }}>
-      <div style={{ height: "100%", overflowY: "auto", paddingBottom: "84px" }}>
+    <div className="appLayout">
+      <div className="appViewport">
         <Outlet />
       </div>
       <Navbar />
