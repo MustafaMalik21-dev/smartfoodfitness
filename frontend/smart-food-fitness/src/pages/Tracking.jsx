@@ -465,7 +465,7 @@ export default function Tracking() { //Tracking page component
   }, [completedWorkouts]);
 
   return (
-    <div className="pageShell trackShell">
+    <div className="pageShell">
       <HeaderBar title="Tracking" />
 
       <div className="pageBody trackBody">

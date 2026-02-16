@@ -313,7 +313,7 @@ export default function Profile() {
   }, [profile, streak, latestWeight, heightPref]);
 
   return (
-    <div className="pageShell profileShell">
+    <div className="pageShell">
       <div className="profileTopBar">
         <button className="profileTopBtn" type="button" onClick={onBack}>
           {isEditing ? "Cancel" : "Back"}
@@ -332,7 +332,7 @@ export default function Profile() {
         )}
       </div>
 
-      <div className="profileBodyWrap">
+      <div className="pageBody profileBody">
         <div className="profileAvatarBlock">
           <label className="profileAvatarCircle" title="Upload profile photo">
             {photoDataUrl ? (

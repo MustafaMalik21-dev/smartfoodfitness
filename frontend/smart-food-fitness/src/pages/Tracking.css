@@ -1,9 +1,3 @@
-.trackShell {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 .trackTabs { /* daily/weekly/monthly toggle */
   width: 100%;
   background: var(--panel);
@@ -13,7 +7,11 @@
   display: flex;
   gap: 6px;
 }
-
+.trackBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
 .trackTab { /* individual tab */
   flex: 1;
   border: none;
