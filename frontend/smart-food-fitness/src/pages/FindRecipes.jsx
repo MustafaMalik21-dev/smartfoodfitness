@@ -4,10 +4,10 @@ import apiClient from "../api/apiClient";
 import "./FindRecipes.css";
 
 const TOP_TABS = [
-  { key: "breakfast", label: "Break...", category: "Breakfast" },
-  { key: "lunch", label: "Lunch", category: "Chicken" },
-  { key: "dinner", label: "Dinner", category: "Beef" },
-  { key: "vegetarian", label: "Vegetar...", category: "Vegetarian" },
+  { key: "breakfast", label: "Breakfast", category: "Breakfast" },
+  { key: "lunch", label: "Chicken", category: "Chicken" },
+  { key: "dinner", label: "Beef", category: "Beef" },
+  { key: "vegetarian", label: "Vegetarian", category: "Vegetarian" },
   { key: "vegan", label: "Vegan", category: "Vegan" },
 ];
 
@@ -70,7 +70,15 @@ export default function FindRecipes() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detail, setDetail] = useState(null);
 
-  // Load tab row
+  useEffect(() => {
+    if (!searchOpen && !detailOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [searchOpen, detailOpen]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -92,7 +100,6 @@ export default function FindRecipes() {
     };
   }, [tab]);
 
-  // Popular dish (random)
   useEffect(() => {
     let cancelled = false;
 
@@ -113,7 +120,6 @@ export default function FindRecipes() {
     };
   }, []);
 
-  // Permanent rows
   useEffect(() => {
     let cancelled = false;
 
@@ -244,12 +250,17 @@ export default function FindRecipes() {
       </div>
 
       {searchOpen ? (
-        <div className="recipesOverlay" role="dialog" aria-modal="true">
-          <div className="recipesModal">
+        <div
+          className="recipesOverlay"
+          role="dialog"
+          aria-modal="true"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setSearchOpen(false);
+          }}
+        >
+          <div className="recipesModal" onMouseDown={(e) => e.stopPropagation()}>
             <div className="recipesModalTitle">Search</div>
-            <div className="recipesModalSub">
-              Searching for: {searchQ.trim() ? `"${searchQ.trim()}"` : "—"}
-            </div>
+            <div className="recipesModalSub">Searching for: {searchQ.trim() ? `"${searchQ.trim()}"` : "—"}</div>
 
             <div className="recipesSearchRow">
               <input
@@ -298,8 +309,18 @@ export default function FindRecipes() {
       ) : null}
 
       {detailOpen ? (
-        <div className="recipesOverlay" role="dialog" aria-modal="true">
-          <div className="recipesDetailModal">
+        <div
+          className="recipesOverlay"
+          role="dialog"
+          aria-modal="true"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              setDetailOpen(false);
+              setDetail(null);
+            }
+          }}
+        >
+          <div className="recipesDetailModal" onMouseDown={(e) => e.stopPropagation()}>
             {detailLoading ? (
               <div className="recipesHint">Loading recipe…</div>
             ) : !detail ? (
