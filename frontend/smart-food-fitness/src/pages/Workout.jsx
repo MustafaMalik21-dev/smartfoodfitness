@@ -28,6 +28,13 @@ function buildDefaultSets(targetSets = 3, reps = 8) {
   }));
 }
 
+function normalizeSearchList(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
 function pickBestSearchHit(list, wantedName) {
   const wanted = String(wantedName || "").trim().toLowerCase();
   if (!wanted || !Array.isArray(list) || list.length === 0) return null;
@@ -39,6 +46,102 @@ function pickBestSearchHit(list, wantedName) {
   if (contains) return contains;
 
   return list[0];
+}
+
+function pickImageFromDetail(detail, fallback) {
+  const imgs = Array.isArray(detail?.images) ? detail.images : [];
+  const first = imgs.find(Boolean);
+
+  const fromImages =
+    typeof first === "string"
+      ? first
+      : typeof first?.url === "string"
+      ? first.url
+      : typeof first?.imageUrl === "string"
+      ? first.imageUrl
+      : "";
+
+  const direct =
+    (typeof detail?.imageUrl === "string" ? detail.imageUrl : "") ||
+    (typeof detail?.gifUrl === "string" ? detail.gifUrl : "") ||
+    (typeof detail?.thumbnailUrl === "string" ? detail.thumbnailUrl : "");
+
+  const hitFallback =
+    (typeof fallback?.imageUrl === "string" ? fallback.imageUrl : "") ||
+    (typeof fallback?.gifUrl === "string" ? fallback.gifUrl : "") ||
+    (typeof fallback?.thumbnailUrl === "string" ? fallback.thumbnailUrl : "");
+
+  return String(fromImages || direct || hitFallback || "").trim();
+}
+
+function pickDescriptionFromDetail(detail) {
+  const candidates = [
+    detail?.description,
+    detail?.instructions,
+    detail?.guide,
+    detail?.howTo,
+    detail?.summary,
+  ]
+    .map((x) => (typeof x === "string" ? x : ""))
+    .map(cleanHtmlToText)
+    .filter(Boolean);
+
+  return candidates[0] || "";
+}
+
+function useWorkoutTimer() {
+  const [elapsedSec, setElapsedSec] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+
+  const startEpochRef = useRef(null);
+  const baseElapsedRef = useRef(0);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    if (!isRunning) return;
+
+    startEpochRef.current = Date.now();
+    intervalRef.current = setInterval(() => {
+      const delta = Math.floor((Date.now() - startEpochRef.current) / 1000);
+      setElapsedSec(baseElapsedRef.current + delta);
+    }, 250);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    };
+  }, [isRunning]);
+
+  function start() {
+    if (elapsedSec > 0) return;
+    baseElapsedRef.current = 0;
+    setElapsedSec(0);
+    setIsRunning(true);
+  }
+
+  function pause() {
+    if (!isRunning) return;
+    const delta = Math.floor((Date.now() - startEpochRef.current) / 1000);
+    baseElapsedRef.current = baseElapsedRef.current + delta;
+    setElapsedSec(baseElapsedRef.current);
+    setIsRunning(false);
+  }
+
+  function resume() {
+    if (isRunning) return;
+    if (elapsedSec === 0) return;
+    setIsRunning(true);
+  }
+
+  function stop() {
+    if (!isRunning) return;
+    const delta = Math.floor((Date.now() - startEpochRef.current) / 1000);
+    baseElapsedRef.current = baseElapsedRef.current + delta;
+    setElapsedSec(baseElapsedRef.current);
+    setIsRunning(false);
+  }
+
+  return { elapsedSec, isRunning, start, pause, resume, stop };
 }
 
 export default function Workout() {
@@ -53,8 +156,7 @@ export default function Workout() {
   const [exercises, setExercises] = useState([]);
   const [idx, setIdx] = useState(0);
 
-  const [elapsedSec, setElapsedSec] = useState(0);
-  const timerRef = useRef(null);
+  const { elapsedSec, isRunning, start, pause, resume, stop } = useWorkoutTimer();
 
   const [metaByName, setMetaByName] = useState({});
   const metaByNameRef = useRef({});
@@ -63,16 +165,7 @@ export default function Workout() {
   }, [metaByName]);
 
   const current = exercises[idx] || null;
-
-  useEffect(() => {
-    setElapsedSec(0);
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => setElapsedSec((x) => x + 1), 1000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
+  const total = exercises.length || 1;
 
   useEffect(() => {
     if (!userId) {
@@ -158,36 +251,34 @@ export default function Workout() {
   }, [userId]);
 
   useEffect(() => {
-    if (!exercises || exercises.length === 0) return;
+    const name = current?.name;
+    if (!name) return;
 
     let cancelled = false;
 
-    async function loadMetaForName(name) {
-      const n = String(name || "").trim();
-      if (!n) return;
-
-      const existing = metaByNameRef.current[n];
+    async function loadMeta() {
+      const existing = metaByNameRef.current[name];
       if (existing && existing.status !== "error") return;
 
       setMetaByName((m) => ({
         ...m,
-        [n]: { status: "loading", description: "", image: "" },
+        [name]: { status: "loading", description: "", image: "" },
       }));
 
       try {
         const searchRes = await apiClient.get("/api/exercises/search", {
-          params: { q: n, limit: 25, scope: "all" },
+          params: { q: name, limit: 25, scope: "all" },
         });
 
         if (cancelled) return;
 
-        const list = Array.isArray(searchRes.data) ? searchRes.data : [];
-        const hit = pickBestSearchHit(list, n);
+        const list = normalizeSearchList(searchRes.data);
+        const hit = pickBestSearchHit(list, name);
 
         if (!hit?.id) {
           setMetaByName((m) => ({
             ...m,
-            [n]: { status: "done", description: "", image: "" },
+            [name]: { status: "done", description: "", image: "" },
           }));
           return;
         }
@@ -195,35 +286,27 @@ export default function Workout() {
         const detailRes = await apiClient.get(`/api/exercises/${hit.id}`);
         if (cancelled) return;
 
-        const imgs = Array.isArray(detailRes.data?.images) ? detailRes.data.images : [];
-        const image = (imgs.find(Boolean) || hit.imageUrl || "").trim();
-        const description = cleanHtmlToText(detailRes.data?.description || "");
+        const detail = detailRes?.data || {};
+        const image = pickImageFromDetail(detail, hit);
+        const description = pickDescriptionFromDetail(detail);
 
         setMetaByName((m) => ({
           ...m,
-          [n]: { status: "done", description, image },
+          [name]: { status: "done", description, image },
         }));
       } catch {
         setMetaByName((m) => ({
           ...m,
-          [n]: { status: "error", description: "", image: "" },
+          [name]: { status: "error", description: "", image: "" },
         }));
       }
     }
 
-    const uniqueNames = Array.from(new Set(exercises.map((x) => x.name).filter(Boolean)));
-
-    (async () => {
-      for (const name of uniqueNames) {
-        if (cancelled) break;
-        await loadMetaForName(name);
-      }
-    })();
-
+    loadMeta();
     return () => {
       cancelled = true;
     };
-  }, [exercises]);
+  }, [current?.name]);
 
   function setIdxSafe(next) {
     const clamped = Math.max(0, Math.min(exercises.length - 1, next));
@@ -278,7 +361,7 @@ export default function Workout() {
   }
 
   async function endWorkout() {
-    if (timerRef.current) clearInterval(timerRef.current);
+    stop();
 
     if (!userId) {
       navigate("/fitness");
@@ -299,7 +382,7 @@ export default function Workout() {
         return {
           name: ex.name,
           guide,
-          image: (meta?.image || "").slice(0, 800),
+          image: String(meta?.image || "").slice(0, 800),
           sets: ex.sets.map((s) => ({
             weight: String(s.weight || "").trim(),
             reps: String(s.reps || "").trim(),
@@ -324,7 +407,17 @@ export default function Workout() {
     navigate("/fitness");
   }
 
-  const total = exercises.length || 1;
+  const meta = current?.name ? metaByName[current.name] : null;
+  const status = meta?.status || "idle";
+  const img = String(meta?.image || "").trim();
+  const desc =
+    status === "loading"
+      ? "Loading guide…"
+      : cleanHtmlToText(meta?.description) || current?.notes || "No description available.";
+
+  const showStart = elapsedSec === 0 && !isRunning;
+  const showPause = elapsedSec > 0 && isRunning;
+  const showResume = elapsedSec > 0 && !isRunning;
 
   return (
     <div className="pageShell">
@@ -336,11 +429,11 @@ export default function Workout() {
         <div style={{ width: 40, height: 40 }} />
       </div>
 
-      <div className="pageBody">
+      <div className="pageBody workoutBody">
         {loading ? <div className="wMsg">Loading workout…</div> : null}
         {err ? <div className="wErr">{err}</div> : null}
 
-        {!loading && !err ? (
+        {!loading && !err && current ? (
           <>
             <div className="workoutMetaTop">
               <div className="metaLeft">
@@ -352,112 +445,83 @@ export default function Workout() {
               </div>
             </div>
 
-            <div className="wSliderWrap">
-              <div className="wSlider" style={{ transform: `translateX(-${idx * 100}%)` }}>
-                {exercises.map((ex) => {
-                  const meta = metaByName[ex.name];
-                  const status = meta?.status || "idle";
-                  const desc =
-                    status === "loading"
-                      ? "Loading guide…"
-                      : cleanHtmlToText(meta?.description) || ex.notes || "No description available.";
-                  const img = (meta?.image || "").trim();
+            <div className="workoutContent">
+              <div className="cardW">
+                <div className="rowTop">
+                  <div>
+                    <div className="labelW">{current.name}</div>
+                    <div className="smallW">{desc}</div>
+                  </div>
 
-                  return (
-                    <div className="wSlide" key={ex.key}>
-                      <div className="cardW">
-                        <div className="rowTop">
-                          <div>
-                            <div className="labelW">{ex.name}</div>
-                            <div className="smallW">{desc}</div>
-                          </div>
+                  <div className="imgW">
+                    {img ? <img className="imgWEl" src={img} alt="" /> : <div className="imgWPh">No image</div>}
+                  </div>
+                </div>
 
-                          <div className="imgW">
-                            {img ? <img className="imgWEl" src={img} alt="" /> : null}
-                          </div>
-                        </div>
+                <div className="navExerciseRow">
+                  <button type="button" className="navBtn" onClick={() => setIdxSafe(idx - 1)} disabled={idx === 0}>
+                    ◀
+                  </button>
+                  <button
+                    type="button"
+                    className="navBtn navBtnOn"
+                    onClick={() => setIdxSafe(idx + 1)}
+                    disabled={idx >= exercises.length - 1}
+                  >
+                    Next Exercise
+                  </button>
+                </div>
+              </div>
 
-                        {exercises.length > 0 ? (
-                          <div className="navExerciseRow">
-                            <button
-                              type="button"
-                              className="navBtn"
-                              onClick={() => setIdxSafe(idx - 1)}
-                              disabled={idx === 0}
-                            >
-                              ◀
-                            </button>
-                            <button
-                              type="button"
-                              className="navBtn navBtnOn"
-                              onClick={() => setIdxSafe(idx + 1)}
-                              disabled={idx >= exercises.length - 1}
-                            >
-                              Next Exercise
-                            </button>
-                          </div>
-                        ) : null}
-                      </div>
+              <div className="cardW">
+                <div className="setsWrap">
+                  <div className="tableHdrW">
+                    <span>Set</span>
+                    <span>Weight</span>
+                    <span>Reps</span>
+                    <span></span>
+                    <span></span>
+                  </div>
 
-                      <div className="cardW">
-                        <div className="setsWrap">
-                          <div className="tableHdrW">
-                            <span>Set</span>
-                            <span>Weight</span>
-                            <span>Reps</span>
-                            <span></span>
-                            <span></span>
-                          </div>
+                  {current.sets.map((s, i) => (
+                    <div className="tableRowW" key={i}>
+                      <span className="setPill">{i + 1}</span>
 
-                          {ex.sets.map((s, i) => (
-                            <div className="tableRowW" key={i}>
-                              <span className="setPill">{i + 1}</span>
+                      <input
+                        className="pillInput"
+                        value={s.weight}
+                        onChange={(e) => editSet(i, "weight", e.target.value)}
+                        placeholder="kg"
+                        inputMode="decimal"
+                      />
 
-                              <input
-                                className="pillInput"
-                                value={s.weight}
-                                onChange={(e) => editSet(i, "weight", e.target.value)}
-                                placeholder="kg"
-                                inputMode="decimal"
-                              />
+                      <input
+                        className="pillInput"
+                        value={s.reps}
+                        onChange={(e) => editSet(i, "reps", e.target.value)}
+                        placeholder="reps"
+                        inputMode="numeric"
+                      />
 
-                              <input
-                                className="pillInput"
-                                value={s.reps}
-                                onChange={(e) => editSet(i, "reps", e.target.value)}
-                                placeholder="reps"
-                                inputMode="numeric"
-                              />
+                      <button
+                        type="button"
+                        className={s.done ? "tickBtn tickOn" : "tickBtn"}
+                        onClick={() => toggleDone(i)}
+                        aria-pressed={s.done}
+                      >
+                        {s.done ? "✅" : "☐"}
+                      </button>
 
-                              <button
-                                type="button"
-                                className={s.done ? "tickBtn tickOn" : "tickBtn"}
-                                onClick={() => toggleDone(i)}
-                                aria-pressed={s.done}
-                              >
-                                {s.done ? "✅" : "☐"}
-                              </button>
-
-                              <button
-                                type="button"
-                                className="minusBtn"
-                                onClick={() => removeSet(i)}
-                                aria-label="Remove set"
-                                title="Remove set"
-                              >
-                                −
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-
-                        <button type="button" className="addSet" onClick={addSet}>
-                          Add Set
-                        </button>
-                      </div>
+                      <button type="button" className="minusBtn" onClick={() => removeSet(i)} aria-label="Remove set" title="Remove set">
+                        −
+                      </button>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+
+                <button type="button" className="addSet" onClick={addSet}>
+                  Add Set
+                </button>
               </div>
             </div>
 
@@ -465,6 +529,26 @@ export default function Workout() {
               <div className="timerW">
                 <div className="timerLabel">Time Spent Working Out</div>
                 <div className="timerValue">{fmtTime(elapsedSec)}</div>
+
+                <div className="timerBtns">
+                  {showStart ? (
+                    <button type="button" className="timerBtn timerBtnPrimary" onClick={start}>
+                      Start
+                    </button>
+                  ) : null}
+
+                  {showPause ? (
+                    <button type="button" className="timerBtn" onClick={pause}>
+                      Pause
+                    </button>
+                  ) : null}
+
+                  {showResume ? (
+                    <button type="button" className="timerBtn timerBtnPrimary" onClick={resume}>
+                      Resume
+                    </button>
+                  ) : null}
+                </div>
               </div>
 
               <button type="button" className="endBtn" onClick={endWorkout}>

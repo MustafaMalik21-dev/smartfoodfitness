@@ -189,8 +189,8 @@ export default function Fitness() {
           Exercise Encyclopedia
         </button>
 
-        <button type="button" className="bigPill" onClick={() => navigate("/workout")}>
-          Workout
+        <button type="button" className="bigPill" onClick={() => navigate("/workout-history")}>
+          Workout History
         </button>
 
         <button type="button" className="bigPill" onClick={() => navigate("/workout-plans")}>

@@ -1,0 +1,307 @@
+.whTopBar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 14px 10px;
+}
+
+.whTitle {
+  text-align: center;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--primary);
+}
+
+.whTopActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.whTopBtn {
+  border: none;
+  cursor: pointer;
+  background: var(--panel2);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-weight: 900;
+  box-shadow: var(--shadow);
+}
+
+.whTopBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.whBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.whInfo {
+  font-weight: 900;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  text-align: center;
+}
+
+.whError {
+  width: 100%;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.whEmpty {
+  background: var(--panel);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.whEmptyTitle {
+  font-weight: 900;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.whEmptySub {
+  margin-top: 4px;
+  font-weight: 900;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+}
+
+.whList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.whCard {
+  background: var(--panel);
+  border-radius: 18px;
+  padding: 12px 12px 14px;
+  box-shadow: var(--shadow);
+}
+
+.whCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.whWorkoutName {
+  font-weight: 950;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.whWhen {
+  margin-top: 2px;
+  font-weight: 900;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+}
+
+.whCardRight {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.whPill {
+  background: var(--panel2);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 950;
+  font-size: 11px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+
+.whPillSoft {
+  color: var(--primary);
+}
+
+.whNotes {
+  background: var(--panel2);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  margin-bottom: 10px;
+}
+
+.whExercises {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.whExerciseBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.whExerciseRow {
+  width: 100%;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  background: var(--panel2);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.whExerciseRowOpen {
+  outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.whExName {
+  font-weight: 950;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.whExRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.whExPill {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 950;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  background: rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  white-space: nowrap;
+}
+
+.whExPillDone {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+.whChevron {
+  font-weight: 900;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  transform: translateY(-1px);
+  transition: transform 140ms ease;
+}
+
+.whChevronOpen {
+  transform: rotate(180deg) translateY(1px);
+}
+
+.whSetsPanel {
+  background: var(--panel2);
+  border-radius: 14px;
+  padding: 10px 10px;
+  box-shadow: var(--shadow);
+}
+
+.whSetsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.whSetRow {
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.whSetRowDone {
+  outline: 2px solid color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.whSetLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.whSetNum {
+  font-weight: 950;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.whSetMeta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.whSetTag {
+  background: var(--panel2);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 950;
+  font-size: 11px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+
+.whSetTagSoft {
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+}
+
+.whSetStatus {
+  font-weight: 950;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  white-space: nowrap;
+}
+
+.whSetStatusDone {
+  color: var(--primary);
+}
+
+.whNoSets {
+  font-weight: 900;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  text-align: center;
+  padding: 2px 0;
+}
+
+.whNoExercises {
+  font-weight: 900;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--text) 70%, transparent);
+  text-align: center;
+  padding: 6px 0 2px;
+}

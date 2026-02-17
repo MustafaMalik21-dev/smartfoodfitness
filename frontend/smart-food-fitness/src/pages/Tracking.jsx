@@ -544,10 +544,6 @@ export default function Tracking() { //Tracking page component
             </div>
           </div>
         )}
-
-        <button className="trackPrimaryBtn" type="button">
-          Notes
-        </button>
       </div>
     </div>
   );

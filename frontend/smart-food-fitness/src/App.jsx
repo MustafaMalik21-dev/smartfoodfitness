@@ -17,7 +17,7 @@ import WorkoutPlanDetail from "./pages/WorkoutPlanDetail";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Onboarding from "./pages/auth/Onboarding";
-
+import WorkoutHistory from "./pages/WorkoutHistory";
 import RequireAuth from "./auth/RequireAuth";
 import RequireOnboarding from "./auth/RequireOnboarding";
 
@@ -49,6 +49,7 @@ export default function App() {
             <Route path="food" element={<Food />} />
             <Route path="food/log" element={<LogFood />} />
             <Route path="food/recipes" element={<FindRecipes />} />
+            <Route path="workout-history" element={<WorkoutHistory />} />
             <Route path="settings" element={<Settings />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="profile" element={<Profile />} />
