@@ -86,6 +86,10 @@
   gap: 12px;
 }
 
+.wTextCol {
+  min-width: 0;
+}
+
 .labelW {
   color: #0b84ff;
   font-weight: 900;
@@ -263,6 +267,7 @@
   padding: 12px 14px;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
 }
+
 .endBtn {
   width: 140px;
   border: 0;
@@ -279,6 +284,7 @@
 .endBtn:active {
   transform: translateY(1px);
 }
+
 .timerLabel {
   color: #0b84ff;
   font-weight: 900;
@@ -366,7 +372,6 @@ html[data-mode="dark"] .timerBtnPrimary {
 html[data-mode="dark"] .imgWPh {
   color: var(--primary);
 }
-
 
 html[data-mode="dark"] .endBtn {
   background: var(--panel);

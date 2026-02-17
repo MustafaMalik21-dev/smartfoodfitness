@@ -26,12 +26,9 @@ public class WorkoutPlanSeedService {
     }
 
     public String seedIfEmpty() {
-        if (!workoutPlanRepository.findByIsActiveTrueOrderByTitleAsc().isEmpty()) {
-            return "Active plans already exist.";
-        }
-
         Instant now = Instant.now();
-        List<WorkoutPlan> plans = new ArrayList<>();
+
+        List<WorkoutPlan> desired = new ArrayList<>();
 
         final String SPLIT_UL = "Upper/Lower";
         final String SPLIT_PPL = "Push/Pull/Legs";
@@ -41,38 +38,60 @@ public class WorkoutPlanSeedService {
         final String SPLIT_LEGS = "Legs Focus";
         final String SPLIT_SA = "Shoulders & Arms";
 
-        plans.add(makePlan(now, "Full Body Starter (3 Days)", "Beginner", "General Fitness", SPLIT_FB, 3, 45,
+        desired.add(makePlan(now, "Full Body Starter (3 Days)", "Beginner", "General Fitness", SPLIT_FB, 3, 45,
                 "Simple full body plan to build consistency.", "Easy to follow; balanced; great habit builder.", "Less specialised."));
-        plans.add(makePlan(now, "Upper/Lower Starter (4 Days)", "Beginner", "Strength", SPLIT_UL, 4, 50,
+        desired.add(makePlan(now, "Upper/Lower Starter (4 Days)", "Beginner", "Strength", SPLIT_UL, 4, 50,
                 "Upper/lower split focusing on technique and progression.", "Great structure; good frequency.", "Requires consistency."));
-        plans.add(makePlan(now, "Upper/Lower Beginner Hypertrophy", "Beginner", "Muscle Gain", SPLIT_UL, 4, 50,
+        desired.add(makePlan(now, "Upper/Lower Beginner Hypertrophy", "Beginner", "Muscle Gain", SPLIT_UL, 4, 50,
                 "Hypertrophy-friendly upper/lower with simple progression.", "Solid volume; easy exercise selection.", "Can feel repetitive."));
 
-        plans.add(makePlan(now, "Classic PPL (5 Days)", "Intermediate", "Muscle Gain", SPLIT_PPL, 5, 60,
+        desired.add(makePlan(now, "Classic PPL (5 Days)", "Intermediate", "Muscle Gain", SPLIT_PPL, 5, 60,
                 "Hypertrophy focused push/pull/legs.", "Great volume and variety.", "Needs good recovery."));
-        plans.add(makePlan(now, "Full Body Strength (3 Days)", "Intermediate", "Strength", SPLIT_FB, 3, 60,
+        desired.add(makePlan(now, "Full Body Strength (3 Days)", "Intermediate", "Strength", SPLIT_FB, 3, 60,
                 "Compound-heavy full body with progression.", "Efficient; strong strength gains.", "Can be fatiguing."));
-        plans.add(makePlan(now, "Arms Focus (4 Days)", "Intermediate", "Muscle Gain", SPLIT_ARMS, 4, 55,
+        desired.add(makePlan(now, "Arms Focus (4 Days)", "Intermediate", "Muscle Gain", SPLIT_ARMS, 4, 55,
                 "Extra arms volume with upper support work.", "Big arms emphasis.", "Other muscles are maintenance volume."));
-        plans.add(makePlan(now, "Shoulders & Arms (4 Days)", "Intermediate", "Muscle Gain", SPLIT_SA, 4, 55,
+        desired.add(makePlan(now, "Shoulders & Arms (4 Days)", "Intermediate", "Muscle Gain", SPLIT_SA, 4, 55,
                 "Upper focus with shoulders/arms emphasis.", "Great delts/arms growth.", "Lower is minimal."));
-        plans.add(makePlan(now, "Legs Focus (4 Days)", "Intermediate", "Strength", SPLIT_LEGS, 4, 55,
+        desired.add(makePlan(now, "Legs Focus (4 Days)", "Intermediate", "Strength", SPLIT_LEGS, 4, 55,
                 "Lower-focused strength with core and posterior chain work.", "Strong lower body gains.", "Upper is maintenance."));
 
-        plans.add(makePlan(now, "PPL High Frequency (6 Days)", "Advanced", "Muscle Gain", SPLIT_PPL, 6, 60,
+        desired.add(makePlan(now, "PPL High Frequency (6 Days)", "Advanced", "Muscle Gain", SPLIT_PPL, 6, 60,
                 "High frequency hypertrophy with high weekly volume.", "Fast progression; lots of work.", "Recovery demand is high."));
-        plans.add(makePlan(now, "Bro Split (5 Days)", "Advanced", "Muscle Gain", SPLIT_BRO, 5, 65,
+        desired.add(makePlan(now, "Bro Split (5 Days)", "Advanced", "Muscle Gain", SPLIT_BRO, 5, 65,
                 "Body-part split with high focus per day.", "Great pump/volume per muscle.", "Each muscle hit less frequently."));
-        plans.add(makePlan(now, "Fat Loss Conditioning + Weights (5 Days)", "Advanced", "Fat Loss", SPLIT_PPL, 5, 50,
+        desired.add(makePlan(now, "Fat Loss Conditioning + Weights (5 Days)", "Advanced", "Fat Loss", SPLIT_PPL, 5, 50,
                 "Weights with conditioning finishers to support fat loss.", "High calorie burn; maintains strength stimulus.", "Recovery demand is high."));
 
-        workoutPlanRepository.saveAll(plans);
+        desired.add(makePlan(now, "Fat Loss Starter (3 Days)", "Beginner", "Fat Loss", SPLIT_FB, 3, 40,
+                "Beginner-friendly plan to burn calories and build consistency.", "Simple; low barrier; great for beginners.", "Less strength focus."));
+        desired.add(makePlan(now, "Full Body Fat Loss (3 Days)", "Intermediate", "Fat Loss", SPLIT_FB, 3, 50,
+                "Full body plan with a fat loss focus.", "Good calorie burn; maintains muscle.", "Needs good sleep/recovery."));
+        desired.add(makePlan(now, "Full Body Fitness (3 Days)", "Intermediate", "General Fitness", SPLIT_FB, 3, 45,
+                "Balanced full body plan to improve fitness.", "Balanced; flexible; repeatable.", "Not highly specialised."));
+        desired.add(makePlan(now, "Upper/Lower Strength (4 Days)", "Advanced", "Strength", SPLIT_UL, 4, 65,
+                "Strength-focused upper/lower split with heavy compounds.", "Strong progression; great structure.", "Higher fatigue."));
+        desired.add(makePlan(now, "Full Body Performance (3 Days)", "Advanced", "General Fitness", SPLIT_FB, 3, 55,
+                "Athletic full body training for overall performance.", "Great overall fitness; time-efficient.", "Can be challenging."));
 
-        for (WorkoutPlan p : plans) {
-            seedSessionsForPlan(now, p);
+        int created = 0;
+        int sessionsCreated = 0;
+
+        for (WorkoutPlan p : desired) {
+            if (workoutPlanRepository.existsByTitleIgnoreCase(p.getTitle())) {
+                continue;
+            }
+            WorkoutPlan saved = workoutPlanRepository.save(p);
+            created++;
+
+            int before = (int) sessionRepository.countByWorkoutPlanId(saved.getId());
+            seedSessionsForPlan(now, saved);
+            int after = (int) sessionRepository.countByWorkoutPlanId(saved.getId());
+            sessionsCreated += Math.max(0, after - before);
         }
 
-        return "Seeded " + plans.size() + " workout plans + sessions.";
+        if (created == 0) return "No new plans needed (all already exist).";
+        return "Added " + created + " new plans and " + sessionsCreated + " sessions.";
     }
 
     private void seedSessionsForPlan(Instant now, WorkoutPlan plan) {

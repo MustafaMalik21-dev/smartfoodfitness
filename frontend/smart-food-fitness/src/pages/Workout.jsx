@@ -5,9 +5,14 @@ import { getUserId } from "../auth/authStorage";
 import "../styles/PageShell.css";
 import "./Workout.css";
 
-function cleanHtmlToText(html) {
-  if (!html) return "";
-  return String(html).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+import { EXERCISE_CATALOG } from "../data/exerciseCatalog";
+
+function cleanText(s) {
+  return String(s || "").replace(/\s+/g, " ").trim();
+}
+
+function normName(s) {
+  return cleanText(s).toLowerCase();
 }
 
 function fmtTime(totalSec) {
@@ -28,65 +33,16 @@ function buildDefaultSets(targetSets = 3, reps = 8) {
   }));
 }
 
-function normalizeSearchList(data) {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.results)) return data.results;
-  if (Array.isArray(data?.data)) return data.data;
-  return [];
-}
-
-function pickBestSearchHit(list, wantedName) {
-  const wanted = String(wantedName || "").trim().toLowerCase();
-  if (!wanted || !Array.isArray(list) || list.length === 0) return null;
-
-  const exact = list.find((x) => String(x?.name || "").trim().toLowerCase() === wanted);
-  if (exact) return exact;
-
-  const contains = list.find((x) => String(x?.name || "").trim().toLowerCase().includes(wanted));
-  if (contains) return contains;
-
-  return list[0];
-}
-
-function pickImageFromDetail(detail, fallback) {
-  const imgs = Array.isArray(detail?.images) ? detail.images : [];
-  const first = imgs.find(Boolean);
-
-  const fromImages =
-    typeof first === "string"
-      ? first
-      : typeof first?.url === "string"
-      ? first.url
-      : typeof first?.imageUrl === "string"
-      ? first.imageUrl
-      : "";
-
-  const direct =
-    (typeof detail?.imageUrl === "string" ? detail.imageUrl : "") ||
-    (typeof detail?.gifUrl === "string" ? detail.gifUrl : "") ||
-    (typeof detail?.thumbnailUrl === "string" ? detail.thumbnailUrl : "");
-
-  const hitFallback =
-    (typeof fallback?.imageUrl === "string" ? fallback.imageUrl : "") ||
-    (typeof fallback?.gifUrl === "string" ? fallback.gifUrl : "") ||
-    (typeof fallback?.thumbnailUrl === "string" ? fallback.thumbnailUrl : "");
-
-  return String(fromImages || direct || hitFallback || "").trim();
-}
-
-function pickDescriptionFromDetail(detail) {
-  const candidates = [
-    detail?.description,
-    detail?.instructions,
-    detail?.guide,
-    detail?.howTo,
-    detail?.summary,
-  ]
-    .map((x) => (typeof x === "string" ? x : ""))
-    .map(cleanHtmlToText)
-    .filter(Boolean);
-
-  return candidates[0] || "";
+function slugifyFallback(s) {
+  return normName(s)
+    .replace(/&/g, " and ")
+    .replace(/\+/g, " plus ")
+    .replace(/\//g, " ")
+    .replace(/[()]/g, " ")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function useWorkoutTimer() {
@@ -158,14 +114,53 @@ export default function Workout() {
 
   const { elapsedSec, isRunning, start, pause, resume, stop } = useWorkoutTimer();
 
-  const [metaByName, setMetaByName] = useState({});
-  const metaByNameRef = useRef({});
-  useEffect(() => {
-    metaByNameRef.current = metaByName;
-  }, [metaByName]);
+  // image retry control (prevents "first render no image forever")
+  const [imgBusted, setImgBusted] = useState({});
+  const [imgVersion, setImgVersion] = useState(0);
 
   const current = exercises[idx] || null;
   const total = exercises.length || 1;
+
+  const resolvedMeta = useMemo(() => {
+    const name = current?.name || "";
+    const key = normName(name);
+
+    const hit = EXERCISE_CATALOG?.[key] || null;
+    const slug = cleanText(hit?.slug) || slugifyFallback(name);
+    const description = cleanText(hit?.description) || cleanText(current?.notes) || "No description available.";
+
+    const baseImg = slug ? `/exercise/${slug}.jpg` : "";
+    const img = baseImg ? `${baseImg}?v=${imgVersion}` : "";
+
+    return { key, slug, description, img };
+  }, [current?.name, current?.notes, imgVersion]);
+
+  // preload ALL images once exercises are known (so first screen already has them cached)
+  useEffect(() => {
+    if (!Array.isArray(exercises) || exercises.length === 0) return;
+
+    const unique = Array.from(new Set(exercises.map((e) => normName(e?.name)).filter(Boolean)));
+
+    unique.forEach((k) => {
+      const hit = EXERCISE_CATALOG?.[k];
+      const slug = cleanText(hit?.slug) || slugifyFallback(k);
+      const url = slug ? `/exercise/${slug}.jpg` : "";
+      if (!url) return;
+      const img = new Image();
+      img.src = `${url}?preload=1`;
+    });
+  }, [exercises]);
+
+  // if current image failed before, allow retry when exercise changes
+  useEffect(() => {
+    if (!resolvedMeta.key) return;
+    setImgBusted((m) => {
+      if (m[resolvedMeta.key] !== true) return m;
+      const copy = { ...m };
+      delete copy[resolvedMeta.key];
+      return copy;
+    });
+  }, [resolvedMeta.key]);
 
   useEffect(() => {
     if (!userId) {
@@ -212,7 +207,7 @@ export default function Workout() {
 
         const normalized = raw
           .map((x, i) => {
-            const name = String(x?.name || "").trim();
+            const name = cleanText(x?.name);
             if (!name) return null;
 
             const setsCount = Number(x?.sets ?? 3);
@@ -221,7 +216,7 @@ export default function Workout() {
             return {
               key: `${name}-${i}`,
               name,
-              notes: String(x?.notes || ""),
+              notes: cleanText(x?.notes || ""),
               sets: buildDefaultSets(setsCount, reps),
             };
           })
@@ -249,64 +244,6 @@ export default function Workout() {
       cancelled = true;
     };
   }, [userId]);
-
-  useEffect(() => {
-    const name = current?.name;
-    if (!name) return;
-
-    let cancelled = false;
-
-    async function loadMeta() {
-      const existing = metaByNameRef.current[name];
-      if (existing && existing.status !== "error") return;
-
-      setMetaByName((m) => ({
-        ...m,
-        [name]: { status: "loading", description: "", image: "" },
-      }));
-
-      try {
-        const searchRes = await apiClient.get("/api/exercises/search", {
-          params: { q: name, limit: 25, scope: "all" },
-        });
-
-        if (cancelled) return;
-
-        const list = normalizeSearchList(searchRes.data);
-        const hit = pickBestSearchHit(list, name);
-
-        if (!hit?.id) {
-          setMetaByName((m) => ({
-            ...m,
-            [name]: { status: "done", description: "", image: "" },
-          }));
-          return;
-        }
-
-        const detailRes = await apiClient.get(`/api/exercises/${hit.id}`);
-        if (cancelled) return;
-
-        const detail = detailRes?.data || {};
-        const image = pickImageFromDetail(detail, hit);
-        const description = pickDescriptionFromDetail(detail);
-
-        setMetaByName((m) => ({
-          ...m,
-          [name]: { status: "done", description, image },
-        }));
-      } catch {
-        setMetaByName((m) => ({
-          ...m,
-          [name]: { status: "error", description: "", image: "" },
-        }));
-      }
-    }
-
-    loadMeta();
-    return () => {
-      cancelled = true;
-    };
-  }, [current?.name]);
 
   function setIdxSafe(next) {
     const clamped = Math.max(0, Math.min(exercises.length - 1, next));
@@ -377,12 +314,16 @@ export default function Workout() {
       performedAt,
       durationSeconds: elapsedSec,
       exercises: exercises.map((ex) => {
-        const meta = metaByNameRef.current[ex.name];
-        const guide = (meta?.description || ex.notes || "").slice(0, 4000);
+        const key = normName(ex.name);
+        const hit = EXERCISE_CATALOG?.[key] || null;
+        const slug = cleanText(hit?.slug) || slugifyFallback(ex.name);
+        const image = slug ? `/exercise/${slug}.jpg` : "";
+        const guide = (cleanText(hit?.description) || cleanText(ex.notes) || "").slice(0, 4000);
+
         return {
           name: ex.name,
           guide,
-          image: String(meta?.image || "").slice(0, 800),
+          image: String(image || "").slice(0, 800),
           sets: ex.sets.map((s) => ({
             weight: String(s.weight || "").trim(),
             reps: String(s.reps || "").trim(),
@@ -407,17 +348,11 @@ export default function Workout() {
     navigate("/fitness");
   }
 
-  const meta = current?.name ? metaByName[current.name] : null;
-  const status = meta?.status || "idle";
-  const img = String(meta?.image || "").trim();
-  const desc =
-    status === "loading"
-      ? "Loading guide…"
-      : cleanHtmlToText(meta?.description) || current?.notes || "No description available.";
-
   const showStart = elapsedSec === 0 && !isRunning;
   const showPause = elapsedSec > 0 && isRunning;
   const showResume = elapsedSec > 0 && !isRunning;
+
+  const shouldShowImg = !!resolvedMeta.img && imgBusted[resolvedMeta.key] !== true;
 
   return (
     <div className="pageShell">
@@ -448,13 +383,27 @@ export default function Workout() {
             <div className="workoutContent">
               <div className="cardW">
                 <div className="rowTop">
-                  <div>
+                  <div className="wTextCol">
                     <div className="labelW">{current.name}</div>
-                    <div className="smallW">{desc}</div>
+                    <div className="smallW">{resolvedMeta.description}</div>
                   </div>
 
                   <div className="imgW">
-                    {img ? <img className="imgWEl" src={img} alt="" /> : <div className="imgWPh">No image</div>}
+                    {shouldShowImg ? (
+                      <img
+                        className="imgWEl"
+                        src={resolvedMeta.img}
+                        alt=""
+                        loading="eager"
+                        decoding="async"
+                        onError={() => {
+                          setImgBusted((m) => ({ ...m, [resolvedMeta.key]: true }));
+                          setTimeout(() => setImgVersion((v) => v + 1), 250);
+                        }}
+                      />
+                    ) : (
+                      <div className="imgWPh">No image</div>
+                    )}
                   </div>
                 </div>
 
@@ -512,7 +461,13 @@ export default function Workout() {
                         {s.done ? "✅" : "☐"}
                       </button>
 
-                      <button type="button" className="minusBtn" onClick={() => removeSet(i)} aria-label="Remove set" title="Remove set">
+                      <button
+                        type="button"
+                        className="minusBtn"
+                        onClick={() => removeSet(i)}
+                        aria-label="Remove set"
+                        title="Remove set"
+                      >
                         −
                       </button>
                     </div>
