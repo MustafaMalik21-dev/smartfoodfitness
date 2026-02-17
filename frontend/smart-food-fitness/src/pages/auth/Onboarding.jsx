@@ -77,7 +77,7 @@ export default function Onboarding() {
         weightValue: toNum(weightValue),
         weightUnit: String(weightUnit || "kg").toLowerCase(),
 
-        onboardingComplete: true,
+        onboardingComplete: false,
       });
 
       try {
@@ -112,10 +112,10 @@ export default function Onboarding() {
         email: auth.email,
         displayName: auth.displayName,
         token: auth.token,
-        onboardingComplete: true,
+        onboardingComplete: false,
       });
 
-      navigate("/", { replace: true });
+      navigate("/onboarding-guide", { replace: true });
     } catch (e2) {
       const msg =
         (e2 && e2.response && e2.response.data && e2.response.data.message) ||
@@ -166,18 +166,13 @@ export default function Onboarding() {
                     <option value="">Select</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
-                    <option value="other">Other</option>
                   </select>
                 </div>
               </div>
 
               <div className="authField">
                 <div className="authLabel">Activity level</div>
-                <select
-                  className="authSelect"
-                  value={activityLevel}
-                  onChange={(e) => setActivityLevel(e.target.value)}
-                >
+                <select className="authSelect" value={activityLevel} onChange={(e) => setActivityLevel(e.target.value)}>
                   <option value="">Select</option>
                   <option value="low">Low</option>
                   <option value="moderate">Moderate</option>

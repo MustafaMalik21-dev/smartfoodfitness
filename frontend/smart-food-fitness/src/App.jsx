@@ -20,6 +20,7 @@ import Onboarding from "./pages/auth/Onboarding";
 import WorkoutHistory from "./pages/WorkoutHistory";
 import RequireAuth from "./auth/RequireAuth";
 import RequireOnboarding from "./auth/RequireOnboarding";
+import OnboardingGuide from "./pages/auth/OnboardingGuide";
 
 function AppLayout() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
 
       <Route element={<RequireAuth />}>
         <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/onboarding-guide" element={<OnboardingGuide />} />
 
         <Route element={<RequireOnboarding />}>
           <Route element={<AppLayout />}>
