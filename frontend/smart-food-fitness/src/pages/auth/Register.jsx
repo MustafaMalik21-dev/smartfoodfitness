@@ -3,6 +3,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import "./Auth.css";
 
+function isValidEmail(email) {
+  const e = String(email || "").trim();
+  if (!e) return false;
+  if (!e.includes("@")) return false;
+  const parts = e.split("@");
+  if (parts.length !== 2) return false;
+  if (!parts[0] || !parts[1]) return false;
+  if (!parts[1].includes(".")) return false;
+  if (parts[1].startsWith(".") || parts[1].endsWith(".")) return false;
+  return true;
+}
+
 export default function Register() {
   const nav = useNavigate();
   const { register } = useAuth();
@@ -22,23 +34,56 @@ export default function Register() {
       setBusy(true);
       setErr("");
 
-      if (!displayName.trim()) {
+      const dn = displayName.trim();
+      const em = email.trim();
+
+      if (!dn) {
         setErr("Please enter a display name.");
         return;
       }
-      if (!email.trim()) {
+
+      if (!em) {
         setErr("Please enter an email.");
         return;
       }
+
+      if (!isValidEmail(em)) {
+        setErr("Please enter a valid email (e.g. you@example.com).");
+        return;
+      }
+
       if (!password) {
         setErr("Please enter a password.");
         return;
       }
 
-      await register(displayName.trim(), email.trim(), password);
+      if (password.length < 8) {
+        setErr("Password must be at least 8 characters long.");
+        return;
+      }
+
+      await register(dn, em, password);
       nav("/onboarding", { replace: true });
     } catch (ex) {
-      setErr((ex && ex.response && ex.response.data && ex.response.data.message) || "Registration failed.");
+      const data = ex?.response?.data;
+
+      if (data?.fieldErrors && typeof data.fieldErrors === "object") {
+        const fe = data.fieldErrors;
+        if (fe.password) {
+          setErr(String(fe.password));
+        } else if (fe.email) {
+          setErr(String(fe.email));
+        } else if (fe.displayName) {
+          setErr(String(fe.displayName));
+        } else {
+          const firstKey = Object.keys(fe)[0];
+          setErr(firstKey ? String(fe[firstKey]) : "Registration failed.");
+        }
+      } else if (data?.message) {
+        setErr(String(data.message));
+      } else {
+        setErr("Registration failed.");
+      }
     } finally {
       setBusy(false);
     }
@@ -65,7 +110,7 @@ export default function Register() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 autoComplete="nickname"
-                placeholder="e.g. Mustafa"
+                placeholder="e.g. Bob"
               />
             </div>
 
