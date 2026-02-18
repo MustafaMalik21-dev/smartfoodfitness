@@ -77,7 +77,7 @@ export default function WorkoutPlanDetail() {
   }
 
   return (
-    <div className="wpdPage">
+    <div className="pageShell">
       <div className="wpdTop">
         <button className="wpdBackBtn" type="button" onClick={() => navigate("/workout-plans")}>
           Back
@@ -86,7 +86,7 @@ export default function WorkoutPlanDetail() {
         <div className="wpdTopSpacer" />
       </div>
 
-      <div className="wpdBody">
+      <div className="pageBody wpdBody">
         {loading ? <div className="wpdMsg">Loading…</div> : null}
         {err ? <div className="wpdErr">{err}</div> : null}
 
