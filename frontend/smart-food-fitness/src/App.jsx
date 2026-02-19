@@ -21,6 +21,7 @@ import WorkoutHistory from "./pages/WorkoutHistory";
 import RequireAuth from "./auth/RequireAuth";
 import RequireOnboarding from "./auth/RequireOnboarding";
 import OnboardingGuide from "./pages/auth/OnboardingGuide";
+import Start from "./pages/Start";
 
 function AppLayout() {
   return (
@@ -36,6 +37,7 @@ function AppLayout() {
 export default function App() {
   return (
     <Routes>
+      <Route path="/start" element={<Start />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
@@ -64,7 +66,7 @@ export default function App() {
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/start" replace />} />
     </Routes>
   );
 }

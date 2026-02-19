@@ -134,7 +134,7 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
-                placeholder="••••••••"
+                placeholder="enter password"
               />
             </div>
 

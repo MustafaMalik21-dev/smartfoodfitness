@@ -1,0 +1,121 @@
+.startScreen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px 16px 18px;
+  box-sizing: border-box;
+}
+
+.startTop {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.startLogo {
+  width: 92px;
+  height: 92px;
+  border-radius: 26px;
+  background: #efefef;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
+  display: grid;
+  place-items: center;
+}
+
+.startLogoInner {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: #0b84ff;
+  box-shadow: 0 14px 26px rgba(11, 132, 255, 0.35);
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+}
+
+.startTitle {
+  font-weight: 900;
+  font-size: 22px;
+  color: #0b84ff;
+  margin-top: 6px;
+}
+
+.startSub {
+  max-width: 320px;
+  font-weight: 800;
+  color: #111827;
+  opacity: 0.75;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.startActions {
+  display: grid;
+  gap: 12px;
+  padding: 0 2px 8px;
+}
+
+.startBtnPrimary {
+  height: 52px;
+  border: none;
+  border-radius: 999px;
+  background: #0b84ff;
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(11, 132, 255, 0.28);
+}
+
+.startBtnSecondary {
+  height: 52px;
+  border: none;
+  border-radius: 999px;
+  background: #efefef;
+  color: #0b84ff;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+}
+
+.startBtnPrimary:active,
+.startBtnSecondary:active {
+  transform: translateY(1px);
+}
+
+.startFooter {
+  text-align: center;
+  font-weight: 800;
+  color: #111827;
+  opacity: 0.55;
+  font-size: 11px;
+}
+
+html[data-mode="dark"] .startLogo,
+html[data-mode="dark"] .startBtnSecondary {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .startSub,
+html[data-mode="dark"] .startFooter {
+  color: var(--text);
+}
+
+html[data-mode="dark"] .startTitle {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .startBtnSecondary {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .startBtnPrimary {
+  background: var(--primary);
+  color: #0b1220;
+}
