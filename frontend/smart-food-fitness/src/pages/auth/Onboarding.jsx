@@ -420,8 +420,8 @@ export default function Onboarding() {
                     className="authHelpBtn"
                     aria-label="What is experience level?"
                     onClick={() => {
-                      setShowExpHelp((v) => !v);
-                      setShowExpHelp((v) => !v);
+                    setShowExpHelp((v) => !v);
+                    setShowActHelp(false);
                     }}
                   >
                     ?
