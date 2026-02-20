@@ -51,7 +51,6 @@ export default function FindRecipes() {
   const navigate = useNavigate();
 
   const [tab, setTab] = useState("dinner");
-
   const [tabItems, setTabItems] = useState([]);
   const [popular, setPopular] = useState(null);
 
@@ -70,14 +69,29 @@ export default function FindRecipes() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detail, setDetail] = useState(null);
 
+  const modalOpen = searchOpen || detailOpen;
+
   useEffect(() => {
-    if (!searchOpen && !detailOpen) return;
+    if (!modalOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [searchOpen, detailOpen]);
+  }, [modalOpen]);
+
+  useEffect(() => {
+    if (!modalOpen) return;
+    function onKeyDown(e) {
+      if (e.key === "Escape") {
+        setSearchOpen(false);
+        setDetailOpen(false);
+        setDetail(null);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [modalOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -190,10 +204,19 @@ export default function FindRecipes() {
     }
   }
 
+  function closeSearch() {
+    setSearchOpen(false);
+  }
+
+  function closeDetail() {
+    setDetailOpen(false);
+    setDetail(null);
+  }
+
   const activeTab = TOP_TABS.find((x) => x.key === tab) || TOP_TABS[2];
 
   return (
-    <div className="pageShell">
+    <div className={modalOpen ? "pageShell recipesShell isModalOpen" : "pageShell recipesShell"}>
       <div className="recipesTopBar">
         <button className="recipesBackBtn" type="button" onClick={() => navigate("/food")}>
           Back
@@ -238,9 +261,7 @@ export default function FindRecipes() {
             }}
             aria-label="Open popular recipe"
           >
-            <div className="recipesDishImgWrap">
-              {popular ? <img className="recipesDishImg" src={popular.thumbUrl} alt="" /> : null}
-            </div>
+            <div className="recipesDishImgWrap">{popular ? <img className="recipesDishImg" src={popular.thumbUrl} alt="" /> : null}</div>
           </button>
         </div>
 
@@ -255,55 +276,66 @@ export default function FindRecipes() {
           role="dialog"
           aria-modal="true"
           onMouseDown={(e) => {
-            if (e.target === e.currentTarget) setSearchOpen(false);
+            if (e.target === e.currentTarget) closeSearch();
           }}
         >
-          <div className="recipesModal" onMouseDown={(e) => e.stopPropagation()}>
-            <div className="recipesModalTitle">Search</div>
-            <div className="recipesModalSub">Searching for: {searchQ.trim() ? `"${searchQ.trim()}"` : "—"}</div>
+          <div className="recipesCard" onMouseDown={(e) => e.stopPropagation()}>
+            <div className="recipesCardHead">
+              <button className="recipesX" type="button" aria-label="Close" onClick={closeSearch}>
+                ✕
+              </button>
+              <div className="recipesCardTitle">Search</div>
+              <div className="recipesHeadSpacer" />
+            </div>
 
-            <div className="recipesSearchRow">
-              <input
-                className="recipesSearchInput"
-                value={searchQ}
-                onChange={(e) => setSearchQ(e.target.value)}
-                placeholder="Search recipes…"
-                autoFocus
-              />
-              <button className="recipesSearchBtn" type="button" onClick={runSearch} disabled={searchLoading}>
-                {searchLoading ? "…" : "Go"}
+            <div className="recipesCardBody">
+              <div className="recipesModalSub">Searching for: {searchQ.trim() ? `"${searchQ.trim()}"` : "—"}</div>
+
+              <div className="recipesSearchRow">
+                <input
+                  className="recipesSearchInput"
+                  value={searchQ}
+                  onChange={(e) => setSearchQ(e.target.value)}
+                  placeholder="Search recipes…"
+                  autoFocus
+                />
+                <button className="recipesSearchBtn" type="button" onClick={runSearch} disabled={searchLoading}>
+                  {searchLoading ? "…" : "Go"}
+                </button>
+              </div>
+
+              <div className="recipesSearchResults">
+                {searchLoading ? (
+                  <div className="recipesHint">Loading results…</div>
+                ) : searchResults.length === 0 ? (
+                  <div className="recipesHint">No results yet. Try “chicken”, “pasta”, “salad”.</div>
+                ) : (
+                  searchResults.map((x) => (
+                    <button
+                      key={x.mealId}
+                      className="recipesResultRow"
+                      type="button"
+                      onClick={() => {
+                        closeSearch();
+                        openDetail(x.mealId);
+                      }}
+                    >
+                      <img className="recipesResultImg" src={x.thumbUrl} alt="" />
+                      <div className="recipesResultText">
+                        <div className="recipesResultName">{x.name}</div>
+                        <div className="recipesResultMeta">Tap to open</div>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="recipesCardFoot">
+              <button className="recipesClose" type="button" onClick={closeSearch}>
+                Close
               </button>
             </div>
-
-            <div className="recipesSearchResults">
-              {searchLoading ? (
-                <div className="recipesHint">Loading results…</div>
-              ) : searchResults.length === 0 ? (
-                <div className="recipesHint">No results yet. Try “chicken”, “pasta”, “salad”.</div>
-              ) : (
-                searchResults.map((x) => (
-                  <button
-                    key={x.mealId}
-                    className="recipesResultRow"
-                    type="button"
-                    onClick={() => {
-                      setSearchOpen(false);
-                      openDetail(x.mealId);
-                    }}
-                  >
-                    <img className="recipesResultImg" src={x.thumbUrl} alt="" />
-                    <div className="recipesResultText">
-                      <div className="recipesResultName">{x.name}</div>
-                      <div className="recipesResultMeta">Tap to open</div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
-
-            <button className="recipesClose" type="button" onClick={() => setSearchOpen(false)}>
-              Close
-            </button>
           </div>
         </div>
       ) : null}
@@ -314,59 +346,58 @@ export default function FindRecipes() {
           role="dialog"
           aria-modal="true"
           onMouseDown={(e) => {
-            if (e.target === e.currentTarget) {
-              setDetailOpen(false);
-              setDetail(null);
-            }
+            if (e.target === e.currentTarget) closeDetail();
           }}
         >
-          <div className="recipesDetailModal" onMouseDown={(e) => e.stopPropagation()}>
-            {detailLoading ? (
-              <div className="recipesHint">Loading recipe…</div>
-            ) : !detail ? (
-              <div className="recipesHint">Could not load recipe.</div>
-            ) : (
-              <>
-                <div className="recipesDetailTop">
-                  <div className="recipesDetailTitle">{detail.name}</div>
-                  <div className="recipesDetailMeta">
+          <div className="recipesCard" onMouseDown={(e) => e.stopPropagation()}>
+            <div className="recipesCardHead">
+              <button className="recipesX" type="button" aria-label="Close" onClick={closeDetail}>
+                ✕
+              </button>
+              <div className="recipesCardTitle">{detail ? detail.name : "Recipe"}</div>
+              <div className="recipesHeadSpacer" />
+            </div>
+
+            <div className="recipesCardBody">
+              {detailLoading ? (
+                <div className="recipesHint">Loading recipe…</div>
+              ) : !detail ? (
+                <div className="recipesHint">Could not load recipe.</div>
+              ) : (
+                <>
+                  <div className="recipesDetailMetaLine">
                     {detail.area || "—"} <span className="dot">•</span> {detail.category || "—"}
                   </div>
-                </div>
 
-                <div className="recipesDetailImgWrap">
-                  <img className="recipesDetailImg" src={detail.thumbUrl} alt="" />
-                </div>
+                  <div className="recipesDetailImgWrap">
+                    <img className="recipesDetailImg" src={detail.thumbUrl} alt="" />
+                  </div>
 
-                <div className="recipesDetailSectionTitle">Ingredients</div>
-                <div className="recipesIngList">
-                  {Array.isArray(detail.ingredients) && detail.ingredients.length > 0 ? (
-                    detail.ingredients.map((i, idx) => (
-                      <div className="recipesIngRow" key={idx}>
-                        <div className="recipesIngName">{i.ingredient}</div>
-                        <div className="recipesIngMeasure">{i.measure}</div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="recipesHint">No ingredients listed.</div>
-                  )}
-                </div>
+                  <div className="recipesDetailSectionTitle">Ingredients</div>
+                  <div className="recipesIngList">
+                    {Array.isArray(detail.ingredients) && detail.ingredients.length > 0 ? (
+                      detail.ingredients.map((i, idx) => (
+                        <div className="recipesIngRow" key={idx}>
+                          <div className="recipesIngName">{i.ingredient}</div>
+                          <div className="recipesIngMeasure">{i.measure}</div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="recipesHint">No ingredients listed.</div>
+                    )}
+                  </div>
 
-                <div className="recipesDetailSectionTitle">Instructions</div>
-                <div className="recipesInstructions">{detail.instructions || "—"}</div>
-              </>
-            )}
+                  <div className="recipesDetailSectionTitle">Instructions</div>
+                  <div className="recipesInstructions">{detail.instructions || "—"}</div>
+                </>
+              )}
+            </div>
 
-            <button
-              className="recipesClose"
-              type="button"
-              onClick={() => {
-                setDetailOpen(false);
-                setDetail(null);
-              }}
-            >
-              Close
-            </button>
+            <div className="recipesCardFoot">
+              <button className="recipesClose" type="button" onClick={closeDetail}>
+                Close
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
