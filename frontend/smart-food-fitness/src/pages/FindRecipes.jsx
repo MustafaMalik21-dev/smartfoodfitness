@@ -18,12 +18,15 @@ const PERMANENT_ROWS = [
 
 function Tile({ item, onClick }) {
   return (
-    <button className="recipesTile" type="button" onClick={onClick}>
+    <button className="recipesTile" type="button" onClick={onClick} aria-label={`Open recipe: ${item.name}`}>
       <div className="recipesTileImgWrap" aria-hidden="true">
         <img className="recipesTileImg" src={item.thumbUrl} alt="" />
+        <div className="recipesTileOverlay" aria-hidden="true">
+          <div className="recipesTileCta">View</div>
+        </div>
       </div>
       <div className="recipesTileName">{item.name}</div>
-      <div className="recipesTileMeta">Tap for details</div>
+      <div className="recipesTileMeta">Tap to view recipe</div>
     </button>
   );
 }
@@ -33,12 +36,12 @@ function Row({ title, items, onSelect }) {
     <div className="recipesRow">
       <div className="recipesRowHead">
         <div className="recipesRowTitle">{title}</div>
-        <button className="recipesSeeAll" type="button">
+        <button className="recipesSeeAll" type="button" disabled aria-disabled="true" title="Coming soon">
           See All
         </button>
       </div>
 
-      <div className="recipesHScroll">
+      <div className="recipesHScroll" aria-label={`${title} recipes`}>
         {items.map((x) => (
           <Tile key={x.mealId} item={x} onClick={() => onSelect(x.mealId)} />
         ))}
@@ -224,17 +227,23 @@ export default function FindRecipes() {
 
         <div className="recipesTitle">Find Recipes</div>
 
-        <button className="recipesSearchIcon" type="button" aria-label="Search" onClick={() => setSearchOpen(true)}>
+        <button className="recipesSearchIcon" type="button" aria-label="Search recipes" onClick={() => setSearchOpen(true)}>
           🔍
         </button>
       </div>
 
       <div className="pageBody recipesBody">
-        <div className="recipesTabs">
+        <div className="recipesSectionHint">
+          Tap any image to open the full recipe (ingredients + instructions).
+        </div>
+
+        <div className="recipesTabs" role="tablist" aria-label="Recipe categories">
           {TOP_TABS.map((t) => (
             <button
               key={t.key}
               type="button"
+              role="tab"
+              aria-selected={tab === t.key}
               className={tab === t.key ? "recipesTab isActive" : "recipesTab"}
               onClick={() => setTab(t.key)}
             >
@@ -245,12 +254,12 @@ export default function FindRecipes() {
 
         <div className="recipesDishCard">
           <div className="recipesDishLeft">
-            <div className="recipesDishTitle">Popular Dish of the day</div>
+            <div className="recipesDishTitle">Popular dish</div>
             <div className="recipesDishLabel">Name</div>
             <div className="recipesDishValue">{popular ? popular.name : "Loading…"}</div>
 
-            <div className="recipesDishLabel">Description</div>
-            <div className="recipesDishValueSmall">Tap the image to view full recipe details.</div>
+            <div className="recipesDishLabel">Tip</div>
+            <div className="recipesDishValueSmall">Tap “View recipe” to open details.</div>
           </div>
 
           <button
@@ -261,7 +270,12 @@ export default function FindRecipes() {
             }}
             aria-label="Open popular recipe"
           >
-            <div className="recipesDishImgWrap">{popular ? <img className="recipesDishImg" src={popular.thumbUrl} alt="" /> : null}</div>
+            <div className="recipesDishImgWrap">
+              {popular ? <img className="recipesDishImg" src={popular.thumbUrl} alt="" /> : null}
+              <div className="recipesDishOverlay" aria-hidden="true">
+                <div className="recipesDishCta">View recipe</div>
+              </div>
+            </div>
           </button>
         </div>
 
@@ -275,6 +289,7 @@ export default function FindRecipes() {
           className="recipesOverlay"
           role="dialog"
           aria-modal="true"
+          aria-label="Search recipes"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) closeSearch();
           }}
@@ -289,7 +304,9 @@ export default function FindRecipes() {
             </div>
 
             <div className="recipesCardBody">
-              <div className="recipesModalSub">Searching for: {searchQ.trim() ? `"${searchQ.trim()}"` : "—"}</div>
+              <div className="recipesModalSub">
+                Type a keyword (e.g. “chicken”, “pasta”, “salad”) then press Go.
+              </div>
 
               <div className="recipesSearchRow">
                 <input
@@ -306,9 +323,9 @@ export default function FindRecipes() {
 
               <div className="recipesSearchResults">
                 {searchLoading ? (
-                  <div className="recipesHint">Loading results…</div>
+                  <div className="recipesHint">Searching…</div>
                 ) : searchResults.length === 0 ? (
-                  <div className="recipesHint">No results yet. Try “chicken”, “pasta”, “salad”.</div>
+                  <div className="recipesHint">No results yet — try a different keyword.</div>
                 ) : (
                   searchResults.map((x) => (
                     <button
@@ -323,7 +340,7 @@ export default function FindRecipes() {
                       <img className="recipesResultImg" src={x.thumbUrl} alt="" />
                       <div className="recipesResultText">
                         <div className="recipesResultName">{x.name}</div>
-                        <div className="recipesResultMeta">Tap to open</div>
+                        <div className="recipesResultMeta">Tap to open recipe</div>
                       </div>
                     </button>
                   ))
@@ -345,6 +362,7 @@ export default function FindRecipes() {
           className="recipesOverlay"
           role="dialog"
           aria-modal="true"
+          aria-label="Recipe details"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) closeDetail();
           }}
@@ -371,6 +389,9 @@ export default function FindRecipes() {
 
                   <div className="recipesDetailImgWrap">
                     <img className="recipesDetailImg" src={detail.thumbUrl} alt="" />
+                    <div className="recipesDetailImgTag" aria-hidden="true">
+                      Full recipe
+                    </div>
                   </div>
 
                   <div className="recipesDetailSectionTitle">Ingredients</div>

@@ -114,12 +114,13 @@ export default function Workout() {
 
   const { elapsedSec, isRunning, start, pause, resume, stop } = useWorkoutTimer();
 
-  // image retry control (prevents "first render no image forever")
   const [imgBusted, setImgBusted] = useState({});
   const [imgVersion, setImgVersion] = useState(0);
 
   const current = exercises[idx] || null;
   const total = exercises.length || 1;
+
+  const hasPlan = !!planId;
 
   const resolvedMeta = useMemo(() => {
     const name = current?.name || "";
@@ -135,7 +136,6 @@ export default function Workout() {
     return { key, slug, description, img };
   }, [current?.name, current?.notes, imgVersion]);
 
-  // preload ALL images once exercises are known (so first screen already has them cached)
   useEffect(() => {
     if (!Array.isArray(exercises) || exercises.length === 0) return;
 
@@ -151,7 +151,6 @@ export default function Workout() {
     });
   }, [exercises]);
 
-  // if current image failed before, allow retry when exercise changes
   useEffect(() => {
     if (!resolvedMeta.key) return;
     setImgBusted((m) => {
@@ -179,11 +178,11 @@ export default function Workout() {
         const prof = await apiClient.get(`/api/user-profile/${userId}`);
         const selected = prof?.data?.selectedWorkoutPlanId;
 
-        setPlanId(selected || null);
+        if (!cancelled) setPlanId(selected || null);
 
         if (!selected) {
           if (!cancelled) {
-            setSessionTitle("No plan selected");
+            setSessionTitle("Workout");
             setExercises([]);
             setIdx(0);
           }
@@ -196,7 +195,7 @@ export default function Workout() {
 
         if (!first) {
           if (!cancelled) {
-            setSessionTitle("No sessions found");
+            setSessionTitle("Workout");
             setExercises([]);
             setIdx(0);
           }
@@ -368,7 +367,19 @@ export default function Workout() {
         {loading ? <div className="wMsg">Loading workout…</div> : null}
         {err ? <div className="wErr">{err}</div> : null}
 
-        {!loading && !err && current ? (
+        {!loading && !err && !hasPlan ? (
+          <div className="wEmptyCard">
+            <div className="wEmptyTitle">No workout plan selected</div>
+            <div className="wEmptyText">
+              You haven’t selected a workout plan yet. Select one to start a workout.
+            </div>
+            <button className="wEmptyBtn" type="button" onClick={() => navigate("/workout-plans")}>
+              Select a workout plan
+            </button>
+          </div>
+        ) : null}
+
+        {!loading && !err && hasPlan && current ? (
           <>
             <div className="workoutMetaTop">
               <div className="metaLeft">

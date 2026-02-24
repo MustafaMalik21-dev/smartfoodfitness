@@ -55,6 +55,17 @@
   font-size: 16px;
 }
 
+.recipesSectionHint {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.10);
+  font-weight: 800;
+  font-size: 12px;
+  color: #111827;
+  opacity: 0.85;
+}
+
 .recipesTabs {
   background: #bfbfbf;
   border-radius: 14px;
@@ -137,6 +148,7 @@
   overflow: hidden;
   background: #f5f5f5;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
+  position: relative;
 }
 
 .recipesDishImg {
@@ -144,6 +156,26 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.recipesDishOverlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: end center;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0));
+  opacity: 1;
+}
+
+.recipesDishCta {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 900;
+  font-size: 11px;
+  color: #0b84ff;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
 }
 
 .recipesRow {
@@ -169,8 +201,9 @@
   background: transparent;
   color: #0b84ff;
   font-weight: 900;
-  cursor: pointer;
+  cursor: not-allowed;
   font-size: 12px;
+  opacity: 0.55;
 }
 
 .recipesHScroll {
@@ -192,6 +225,10 @@
   scroll-snap-align: start;
 }
 
+.recipesTile:active {
+  transform: translateY(1px);
+}
+
 .recipesTileImgWrap {
   width: 140px;
   height: 120px;
@@ -199,6 +236,7 @@
   overflow: hidden;
   background: #f5f5f5;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
+  position: relative;
 }
 
 .recipesTileImg {
@@ -206,6 +244,35 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.recipesTileOverlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: end center;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0));
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.recipesTile:hover .recipesTileOverlay {
+  opacity: 1;
+}
+
+.recipesTile:focus-visible .recipesTileOverlay {
+  opacity: 1;
+}
+
+.recipesTileCta {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 900;
+  font-size: 11px;
+  color: #0b84ff;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
 }
 
 .recipesTileName {
@@ -401,6 +468,10 @@
   box-sizing: border-box;
 }
 
+.recipesResultRow:active {
+  transform: translateY(1px);
+}
+
 .recipesResultImg {
   width: 54px;
   height: 54px;
@@ -447,6 +518,7 @@
   background: #ffffff;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.10);
   flex: 0 0 auto;
+  position: relative;
 }
 
 .recipesDetailImg {
@@ -454,6 +526,19 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.recipesDetailImgTag {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 900;
+  font-size: 11px;
+  color: #0b84ff;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
 }
 
 .recipesDetailSectionTitle {
@@ -524,6 +609,12 @@ html[data-mode="dark"] .recipesSearchIcon {
   color: var(--text);
 }
 
+html[data-mode="dark"] .recipesSectionHint {
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
 html[data-mode="dark"] .recipesTabs {
   background: var(--panel2);
 }
@@ -560,7 +651,6 @@ html[data-mode="dark"] .recipesDetailMetaLine {
 }
 
 html[data-mode="dark"] .recipesRowTitle,
-html[data-mode="dark"] .recipesSeeAll,
 html[data-mode="dark"] .recipesCardTitle,
 html[data-mode="dark"] .recipesDetailSectionTitle {
   color: var(--primary);
@@ -570,6 +660,14 @@ html[data-mode="dark"] .recipesDishImgWrap,
 html[data-mode="dark"] .recipesTileImgWrap {
   background: var(--panel2);
   box-shadow: var(--shadow);
+}
+
+html[data-mode="dark"] .recipesDishCta,
+html[data-mode="dark"] .recipesTileCta,
+html[data-mode="dark"] .recipesDetailImgTag {
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 html[data-mode="dark"] .recipesCard {

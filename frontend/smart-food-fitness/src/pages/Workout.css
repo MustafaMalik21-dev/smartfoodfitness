@@ -48,6 +48,41 @@
   gap: 12px;
 }
 
+.wEmptyCard {
+  background: #efefef;
+  border-radius: 22px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wEmptyTitle {
+  font-weight: 900;
+  color: #0b84ff;
+  font-size: 16px;
+}
+
+.wEmptyText {
+  font-weight: 800;
+  color: #111827;
+  opacity: 0.8;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.wEmptyBtn {
+  height: 44px;
+  border-radius: 14px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 900;
+  background: #0b84ff;
+  color: #fff;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+}
+
 .workoutMetaTop {
   display: flex;
   justify-content: space-between;
@@ -337,18 +372,23 @@
     width: 28px;
     height: 28px;
   }
+
+  .endBtn {
+    width: 120px;
+  }
 }
 
-/* DARK MODE */
 html[data-mode="dark"] .simpleBack,
 html[data-mode="dark"] .cardW,
-html[data-mode="dark"] .timerW {
+html[data-mode="dark"] .timerW,
+html[data-mode="dark"] .wEmptyCard {
   background: var(--panel);
   box-shadow: var(--shadow);
 }
 
 html[data-mode="dark"] .metaRight,
-html[data-mode="dark"] .timerValue {
+html[data-mode="dark"] .timerValue,
+html[data-mode="dark"] .wEmptyText {
   color: var(--text);
 }
 
@@ -377,4 +417,13 @@ html[data-mode="dark"] .endBtn {
   background: var(--panel);
   box-shadow: var(--shadow);
   color: var(--primary);
+}
+
+html[data-mode="dark"] .wEmptyTitle {
+  color: var(--primary);
+}
+
+html[data-mode="dark"] .wEmptyBtn {
+  background: var(--primary);
+  color: #0b1220;
 }
