@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.mustafa.smartfoodfitness.entity.WorkoutPlan;
 
-public interface WorkoutPlanRepository extends JpaRepository<WorkoutPlan, Long> {
+public interface WorkoutPlanRepository extends JpaRepository<WorkoutPlan, Long> { // Define the WorkoutPlanRepository interface extending JpaRepository to provide CRUD operations for WorkoutPlan entities, along with custom query methods to retrieve active workout plans based on various criteria such as level, goal, and split, and to check for the existence of workout plans by title
 
     List<WorkoutPlan> findByIsActiveTrueOrderByTitleAsc();
 

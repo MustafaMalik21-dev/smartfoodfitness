@@ -1,4 +1,4 @@
-export const EXERCISE_CATALOG = {
+export const EXERCISE_CATALOG = { // This object serves as a catalog of exercises, where each key is the name of an exercise and the value is an object containing a slug (a URL-friendly identifier) and a description of how to perform the exercise, allowing the application to provide users with detailed information and instructions for a variety of exercises that they can incorporate into their fitness routines, enhancing their workout experience and helping them understand proper form and technique for each exercise
   "bench press": {
     slug: "bench-press",
     description: "Lie back with feet planted. Lower the bar to mid-chest and press up with control.",

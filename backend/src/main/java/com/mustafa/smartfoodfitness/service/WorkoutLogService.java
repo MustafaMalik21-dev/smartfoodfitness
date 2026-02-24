@@ -29,7 +29,7 @@ public class WorkoutLogService {
         this.userProfileRepository = userProfileRepository;
     }
 
-    public WorkoutLogResponse createWorkoutLog(CreateWorkoutLogRequest request) {
+    public WorkoutLogResponse createWorkoutLog(CreateWorkoutLogRequest request) { // Method to create a new workout log entry, accepting a CreateWorkoutLogRequest DTO containing the details of the workout log to be created, validating the input data including checking for the existence of the associated user profile, creating a new WorkoutLog entity based on the request data, saving it to the database, and returning a WorkoutLogResponse DTO representing the created workout log to be sent back to the client when they access the relevant endpoint in the application
         Long userId = request.getUserId();
         if (userId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId is required.");
@@ -55,7 +55,7 @@ public class WorkoutLogService {
         return mapToResponse(saved);
     }
 
-    public List<WorkoutLogResponse> getWorkoutLogsForUser(long userId, Instant from, Instant to) {
+    public List<WorkoutLogResponse> getWorkoutLogsForUser(long userId, Instant from, Instant to) { // Method to retrieve workout logs for a specific user, accepting the user ID and optional from and to timestamps to filter the logs by performed date, validating the existence of the associated user profile, fetching the workout logs from the database based on the provided criteria, and returning a list of WorkoutLogResponse DTOs representing the workout logs to be sent back to the client when they access the relevant endpoint in the application
         List<WorkoutLog> logs;
         if (from != null && to != null) {
             logs = workoutLogRepository.findByUserProfileIdAndPerformedAtBetweenOrderByPerformedAtDesc(userId, from, to);
@@ -65,7 +65,7 @@ public class WorkoutLogService {
         return logs.stream().map(this::mapToResponse).toList();
     }
 
-    public WorkoutStreakResponse getWorkoutStreak(long userId, String date, String timezone) {
+    public WorkoutStreakResponse getWorkoutStreak(long userId, String date, String timezone) { // Method to calculate the workout streak for a specific user, accepting the user ID, an optional date to use as the reference point for calculating the streak (defaulting to the current date), and an optional timezone to interpret the dates (defaulting to the system timezone), validating the existence of the associated user profile, fetching the workout logs for the user within a relevant date range, calculating the current streak of consecutive workout days up to the reference date, counting the total workouts and workouts in the last 7 days, and returning a WorkoutStreakResponse DTO representing the calculated streak information to be sent back to the client when they access the relevant endpoint in the application
         ZoneId zoneId;
         try {
             zoneId = (timezone == null || timezone.isBlank()) ? ZoneId.systemDefault() : ZoneId.of(timezone.trim());
@@ -119,7 +119,7 @@ public class WorkoutLogService {
         return r;
     }
 
-    private WorkoutLogResponse mapToResponse(WorkoutLog saved) {
+    private WorkoutLogResponse mapToResponse(WorkoutLog saved) { // Helper method to convert a WorkoutLog entity to a WorkoutLogResponse DTO, extracting the relevant fields from the entity and populating the response DTO accordingly before returning it to be sent back to the client when they access the relevant endpoint in the application
         WorkoutLogResponse r = new WorkoutLogResponse();
         r.setId(saved.getId());
         r.setUserId(saved.getUserProfile().getId());

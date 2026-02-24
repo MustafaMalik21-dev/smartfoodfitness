@@ -1,5 +1,5 @@
 package com.mustafa.smartfoodfitness.dto;
-
+// Define the OnboardingRequest DTO with fields for user ID, age, gender, height value and unit, weight value and unit, calorie goal, protein goal, carb goal, fat goal, activity level, and experience level, along with getter and setter methods for each field to facilitate data transfer of onboarding information between the backend and frontend of the application
 import jakarta.validation.constraints.NotNull;
 
 public class OnboardingRequest {

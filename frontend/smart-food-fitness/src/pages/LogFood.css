@@ -59,7 +59,6 @@
   color: #111827;
 }
 
-/* Tabs: only 2 now (Recent, Popular) */
 .logFoodTabs {
   background: #bfbfbf;
   border-radius: 14px;
@@ -173,7 +172,6 @@
   font-weight: 900;
 }
 
-/* Bottom actions: only Manual Entry */
 .logFoodActionsOne {
   display: grid;
   grid-template-columns: 1fr;
@@ -212,7 +210,7 @@
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
   padding: 14px;
   box-sizing: border-box;
-  overflow: hidden; /* FIX: stops manual grid poking out */
+  overflow: hidden; 
 }
 
 .lfModalTop {
@@ -352,7 +350,6 @@
   cursor: not-allowed;
 }
 
-/* Manual entry layout (FIXED so it never sticks out) */
 .lfManualForm {
   margin-top: 12px;
   display: grid;
@@ -381,7 +378,6 @@
   color: #111827;
 }
 
-/* small screens: stack macro inputs */
 @media (max-width: 360px) {
   .lfModalGrid {
     grid-template-columns: 1fr;
@@ -396,10 +392,6 @@
     grid-template-columns: 1fr;
   }
 }
-
-/* =========================
-   Dark mode overrides
-   ========================= */
 
 html[data-mode="dark"] .logFoodPage {
   background: var(--bg);
@@ -453,10 +445,6 @@ html[data-mode="dark"] .logFoodRow {
   color: var(--text);
   border-bottom-color: var(--border);
 }
-
-/* =========================
-   Modal dark mode
-   ========================= */
 
 html[data-mode="dark"] .lfModalOverlay {
   background: rgba(0, 0, 0, 0.55);

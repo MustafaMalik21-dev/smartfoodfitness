@@ -12,7 +12,7 @@ import com.mustafa.smartfoodfitness.repository.WorkoutPlanRepository;
 import com.mustafa.smartfoodfitness.repository.WorkoutPlanSessionRepository;
 
 @Service
-public class WorkoutPlanSeedService {
+public class WorkoutPlanSeedService { // Service class responsible for seeding the database with predefined workout plans and their associated sessions, providing a method to check if seeding is needed and to perform the seeding operation if the workout plans table is empty, and utilizing the WorkoutPlanRepository and WorkoutPlanSessionRepository to interact with the database when creating new workout plans and sessions based on hardcoded data representing various workout routines for different fitness levels and goals, which can be used to populate the application with initial workout plan options for users when they access the relevant endpoints in the application
 
     private final WorkoutPlanRepository workoutPlanRepository;
     private final WorkoutPlanSessionRepository sessionRepository;
@@ -25,7 +25,7 @@ public class WorkoutPlanSeedService {
         this.sessionRepository = sessionRepository;
     }
 
-    public String seedIfEmpty() {
+    public String seedIfEmpty() { // Method to check if the workout plans table is empty and perform seeding if needed, first checking the count of workout plans in the database, and if it is zero, proceeding to create a predefined list of workout plans with their associated sessions based on hardcoded data, saving them to the database, and returning a message indicating the number of new plans and sessions added, or returning a message indicating that no new plans were needed if the table was not empty when users access the relevant endpoint in the application
         Instant now = Instant.now();
 
         List<WorkoutPlan> desired = new ArrayList<>();
@@ -94,7 +94,7 @@ public class WorkoutPlanSeedService {
         return "Added " + created + " new plans and " + sessionsCreated + " sessions.";
     }
 
-    private void seedSessionsForPlan(Instant now, WorkoutPlan plan) {
+    private void seedSessionsForPlan(Instant now, WorkoutPlan plan) { // Method to seed workout sessions for a given workout plan based on its split type, accepting the current timestamp and a WorkoutPlan entity as parameters, determining the split type of the plan, creating a list of WorkoutPlanSession entities with hardcoded data representing the sessions for that split type, associating them with the provided workout plan, and saving them to the database using the WorkoutPlanSessionRepository when users access the relevant endpoint in the application
         String split = plan.getSplit() == null ? "" : plan.getSplit().trim();
         List<WorkoutPlanSession> sessions = new ArrayList<>();
 
@@ -145,7 +145,7 @@ public class WorkoutPlanSeedService {
         }
     }
 
-    private WorkoutPlan makePlan(
+    private WorkoutPlan makePlan( // Helper method to create a WorkoutPlan entity based on provided parameters, accepting the current timestamp and various attributes of the workout plan such as title, level, goal, split type, days per week, estimated duration, description, pros, and cons, populating a new WorkoutPlan entity with these values along with setting it as active and assigning the created and updated timestamps before returning the entity to be saved to the database when users access the relevant endpoint in the application
             Instant now,
             String title,
             String level,
@@ -173,7 +173,7 @@ public class WorkoutPlanSeedService {
         return p;
     }
 
-    private WorkoutPlanSession makeSession(
+    private WorkoutPlanSession makeSession( // Helper method to create a WorkoutPlanSession entity based on provided parameters, accepting the current timestamp, the associated WorkoutPlan entity, session index, title, focus, exercise JSON string, and estimated minutes, populating a new WorkoutPlanSession entity with these values along with setting the created and updated timestamps before returning the entity to be saved to the database when users access the relevant endpoint in the application
             Instant now,
             WorkoutPlan plan,
             int idx,

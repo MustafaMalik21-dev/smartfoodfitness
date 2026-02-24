@@ -7,7 +7,7 @@ import "../styles/PageShell.css";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts";
 import "./Food.css";
 
-function sum(arr) {
+function sum(arr) { // Helper function that takes an array of numbers and returns their sum, using the reduce method to accumulate the total, starting from an initial value of 0, and ensuring that non-numeric values are treated as 0 to prevent NaN results
   return arr.reduce((a, b) => a + b, 0);
 }
 
@@ -25,7 +25,7 @@ export default function Food() {
   const [goals, setGoals] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that runs on component mount and whenever the userId changes, responsible for fetching the user's food entry logs and goals from the API, updating the state with the fetched data to display the logged food and macro summaries, while handling loading state and cancellation to prevent state updates on unmounted components
     if (!userId) return;
 
     let cancelled = false;
@@ -58,7 +58,7 @@ export default function Food() {
     };
   }, [userId]);
 
-  const totals = useMemo(() => {
+  const totals = useMemo(() => { // Memoized calculation of the total protein, carbs, and fat from the logged food entries, using the sum helper function to aggregate the values for each macro across all logs, and treating missing values as 0 to ensure accurate totals for display in the macro summary chart
     return {
       protein: sum(logs.map((x) => x.proteins || 0)),
       carbs: sum(logs.map((x) => x.carbs || 0)),
@@ -66,7 +66,7 @@ export default function Food() {
     };
   }, [logs]);
 
-  const chartData = useMemo(() => {
+  const chartData = useMemo(() => { // Memoized preparation of the data for the macro summary bar chart, creating an array of objects representing each macro (protein, carbs, fat) with their current totals and goals, using the safeNum helper function to ensure that goal values are treated as 0 if they are missing or invalid, allowing for a consistent display of the current intake versus goals in the chart
     const g = goals || {};
     return [
       { name: "Protein", Current: totals.protein, Goal: safeNum(g.proteinGoal) },

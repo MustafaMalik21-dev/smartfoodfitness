@@ -13,7 +13,7 @@ function safeParse(json) {
   }
 }
 
-export default function WorkoutPlanDetail() {
+export default function WorkoutPlanDetail() { // Main component for the workout plan detail page, responsible for fetching and displaying the details of a specific workout plan based on the plan ID from the URL parameters. The component manages the state of the workout plan, its associated sessions, loading status, and any errors that may occur during data fetching. It also provides functionality to select the workout plan for the user, allowing them to set it as their active plan in the application. The component uses helper functions to safely parse exercise data and generate unique keys for toggling exercise details within each session, while also providing navigation back to the workout plans list and starting a workout session based on the selected plan.
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -27,7 +27,7 @@ export default function WorkoutPlanDetail() {
   const [selectBusy, setSelectBusy] = useState(false);
   const [selectMsg, setSelectMsg] = useState("");
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook to load the workout plan details and associated sessions when the component mounts or when the plan ID changes, fetching data from the API and updating the component state accordingly. The effect handles loading state, error handling, and cancellation to prevent state updates on unmounted components, ensuring a smooth user experience when navigating to different workout plans or when the component is unmounted before the data fetching completes.
     let cancelled = false;
 
     async function load() {
@@ -58,7 +58,7 @@ export default function WorkoutPlanDetail() {
     };
   }, [id]);
 
-  async function selectPlan() {
+  async function selectPlan() { // Function to handle the selection of the workout plan for the user, sending a request to the API to set the selected plan as the active plan for the user. The function manages the busy state and displays messages based on the success or failure of the API request, providing feedback to the user about the status of their action. It also checks for the presence of a valid user ID before making the API call, ensuring that only authenticated users can select a workout plan.
     if (!userId) {
       setSelectMsg("No userId found. Log in again.");
       return;

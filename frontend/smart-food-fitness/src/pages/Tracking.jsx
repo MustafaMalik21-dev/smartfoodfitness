@@ -4,7 +4,7 @@ import apiClient from "../api/apiClient";
 import "./Tracking.css";
 import { getUserId } from "../auth/authStorage";
 
-import {
+import { // Importing necessary components and libraries for the Tracking page, including React hooks for state and effect management, a header component for consistent page layout, an API client for fetching data from the backend, CSS for styling, and a function to retrieve the current user's ID from authentication storage. Additionally, importing Chart.js components and the Line chart component from react-chartjs-2 for rendering the tracking charts on the page.
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -19,7 +19,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip,
 
 const SETTINGS_KEY = "sff_settings_v1";
 
-const DEFAULT_SETTINGS = {
+const DEFAULT_SETTINGS = { // Default settings for the tracking page, including units for weight and height, tracking preferences for macros, weight, and workouts, notification preferences for workouts, food, and streaks, and accessibility options for text size and mode. These settings provide a baseline configuration that can be customized by the user and persisted in localStorage to maintain user preferences across sessions.
   units: { weight: "kg", height: "ft" },
   tracking: { macros: true, weight: true, workouts: true },
   notifications: { workouts: true, food: true, streak: true },

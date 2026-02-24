@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.mustafa.smartfoodfitness.service.WorkoutPlanSeedService;
 
+//Automatically put workout plans into the database on startup
 @Component
 public class WorkoutPlanSeeder implements CommandLineRunner {
 

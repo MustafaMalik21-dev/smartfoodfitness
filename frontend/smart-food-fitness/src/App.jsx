@@ -23,7 +23,7 @@ import RequireOnboarding from "./auth/RequireOnboarding";
 import OnboardingGuide from "./pages/auth/OnboardingGuide";
 import Start from "./pages/Start";
 
-function AppLayout() {
+function AppLayout() { // Layout component for the main application interface, providing a consistent structure with a navigation bar and a viewport for rendering the current page's content. The component uses the Outlet component from react-router-dom to render the matched child route within the viewport, allowing for seamless navigation between different pages of the application while maintaining the overall layout and navigation structure provided by the Navbar component.
   return (
     <div className="appLayout">
       <div className="appViewport">

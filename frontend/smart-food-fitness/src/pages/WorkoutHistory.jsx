@@ -5,7 +5,7 @@ import "../styles/PageShell.css";
 import "./WorkoutHistory.css";
 import { getUserId } from "../auth/authStorage";
 
-function formatWhen(iso) {
+function formatWhen(iso) { // Helper function to format an ISO date string into a more human-readable format, returning a string that includes the weekday, day, month, year, hour, and minute. If the input is not a valid ISO date string, the function returns a placeholder "—" to indicate that the date is unavailable or invalid.
   if (!iso) return "—";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "—";
@@ -19,7 +19,7 @@ function formatWhen(iso) {
   });
 }
 
-function safeJsonParse(s) {
+function safeJsonParse(s) { // Helper function to safely parse a JSON string, returning the parsed object if successful or null if parsing fails due to invalid JSON format. This function provides a way to handle potential errors when retrieving and parsing data from the backend, ensuring that the application can gracefully handle cases where the data may not be in the expected format without crashing.
   try {
     return JSON.parse(s);
   } catch {
@@ -37,7 +37,7 @@ function getTotalSetCount(ex) {
   return sets.length;
 }
 
-function displayWeight(w) {
+function displayWeight(w) { // Helper function to format a weight value for display, converting it to a string and trimming whitespace, while also handling null, undefined, and non-numeric values by returning an empty string. This function ensures that only valid weight values are displayed to the user, and that any invalid or missing data is represented as an empty string to maintain a clean and consistent user interface.
   if (w === null || w === undefined) return "";
   const s = String(w).trim();
   if (!s) return "";
@@ -63,7 +63,7 @@ function makeExerciseKey(logId, exIndex) {
   return `${logId}::${exIndex}`;
 }
 
-export default function WorkoutHistory() {
+export default function WorkoutHistory() { // Main component for the workout history page, responsible for fetching and displaying the user's past workout logs in a structured format. The component manages the state of the workout logs, loading status, and any errors that may occur during data fetching. It also provides functionality to toggle the visibility of exercise details within each workout log, allowing users to view the exercises performed in each workout session along with their respective sets and completion status. The component uses helper functions to format dates, safely parse JSON data, and display weight and reps information in a user-friendly manner.
   const navigate = useNavigate();
   const userId = getUserId();
 
@@ -90,11 +90,11 @@ export default function WorkoutHistory() {
     }
   }
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook to load the workout history data when the component mounts or when the userId changes, calling the load function to fetch the workout logs from the API and update the component state accordingly. This effect ensures that the workout history is always up-to-date with the latest data from the backend whenever the user accesses this page or when their authentication status changes.
     load();
   }, [userId]);
 
-  const view = useMemo(() => {
+  const view = useMemo(() => { // Memoized transformation of the raw workout logs data into a structured format suitable for rendering in the UI, sorting the logs by performed date in descending order and extracting relevant information such as workout name, type, duration, notes, and exercise details. The transformation also handles parsing of the exercise details from JSON format and calculates summary information such as the total number of exercises and how many were completed for each workout log, allowing for an efficient rendering of the workout history with all necessary details readily available.
     return (logs || [])
       .slice()
       .sort((a, b) => {
@@ -126,7 +126,7 @@ export default function WorkoutHistory() {
       });
   }, [logs]);
 
-  function toggleExercise(logId, exIndex) {
+  function toggleExercise(logId, exIndex) { // Function to toggle the visibility of exercise details for a specific exercise within a workout log, using a unique key generated from the log ID and exercise index to track which exercise's details are currently open. When the function is called, it checks if the clicked exercise is already open (i.e., its key matches the current openExerciseKey) and toggles it accordingly, allowing users to expand or collapse the details of each exercise in their workout history for a more interactive and organized viewing experience.
     const key = makeExerciseKey(logId, exIndex);
     setOpenExerciseKey((prev) => (prev === key ? "" : key));
   }

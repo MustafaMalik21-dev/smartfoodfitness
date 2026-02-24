@@ -5,7 +5,6 @@ import { useAuth } from "../../auth/useAuth";
 import "./Auth.css";
 import "./OnboardingGuide.css";
 
-/* Import your custom icons */
 import HomeIcon from "../../assets/Homeicon.png";
 import DumbellIcon from "../../assets/Dumbellicon.png";
 import TrackingIcon from "../../assets/Trackingicon.png";
@@ -13,7 +12,7 @@ import FoodIcon from "../../assets/Foodicon.png";
 import SettingsIcon from "../../assets/Settingsicon.png";
 import PfpIcon from "../../assets/PFP.png";
 
-const GUIDE_ITEMS = [
+const GUIDE_ITEMS = [ // This array defines the items to be displayed in the onboarding guide, where each item represents a different page or feature of the application, including its key, title, icon, description text, and a recommended tip for users to get started with that particular feature, allowing the onboarding guide to provide users with a clear overview of the main sections of the app and how to use them effectively as they begin their fitness journey with Smart Food & Fitness
   {
     key: "dashboard",
     title: "Dashboard",

@@ -13,13 +13,12 @@ import BicepIcon from "../assets/Bicepicon.png";
 import CardioIcon from "../assets/Cardioicon.png";
 
 
-function cleanHtmlToText(html) {
+function cleanHtmlToText(html) { // Utility function that takes an HTML string and returns a plain text version by removing all HTML tags and extra whitespace, used for displaying exercise descriptions in a clean format
   if (!html) return "";
   return String(html).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-/* ===== CATEGORY PLACEHOLDER MAPPING ===== */
-function placeholderForCategory(category) {
+function placeholderForCategory(category) { // Utility function that returns a placeholder image URL based on the exercise category, used when an exercise does not have a specific image associated with it
   const c = String(category || "").toLowerCase();
 
   if (c.includes("chest")) return ChestIcon;
@@ -28,16 +27,15 @@ function placeholderForCategory(category) {
   if (c.includes("arm")) return BicepIcon;
   if (c.includes("core")) return CoreIcon;
   if (c.includes("leg")) return LegsIcon;
-  if (c.includes("cardio")) return CardioIcon; // cardio fallback
+  if (c.includes("cardio")) return CardioIcon;
 
   return ChestIcon;
 }
-
-function bestImage(tile) {
+ 
+function bestImage(tile) { // Utility function that determines the best image URL to use for an exercise tile, prioritizing the exercise's specific image and falling back to a category placeholder if no specific image is available
   return tile?.imageUrl || placeholderForCategory(tile?.category);
 }
 
-/* ===== TILE ===== */
 function Tile({ item, onClick }) {
   return (
     <button type="button" className="eeTile" onClick={onClick}>
@@ -50,8 +48,7 @@ function Tile({ item, onClick }) {
   );
 }
 
-/* ===== ROW ===== */
-function Row({ title, items, onPick, onSeeAll }) {
+function Row({ title, items, onPick, onSeeAll }) { // Component that renders a horizontal scrollable row of exercise tiles for a specific category, with a title and a "See All" button that triggers a callback when clicked
   if (!items || items.length === 0) return null;
 
   return (
@@ -72,8 +69,7 @@ function Row({ title, items, onPick, onSeeAll }) {
   );
 }
 
-/* ===== MAIN COMPONENT ===== */
-export default function ExerciseEncyclopedia() {
+export default function ExerciseEncyclopedia() { // Main component for the Exercise Encyclopedia page, responsible for fetching exercise data, managing state for loading, errors, search functionality, and displaying exercise details in a modal when an exercise tile is clicked
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -88,7 +84,7 @@ export default function ExerciseEncyclopedia() {
   const [detail, setDetail] = useState(null);
   const [detailBusy, setDetailBusy] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that runs on component mount to fetch the exercise data for the encyclopedia, handling loading state, errors, and cancellation to prevent state updates on unmounted components
     let cancelled = false;
 
     async function load() {
@@ -106,7 +102,7 @@ export default function ExerciseEncyclopedia() {
       }
     }
 
-    load();
+    load(); // Initial load of exercise data when the component mounts
     return () => (cancelled = true);
   }, []);
 
@@ -163,7 +159,7 @@ export default function ExerciseEncyclopedia() {
       .filter((x) => x && x.id && x.name);
   }, [data]);
 
-  const searched = useMemo(() => {
+  const searched = useMemo(() => { // Memoized value that computes the list of exercises matching the search query, filtering the full list of exercises based on whether the exercise name or category includes the search query, and limiting the results to 80 items for performance
     const query = q.trim().toLowerCase();
     if (!query) return allTiles.slice(0, 60);
 
@@ -174,7 +170,7 @@ export default function ExerciseEncyclopedia() {
     }).slice(0, 80);
   }, [q, allTiles]);
 
-  async function openDetail(tile) {
+  async function openDetail(tile) { // Function that handles opening the exercise detail modal when an exercise tile is clicked, fetching the detailed information for the selected exercise and managing loading state for the detail view
     setActive(tile);
     setDetail(null);
     setDetailBusy(true);
@@ -189,7 +185,7 @@ export default function ExerciseEncyclopedia() {
     }
   }
 
-  const modalImages = useMemo(() => {
+  const modalImages = useMemo(() => { // Memoized value that determines the list of images to display in the exercise detail modal, prioritizing the exercise's specific images and falling back to the best available image if no specific images are provided
     const imgs = (detail?.images || []).filter(Boolean);
     if (imgs.length > 0) return imgs.slice(0, 4);
     if (active) return [bestImage(active)];

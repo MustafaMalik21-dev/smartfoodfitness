@@ -1,5 +1,5 @@
 package com.mustafa.smartfoodfitness.dto;
-
+// Define the UpdateUserProfileRequest DTO with fields for display name, age, height value and unit, weight
 import java.util.Set;
 
 import jakarta.validation.constraints.Max;

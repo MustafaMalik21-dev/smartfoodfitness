@@ -16,7 +16,7 @@ const PERMANENT_ROWS = [
   { key: "seafood", title: "Seafood", type: "category", value: "Seafood" },
 ];
 
-function Tile({ item, onClick }) {
+function Tile({ item, onClick }) { // Component that renders a single recipe tile with an image, name, and meta information, and triggers a callback when clicked to open the recipe details
   return (
     <button className="recipesTile" type="button" onClick={onClick} aria-label={`Open recipe: ${item.name}`}>
       <div className="recipesTileImgWrap" aria-hidden="true">
@@ -31,7 +31,7 @@ function Tile({ item, onClick }) {
   );
 }
 
-function Row({ title, items, onSelect }) {
+function Row({ title, items, onSelect }) { // Component that renders a horizontal scrollable row of recipe tiles for a specific category, with a title and a disabled "See All" button that indicates more recipes will be available in the future
   return (
     <div className="recipesRow">
       <div className="recipesRowHead">
@@ -50,7 +50,7 @@ function Row({ title, items, onSelect }) {
   );
 }
 
-export default function FindRecipes() {
+export default function FindRecipes() { // Main component for the Find Recipes page, responsible for fetching recipe data for different categories, managing state for loading, search functionality, and displaying recipe details in a modal when a recipe tile is clicked
   const navigate = useNavigate();
 
   const [tab, setTab] = useState("dinner");
@@ -74,7 +74,7 @@ export default function FindRecipes() {
 
   const modalOpen = searchOpen || detailOpen;
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that runs whenever a modal (search or detail) is open, preventing background scrolling by setting the body's overflow style to "hidden", and restoring it when the modal is closed
     if (!modalOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -83,7 +83,7 @@ export default function FindRecipes() {
     };
   }, [modalOpen]);
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that adds a keydown event listener to the window when a modal is open, allowing the user to close the modal by pressing the Escape key, and cleaning up the event listener when the modal is closed
     if (!modalOpen) return;
     function onKeyDown(e) {
       if (e.key === "Escape") {
@@ -99,7 +99,7 @@ export default function FindRecipes() {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadTabRow() {
+    async function loadTabRow() { // Effect hook that runs whenever the selected top tab changes, fetching the recipes for the selected category and updating the state with the new recipes, while handling cancellation to prevent state updates on unmounted components
       try {
         const t = TOP_TABS.find((x) => x.key === tab) || TOP_TABS[2];
         const res = await apiClient.get(`/api/recipes/category/${encodeURIComponent(t.category)}`);
@@ -117,7 +117,7 @@ export default function FindRecipes() {
     };
   }, [tab]);
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that runs on component mount to fetch a random popular recipe, updating the state with the fetched recipe, and handling cancellation to prevent state updates on unmounted components
     let cancelled = false;
 
     async function loadPopular() {
@@ -140,7 +140,7 @@ export default function FindRecipes() {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadPermanentRows() {
+    async function loadPermanentRows() { // Effect hook that runs on component mount to fetch the recipes for the permanent rows (High Protein and Seafood), making parallel API calls for each row, and updating the state with the fetched recipes, while handling cancellation to prevent state updates on unmounted components
       try {
         const promises = PERMANENT_ROWS.map(async (r) => {
           const url =
@@ -175,7 +175,7 @@ export default function FindRecipes() {
     };
   }, []);
 
-  async function openDetail(mealId) {
+  async function openDetail(mealId) { // Function that handles opening the recipe detail modal when a recipe tile is clicked, fetching the detailed information for the selected recipe and managing loading state for the detail view
     setDetailOpen(true);
     setDetailLoading(true);
     setDetail(null);
@@ -218,7 +218,7 @@ export default function FindRecipes() {
 
   const activeTab = TOP_TABS.find((x) => x.key === tab) || TOP_TABS[2];
 
-  return (
+  return ( // JSX for rendering the Find Recipes page, including the top bar with navigation and search button, the popular dish section, the category tabs, the recipe rows, and the modals for search and recipe details
     <div className={modalOpen ? "pageShell recipesShell isModalOpen" : "pageShell recipesShell"}>
       <div className="recipesTopBar">
         <button className="recipesBackBtn" type="button" onClick={() => navigate("/food")}>

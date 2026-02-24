@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../../api/apiClient";
 import { useAuth } from "../../auth/useAuth";
 import "./Auth.css";
-
+// This component renders the onboarding page of the application, guiding users through a multi-step setup process to personalize their profile and fitness targets, including input
 function toNum(v) {
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 }
 
-function toLowerOrNull(v) {
+function toLowerOrNull(v) { // converts a string to lowercase or returns null if the string is empty or not provided, used for normalizing user input for fields
   const s = String(v || "").trim();
   return s ? s.toLowerCase() : null;
 }
@@ -42,7 +42,7 @@ function mToCm(m) {
   return Number(m) * 100;
 }
 
-function activityMultiplier(level) {
+function activityMultiplier(level) { // Helper function to determine the activity multiplier based on the user's selected activity level, accepting a string input representing the activity level (e.g., "low", "moderate", "high"), converting it to lowercase for normalization, and returning a corresponding multiplier value that can be used in calculations for estimating total daily energy expenditure (TDEE) based on the user's basal metabolic rate (BMR) and activity level, allowing the application to provide personalized calorie targets for users based on their lifestyle and activity habits
   const v = String(level || "").toLowerCase();
   if (v === "low") return 1.2;
   if (v === "moderate") return 1.55;
@@ -50,7 +50,7 @@ function activityMultiplier(level) {
   return 1.2;
 }
 
-function mifflinStJeorBmr({ sex, age, heightCm, weightKg }) {
+function mifflinStJeorBmr({ sex, age, heightCm, weightKg }) { // Helper function to calculate the basal metabolic rate (BMR) using the Mifflin-St Jeor equation, accepting an object with properties
   const a = Number(age);
   const h = Number(heightCm);
   const w = Number(weightKg);
@@ -62,7 +62,7 @@ function mifflinStJeorBmr({ sex, age, heightCm, weightKg }) {
   return base - 78;
 }
 
-function deriveTargets({ weightKg, tdee, goal }) {
+function deriveTargets({ weightKg, tdee, goal }) { // Helper function to derive personalized calorie and macronutrient targets based on the user's weight, total daily energy expenditure (TDEE), and fitness goal, accepting an object with properties weightKg (weight in kilograms), tdee (total daily energy expenditure in calories), and goal (fitness goal such as "maintain", "lose", or "gain"), performing calculations to adjust the calorie target based on the specified goal, and then determining the recommended protein, carbohydrate, and fat intake in grams based on standard macronutrient distribution guidelines, allowing the application to provide users with tailored nutrition targets that align with their fitness objectives and support their overall health and wellness journey
   const w = Number(weightKg);
   const cals = Number(tdee);
   if (!Number.isFinite(w) || !Number.isFinite(cals) || w <= 0 || cals <= 0) {
@@ -88,7 +88,7 @@ function deriveTargets({ weightKg, tdee, goal }) {
   };
 }
 
-export default function Onboarding() {
+export default function Onboarding() { // This component renders the onboarding page of the application, guiding users through a multi-step setup process to personalize their profile and fitness targets, including input
   const navigate = useNavigate();
   const { auth, setAuth } = useAuth();
 
@@ -110,7 +110,7 @@ export default function Onboarding() {
   const [weightValue, setWeightValue] = useState("");
   const [weightUnit, setWeightUnit] = useState("kg");
 
-  const [goal, setGoal] = useState("maintain"); // maintain | lose | gain
+  const [goal, setGoal] = useState("maintain");
 
   const [calorieGoal, setCalorieGoal] = useState("2000");
   const [proteinGoal, setProteinGoal] = useState("150");
@@ -129,7 +129,7 @@ export default function Onboarding() {
 
     let heightCm = null;
 
-    if (String(heightUnit).toLowerCase() === "ft") {
+    if (String(heightUnit).toLowerCase() === "ft") { // If the height unit is in feet, it converts the height from feet and inches to centimeters by accepting the height in feet and inches as input, converting them to numeric values, and then calculating the total height in centimeters using the conversion factors (1 foot = 30.48 cm and 1 inch = 2.54 cm), allowing the application to standardize height measurements for users who prefer to input their height in imperial units while still maintaining consistency in the backend data storage and calculations that require height in metric units
       const ft = toNum(heightFt);
       const inch = toNum(heightIn);
 
@@ -153,7 +153,7 @@ export default function Onboarding() {
     return { a, wv, heightCm, weightKg };
   }, [age, weightValue, weightUnit, heightUnit, heightFt, heightIn, heightM, heightCmPart]);
 
-  function validateStep1() {
+  function validateStep1() { // Function to validate the user input for the first step of the onboarding process, checking if the age is provided and within a sensible range (between
     const a = parsed.a;
     if (a == null) return "Please enter your age.";
     if (a < 5 || a > 100) return "Please enter a sensible age (between 5 and 100).";
@@ -196,7 +196,7 @@ export default function Onboarding() {
     return "";
   }
 
-  function applyRecommendedTargets() {
+  function applyRecommendedTargets() { // Function to apply the recommended calorie and macronutrient targets based on the user's input for
     const sex = toLowerOrNull(gender);
     const a = parsed.a;
     const heightCm = parsed.heightCm;
@@ -283,7 +283,7 @@ export default function Onboarding() {
         onboardingComplete: false,
       });
 
-      try {
+      try { // After successfully updating the user's profile information, it attempts to save the user's calorie and macronutrient targets by making a POST request to the backend API endpoint for user goals, passing the user ID and the calculated calorie, protein, carbohydrate, and fat goals as parameters, while handling any potential errors that may occur during this process (such as a conflict error if the goals already exist) by catching the error and checking its status code, allowing the application to ensure that the user's fitness targets are stored in the backend and can be retrieved later for display in the user's dashboard and for tracking their progress towards their fitness goals
         await apiClient.post("/api/user-goals", {
           userId: userId,
           calorieGoal: Math.max(1, Number(calorieGoal)),
@@ -318,7 +318,7 @@ export default function Onboarding() {
         onboardingComplete: false,
       });
 
-      navigate("/onboarding-guide", { replace: true });
+      navigate("/onboarding-guide", { replace: true }); // Navigate to the onboarding guide page after successfully saving the user's profile information and goals, allowing the user to proceed with the next steps of the onboarding process where they can learn how to use the app effectively and make the most out of its features for tracking their fitness journey
     } catch (e2) {
       const msg =
         (e2 && e2.response && e2.response.data && e2.response.data.message) ||

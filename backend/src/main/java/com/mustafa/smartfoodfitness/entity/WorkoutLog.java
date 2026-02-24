@@ -1,5 +1,5 @@
 package com.mustafa.smartfoodfitness.entity;
-
+// Define the WorkoutLog entity representing a workout log entry in the database, with fields for ID, user profile association, workout details, timestamps, and corresponding getter and setter methods for each field to facilitate data persistence and retrieval of workout log information within the application
 import java.time.Instant;
 
 import jakarta.persistence.Column;
@@ -46,33 +46,73 @@ public class WorkoutLog {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() { 
+        return id; 
+    }
+    public void setId(Long id) { 
+        this.id = id; 
+    }
 
-    public UserProfile getUserProfile() { return userProfile; }
-    public void setUserProfile(UserProfile userProfile) { this.userProfile = userProfile; }
+    public UserProfile getUserProfile() { 
+        return userProfile; 
+    }
+    public void setUserProfile(UserProfile userProfile) { 
+        this.userProfile = userProfile; 
+    }
 
-    public String getWorkoutName() { return workoutName; }
-    public void setWorkoutName(String workoutName) { this.workoutName = workoutName; }
+    public String getWorkoutName() { 
+        return workoutName; 
+    }
+    public void setWorkoutName(String workoutName) { 
+        this.workoutName = workoutName; 
+    }
 
-    public String getWorkoutType() { return workoutType; }
-    public void setWorkoutType(String workoutType) { this.workoutType = workoutType; }
+    public String getWorkoutType() { 
+        return workoutType; 
+    }
+    public void setWorkoutType(String workoutType) { 
+        this.workoutType = workoutType; 
+    }
 
-    public Integer getDurationMinutes() { return durationMinutes; }
-    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
+    public Integer getDurationMinutes() { 
+        return durationMinutes; 
+    }
+    public void setDurationMinutes(Integer durationMinutes) { 
+        this.durationMinutes = durationMinutes; 
+    }
 
-    public Instant getPerformedAt() { return performedAt; }
-    public void setPerformedAt(Instant performedAt) { this.performedAt = performedAt; }
+    public Instant getPerformedAt() { 
+        return performedAt; 
+    }
+    public void setPerformedAt(Instant performedAt) { 
+        this.performedAt = performedAt; 
+    }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public String getNotes() { 
+        return notes; 
+    }
+    public void setNotes(String notes) { 
+        this.notes = notes; 
+    }
 
-    public String getDetailsJson() { return detailsJson; }
-    public void setDetailsJson(String detailsJson) { this.detailsJson = detailsJson; }
+    public String getDetailsJson() { 
+        return detailsJson; 
+    }
+    public void setDetailsJson(String detailsJson) { 
+        this.detailsJson = detailsJson; 
+    }
 
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Instant getCreatedAt() { 
+        return createdAt; 
+    }
+    public void setCreatedAt(Instant createdAt) { 
+        this.createdAt = createdAt; 
+    }
 
-    public Instant getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public Instant getUpdatedAt() { 
+        return updatedAt; 
+    }
+    public void setUpdatedAt(Instant updatedAt) { 
+        this.updatedAt = updatedAt; 
+    }
 }

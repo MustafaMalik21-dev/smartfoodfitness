@@ -24,7 +24,7 @@ import com.mustafa.smartfoodfitness.repository.WorkoutPlanSessionRepository;
 import com.mustafa.smartfoodfitness.service.WorkoutPlanSeedService;
 
 @RestController
-@RequestMapping("/api/workout-plans")
+@RequestMapping("/api/workout-plans") //Controller class responsible for handling HTTP requests related to workout plans, providing endpoints for retrieving all active workout plans, fetching details of a specific workout plan by its ID, retrieving the sessions associated with a specific workout plan, allowing users to select a workout plan, searching for workout plans based on various criteria such as level, goal, and split, and seeding the database with workout plans when users access the relevant endpoints in the application
 public class WorkoutPlanController {
 
     private final WorkoutPlanRepository workoutPlanRepository;
@@ -47,15 +47,15 @@ public class WorkoutPlanController {
         this.workoutPlanSeedService = workoutPlanSeedService;
     }
 
-    @GetMapping
-    public List<WorkoutPlanResponse> getAllActivePlans() {
+    @GetMapping // handle HTTP GET requests to retrieve all active workout plans, and returning a list of response DTOs representing the active workout plans to the client when they access the relevant endpoint in the application
+    public List<WorkoutPlanResponse> getAllActivePlans() { 
         return workoutPlanRepository.findByIsActiveTrueOrderByTitleAsc()
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") // handle HTTP GET requests to retrieve details of a specific workout plan by its ID, accepting a path variable representing the workout plan ID, validating that the workout plan exists and is active, and returning a response DTO containing the workout plan details to the client when they access the relevant endpoint in the application, throwing a 404 Not Found error if the workout plan does not exist or is not active
     public WorkoutPlanResponse getPlanById(@PathVariable @NonNull Long id) {
         WorkoutPlan plan = workoutPlanRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workout plan not found."));
@@ -67,7 +67,7 @@ public class WorkoutPlanController {
         return toResponse(plan);
     }
 
-    @GetMapping("/{id}/sessions")
+    @GetMapping("/{id}/sessions") // handle HTTP GET requests to retrieve the sessions associated with a specific workout plan, accepting a path variable representing the workout plan ID, validating that the workout plan exists and is active, and returning a list of response DTOs representing the workout plan sessions to the client when they access the relevant endpoint in the application, throwing a 404 Not Found error if the workout plan does not exist or is not active
     public List<WorkoutPlanSession> getPlanSessions(@PathVariable @NonNull Long id) {
         WorkoutPlan plan = workoutPlanRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workout plan not found."));
@@ -79,7 +79,7 @@ public class WorkoutPlanController {
         return sessionRepository.findByWorkoutPlanIdOrderBySessionIndexAsc(id);
     }
 
-    @PostMapping("/{id}/select")
+    @PostMapping("/{id}/select") // handle HTTP POST requests to allow users to select a workout plan, accepting a path variable representing the workout plan ID and a query parameter for the user ID, validating that the workout plan exists and is active, validating that the associated user profile exists, updating the user's selected workout plan in the database, and returning a response indicating the successful selection of the workout plan to the client when they access the relevant endpoint in the application, throwing a 404 Not Found error if the workout plan does not exist or is not active, or if the user profile does not exist
     public String selectPlan(
             @PathVariable @NonNull Long id,
             @RequestParam Long userId
@@ -100,8 +100,8 @@ public class WorkoutPlanController {
 
         return "Selected plan " + plan.getId() + " for user " + userId;
     }
-
-    @GetMapping("/search")
+ 
+    @GetMapping("/search") // handle HTTP GET requests to search for workout plans based on various criteria such as level, goal, and split, accepting optional query parameters for the search criteria, validating the input parameters, querying the database for workout plans that match the specified criteria, and returning a list of response DTOs representing the matching workout plans to the client when they access the relevant endpoint in the application
     public List<WorkoutPlanResponse> searchPlans(
             @RequestParam(required = false) String level,
             @RequestParam(required = false) String goal,
@@ -138,7 +138,7 @@ public class WorkoutPlanController {
         return plans.stream().map(this::toResponse).toList();
     }
 
-    @PostMapping("/seed")
+    @PostMapping("/seed") // handle HTTP POST requests to seed the database with workout plans, validating that seeding is enabled through application configuration, invoking the workout plan seed service to populate the database with workout plans if it is currently empty, and returning a response indicating the result of the seeding operation to the client when they access the relevant endpoint in the application, throwing a 404 Not Found error if seeding is not enabled
     public String seedPlans() {
         if (!seedHttpEnabled) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");

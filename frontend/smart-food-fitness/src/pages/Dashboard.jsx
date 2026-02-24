@@ -6,17 +6,17 @@ import "../styles/PageShell.css";
 import "./Dashboard.css";
 import StreakIcon from "../assets/Streakicon.png";
 import { getUserId } from "../auth/authStorage";
-
+// Utility functions
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-function toNumber(v) {
+function toNumber(v) { // Converts a value to a number, returning 0 for non-finite values
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
 }
 
-function percentFromCurrentGoal(current, goal) {
+function percentFromCurrentGoal(current, goal) { // Calculates the percentage of current relative to goal, clamped between 0 and 100
   const c = Math.max(0, toNumber(current));
   const g = Math.max(0, toNumber(goal));
   if (!g) return 0;
@@ -27,7 +27,7 @@ function formatInt(n) {
   return Math.round(toNumber(n)).toString();
 }
 
-function capCurrentToGoal(current, goal) {
+function capCurrentToGoal(current, goal) { // Caps the current value to not exceed the goal, ensuring both are non-negative
   const c = Math.max(0, toNumber(current));
   const g = Math.max(0, toNumber(goal));
   if (g > 0) return Math.min(c, g);
@@ -45,7 +45,7 @@ function Donut({ percent, size = 160, stroke = 18, labelLeft, labelRight }) {
   const p = clamp(toNumber(percent), 0, 100);
   const offset = c * (1 - p / 100);
 
-  return (
+  return ( // Donut chart component that visually represents the percentage of a goal achieved, with labels for consumed and remaining portions
     <div className="donutWrap" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="donutSvg">
         <circle cx={size / 2} cy={size / 2} r={r} className="donutTrack" strokeWidth={stroke} />
@@ -79,7 +79,7 @@ function Donut({ percent, size = 160, stroke = 18, labelLeft, labelRight }) {
   );
 }
 
-function MiniRing({ current, goal, colorVar = "--primary" }) {
+function MiniRing({ current, goal, colorVar = "--primary" }) { // A smaller ring component used for displaying progress towards macro goals, with customizable color
   const p = percentFromCurrentGoal(current, goal);
   const size = 60;
   const stroke = 10;
@@ -87,7 +87,7 @@ function MiniRing({ current, goal, colorVar = "--primary" }) {
   const c = 2 * Math.PI * r;
   const offset = c * (1 - p / 100);
 
-  return (
+  return ( // A mini ring component that visually represents the percentage of a macro goal achieved, with customizable color based on the provided CSS variable
     <div className="miniRing">
       <svg width={size} height={size} className="miniRingSvg">
         <circle cx={size / 2} cy={size / 2} r={r} className="miniTrack" strokeWidth={stroke} />
@@ -106,7 +106,7 @@ function MiniRing({ current, goal, colorVar = "--primary" }) {
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard() { // Main dashboard component that displays the user's current progress towards their calorie and macro goals, as well as workout streaks and quick action buttons for logging food, starting workouts, and viewing progress
   const navigate = useNavigate();
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -117,7 +117,7 @@ export default function Dashboard() {
     let cancelled = false;
     if (!userId) return;
 
-    async function load() {
+    async function load() { // Loads the dashboard summary data for the user, handling loading state and cancellation to prevent state updates on unmounted components
       try {
         setLoading(true);
         const res = await apiClient.get(`/api/dashboard-summary/user/${userId}`, {
@@ -142,16 +142,16 @@ export default function Dashboard() {
 
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onVisibility);
-
-    return () => {
-      cancelled = true;
+ 
+    return () => { // Cleanup function to cancel ongoing data fetches and remove event listeners when the component unmounts, preventing memory leaks and unwanted state updates
+      cancelled = true;  
       clearInterval(poll);
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [userId]);
 
-  const view = useMemo(() => {
+  const view = useMemo(() => { // Transforms the raw dashboard data into a format suitable for rendering, calculating remaining calories, percentages, and formatting macro lines for display
     const d = dashboard ?? {};
 
     const caloriesGoal = Math.max(0, toNumber(d.caloriesGoal));
@@ -183,7 +183,7 @@ export default function Dashboard() {
       { label: "Fat", current: fatsTotal, goal: fatsGoal, colorVar: "--dashFat" },
     ];
 
-    return {
+    return { // View model for the dashboard, containing all the calculated values needed for rendering the UI components
       caloriesGoal,
       caloriesTotal,
       caloriesRemaining,

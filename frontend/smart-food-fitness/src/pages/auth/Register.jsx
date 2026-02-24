@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import "./Auth.css";
-
+// This component renders the registration page of the application, allowing users to create a new account by entering their display name, email, and password, and upon successful registration, it redirects them to the onboarding page to complete their profile setup, while also handling error states and providing a link to the login page for users who already have an account. The component includes validation for the input fields to ensure that the user provides valid information before attempting to register.
 function isValidEmail(email) {
   const e = String(email || "").trim();
   if (!e) return false;
@@ -15,7 +15,7 @@ function isValidEmail(email) {
   return true;
 }
 
-export default function Register() {
+export default function Register() { // This component renders the registration page of the application, allowing users to create a new account by entering their display name, email, and password, and upon successful registration, it redirects them to the onboarding page to complete their profile setup, while also handling error states and providing a link to the login page for users who already have an account. The component includes validation for the input fields to ensure that the user provides valid information before attempting to register.
   const nav = useNavigate();
   const { register } = useAuth();
 

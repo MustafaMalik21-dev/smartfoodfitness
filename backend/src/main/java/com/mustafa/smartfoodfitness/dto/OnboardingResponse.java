@@ -1,5 +1,5 @@
 package com.mustafa.smartfoodfitness.dto;
-
+// Define the OnboardingResponse DTO with fields for user ID and onboarding completion status, along with getter and setter methods for each field to facilitate data transfer of onboarding response information between the backend and frontend of the application
 public class OnboardingResponse {
   private Long userId;
   private Boolean onboardingComplete;

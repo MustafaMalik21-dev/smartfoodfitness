@@ -1,4 +1,3 @@
-// src/pages/Profile.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
@@ -8,7 +7,7 @@ import { getUserId } from "../auth/authStorage";
 
 const SETTINGS_KEY = "sff_settings_v1";
 
-function safeParse(json) {
+function safeParse(json) { // Helper function that attempts to parse a JSON string and returns the resulting object, but if parsing fails due to invalid JSON, it catches the error and returns null instead, providing a safe way to handle potentially malformed JSON data without crashing the application
   try {
     return JSON.parse(json);
   } catch {
@@ -28,7 +27,7 @@ function toNumOrNull(v) {
   return Number.isFinite(n) ? n : null;
 }
 
-function unitLabel(u) {
+function unitLabel(u) { // Helper function that takes a unit string and returns a standardized label for that unit, handling common variations and providing fallbacks for unrecognized units, ensuring that the display of units in the profile page is consistent and user-friendly
   if (!u) return "";
   const x = String(u).toLowerCase();
   if (x === "kg") return "Kg";
@@ -38,7 +37,7 @@ function unitLabel(u) {
   return u;
 }
 
-function formatHeight(heightValue, heightUnit) {
+function formatHeight(heightValue, heightUnit) { // Function to format a height value and unit into a human-readable string, handling both feet/inches and meters, and providing fallbacks for invalid or missing values to ensure a consistent display of height information in the profile page
   const v = Number(heightValue);
   const u = String(heightUnit || "").toLowerCase();
   if (!Number.isFinite(v)) return "—";
@@ -61,7 +60,7 @@ function formatHeight(heightValue, heightUnit) {
   return `${v} ${unitLabel(u)}`;
 }
 
-function formatHeightWithPreference(heightValue, storedUnit, preferredUnit) {
+function formatHeightWithPreference(heightValue, storedUnit, preferredUnit) { // Function to format a height value based on the user's preferred unit, converting between feet and meters as needed, and providing fallbacks for invalid or missing values to ensure that the height is displayed in the user's preferred unit while maintaining a consistent and user-friendly format in the profile page
   const v = Number(heightValue);
   const from = (storedUnit || "ft").toString().toLowerCase();
   const to = (preferredUnit || "ft").toString().toLowerCase();
@@ -87,7 +86,7 @@ function normalizeUnit(u, fallback) {
   return x || (fallback ?? "");
 }
 
-function aimColorClass(color) {
+function aimColorClass(color) { // Helper function that takes a color string and returns a corresponding CSS class name for styling the aim chips in the profile page, handling a predefined set of color options and providing a default class for unrecognized colors, allowing for consistent and visually distinct styling of different aims based on their associated colors
   const c = (color || "").toLowerCase();
   if (c === "red") return "aimChipRed";
   if (c === "green") return "aimChipGreen";
@@ -97,7 +96,7 @@ function aimColorClass(color) {
   return "aimChipBlue";
 }
 
-const ALL_AIMS = [
+const ALL_AIMS = [ // A predefined list of possible aims that users can select for their profile, each with a unique key, a user-friendly label, and an associated color for display purposes, allowing users to choose from a variety of common fitness and health goals to personalize their profile and track their progress towards those goals in the application
   { key: "lose_weight", label: "Lose Weight", color: "red" },
   { key: "gain_muscle", label: "Gain Muscle", color: "purple" },
   { key: "get_fitter", label: "Get Fitter", color: "blue" },
@@ -130,7 +129,7 @@ const ALL_AIMS = [
   { key: "improve_health", label: "Improve Health", color: "green" },
 ];
 
-export default function Profile() {
+export default function Profile() { // Main component for the user profile page, responsible for displaying and allowing editing of user information
   const navigate = useNavigate();
 
   const userId = getUserId();
@@ -157,7 +156,7 @@ export default function Profile() {
 
   const showAvatarHint = !photoDataUrl;
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that runs on component mount to set up an interval that checks for changes in the user's height unit preference stored in localStorage, updating the heightPref state accordingly to ensure that the displayed height information is always in sync with the user's preferred unit, and cleaning up the interval on component unmount to prevent memory leaks
     const t = setInterval(() => {
       const latest = loadHeightPref();
       setHeightPref((prev) => (prev === latest ? prev : latest));
@@ -208,7 +207,7 @@ export default function Profile() {
     loadAll();
   }, [userId]);
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that runs whenever the photoDataUrl state changes, saving the current profile picture data URL to localStorage under a key specific to the user, ensuring that the user's profile picture persists across sessions and is loaded correctly when the profile page is accessed in the future
     localStorage.setItem(PROFILE_PIC_KEY, photoDataUrl || "");
   }, [PROFILE_PIC_KEY, photoDataUrl]);
 
@@ -240,7 +239,7 @@ export default function Profile() {
     setErrorMsg("");
   }
 
-  async function saveEdit() {
+  async function saveEdit() { // Function to save the edited profile information, validating the inputs and preparing the payload for the API request, including handling changes to the user's weight by creating a new weight entry if the weight has changed, and then sending a PUT request to update the user profile, while managing loading state and errors to provide feedback to the user during the save process, and finally reloading the profile data to reflect any changes made
     if (!draft) return;
 
     const draftWeightValue = toNumOrNull(draft.weightValue);
@@ -366,7 +365,7 @@ export default function Profile() {
     navigate(-1);
   }
 
-  const view = useMemo(() => {
+  const view = useMemo(() => { // Memoized calculation of the display values for the profile information, including handling of missing or invalid data by providing fallbacks, and formatting of weight and height values based on the latest weight entry and user preferences, to ensure that the profile page displays consistent and user-friendly information about the user's profile and fitness streaks
     const p = profile || {};
     const s = streak || {};
 

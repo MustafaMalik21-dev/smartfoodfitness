@@ -15,7 +15,7 @@ const NAV_ITEMS = [
   { to: "/settings", label: "Settings", icon: SettingsIcon },
 ];
 
-export default function Navbar() {
+export default function Navbar() { // The Navbar component renders a bottom navigation bar with links to different routes in the application, using the NavLink component from react-router-dom to create navigable links that can be styled based on their active state, and it maps over a predefined array of navigation items to generate the corresponding links with icons and labels, allowing users to easily navigate between the main sections of the application such as Home, Fitness, Tracking, Food, and Settings while providing visual feedback on which section is currently active through styling
   return (
     <nav className="bottomNav" aria-label="Bottom navigation">
       {NAV_ITEMS.map((item) => (

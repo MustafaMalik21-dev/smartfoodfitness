@@ -47,8 +47,6 @@
   cursor: pointer;
 }
 
-/* ---- Calendar ---- */
-
 .calWrap {
   display: grid;
   grid-template-columns: 44px 1fr 44px;
@@ -202,7 +200,6 @@
   opacity: 1;
 }
 
-/* DARK MODE */
 html[data-mode="dark"] .bigPill,
 html[data-mode="dark"] .card {
   background: var(--panel);

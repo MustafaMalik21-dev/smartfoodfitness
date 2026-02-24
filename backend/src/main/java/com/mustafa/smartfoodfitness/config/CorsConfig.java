@@ -8,6 +8,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+//Config file
 @Configuration
 public class CorsConfig {
 
@@ -17,8 +18,7 @@ public class CorsConfig {
 
         cfg.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "https://smartfoodfitness.vercel.app",
-                "https://smartfoodfitness-ll3fsm2z8-mustafa-maliks-projects.vercel.app"
+                "https://smartfoodfitness.vercel.app"
         ));
 
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

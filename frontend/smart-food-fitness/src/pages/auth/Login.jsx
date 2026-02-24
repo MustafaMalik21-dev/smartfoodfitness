@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth";
 import "./Auth.css";
-
+// This component renders the login page of the application, allowing users to enter their email and password to authenticate themselves, and upon successful login, it checks if the user has completed the onboarding process and redirects them accordingly, while also handling error states and providing a link to the registration page for users who do not have an account
 export default function Login() {
   const nav = useNavigate();
   const location = useLocation();

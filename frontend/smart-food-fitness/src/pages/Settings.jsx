@@ -7,14 +7,14 @@ import { useAuth } from "../auth/useAuth";
 
 const LS_KEY = "sff_settings_v1";
 
-const DEFAULTS = {
+const DEFAULTS = { // Default settings for the application, including units for weight and height, tracking preferences for macros, weight, and workouts, notification preferences for workouts, food, and streaks, and accessibility options for text size and mode, providing a baseline configuration that can be customized by the user and persisted in localStorage
   units: { weight: "kg", height: "ft" },
   tracking: { macros: true, weight: true, workouts: true },
   notifications: { workouts: true, food: true, streak: true },
   accessibility: { textSize: "small", mode: "light" },
 };
 
-function safeParse(json) {
+function safeParse(json) {// Helper function to safely parse a JSON string, returning the parsed object if successful or null if parsing fails due to invalid JSON format, providing a way to handle potential errors when retrieving and parsing settings from localStorage without crashing the application
   try {
     return JSON.parse(json);
   } catch {
@@ -22,7 +22,7 @@ function safeParse(json) {
   }
 }
 
-function mergeDefaults(saved) {
+function mergeDefaults(saved) { // Function to merge the saved settings from localStorage with the default settings, ensuring that any missing properties in the saved settings are filled in with the default values, and that the structure of the settings is maintained even if the saved data is incomplete or malformed, providing a robust way to handle user preferences while preventing issues caused by invalid data
   if (!saved || typeof saved !== "object") return DEFAULTS;
   return {
     units: { ...DEFAULTS.units, ...(saved.units || {}) },
@@ -32,7 +32,7 @@ function mergeDefaults(saved) {
   };
 }
 
-function PillTabs({ options, value, onChange, columns }) {
+function PillTabs({ options, value, onChange, columns }) { // Component for rendering a set of pill-shaped tabs based on the provided options, allowing the user to select one of the options and triggering the onChange callback with the selected value, while also supporting an optional columns prop to control the layout of the tabs in a responsive grid format
   const cols = columns || options.length;
 
   return (
@@ -60,7 +60,7 @@ function PillTabs({ options, value, onChange, columns }) {
   );
 }
 
-function ToggleRow({ label, checked, onChange }) {
+function ToggleRow({ label, checked, onChange }) { // Component for rendering a toggle switch with a label, allowing the user to toggle a boolean setting on or off, and triggering the onChange callback with the new value when the toggle is clicked, while also providing visual feedback on the current state of the toggle through styling and ARIA attributes for accessibility
   return (
     <div className="sRow">
       <div className="sRowLabel">{label}</div>
@@ -76,7 +76,7 @@ function ToggleRow({ label, checked, onChange }) {
   );
 }
 
-export default function Settings() {
+export default function Settings() { // Main component for the settings page, responsible for managing user preferences and allowing the user to customize their experience with the application, including handling of units, tracking options, notifications, and accessibility settings, while also providing a logout button to allow the user to sign out of their account
   const [settings, setSettings] = useState(DEFAULTS);
   const [hasLoaded, setHasLoaded] = useState(false);
   const navigate = useNavigate();

@@ -2,7 +2,7 @@
   position: relative;
 }
 
-.eeTop {
+.eeTop { /* Styles for the top section of the Exercise Encyclopedia page, including the back button, title, and search button, arranged in a grid layout with appropriate spacing and styling for each element to create a visually appealing and user-friendly header for the page. The back button allows users to navigate back to the previous page, while the search button provides access to the search functionality for finding specific exercises within the encyclopedia. The title is prominently displayed in the center, using a bold font and a distinct color to make it stand out as the main heading of the page. */
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -434,7 +434,7 @@
   color: #111827;
 }
 
-@media (max-width: 420px) {
+@media (max-width: 420px) { /* Responsive styles for smaller screens, adjusting the layout and sizing of elements in the Exercise Encyclopedia page to ensure a user-friendly experience on mobile devices. The modal card and search panel widths are reduced to fit within the smaller screen size while maintaining appropriate padding and spacing for readability and usability. */
   .eeModalCard {
     width: calc(100% - 24px);
   }

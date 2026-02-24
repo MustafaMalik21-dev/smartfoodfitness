@@ -12,7 +12,7 @@ import com.mustafa.smartfoodfitness.service.OnboardingService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/onboarding")
+@RequestMapping("/api/onboarding") //Controller class responsible for handling HTTP requests related to the onboarding process, providing an endpoint for completing the onboarding process, accepting a request body containing the necessary information to complete onboarding, validating the input data, and returning a response DTO representing the result of the onboarding process to the client when they access the relevant endpoint in the application
 public class OnboardingController {
 
   private final OnboardingService onboardingService;
@@ -21,7 +21,7 @@ public class OnboardingController {
     this.onboardingService = onboardingService;
   }
 
-  @PostMapping("/complete")
+  @PostMapping("/complete") // handle HTTP POST requests to complete the onboarding process, accepting a request body containing the necessary information to complete onboarding, validating the input data, and returning a response DTO representing the result of the onboarding process to the client when they access the relevant endpoint in the application
   public OnboardingResponse complete(@Valid @RequestBody OnboardingRequest req) {
     return onboardingService.complete(req);
   }

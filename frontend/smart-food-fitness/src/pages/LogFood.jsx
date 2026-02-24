@@ -4,7 +4,7 @@ import apiClient from "../api/apiClient";
 import { useAuth } from "../auth/useAuth";
 import "./LogFood.css";
 
-function n(v) {
+function n(v) { // Helper function that takes a value and attempts to convert it to a number, returning the number if it's finite, or 0 if it's not a valid number, used to safely handle numeric inputs for calculations without risking NaN results
   const x = Number(v);
   return Number.isFinite(x) ? x : 0;
 }
@@ -15,7 +15,7 @@ function roundInt(v) {
   return Math.round(x);
 }
 
-function calcFromPer100(per100, grams) {
+function calcFromPer100(per100, grams) { // Helper function that calculates the total amount of a macro (calories, protein, carbs, fat) based on its per 100g value and the actual weight in grams, using the formula (per100 * grams) / 100 to scale the per 100g value to the specified weight, and ensuring that non-numeric inputs are treated as 0 to prevent NaN results
   return (n(per100) * n(grams)) / 100;
 }
 
@@ -25,7 +25,7 @@ function clampNonNeg(v) {
   return Math.max(0, x);
 }
 
-export default function LogFood() {
+export default function LogFood() { // Main component for the Log Food page, responsible for allowing users to search for foods, view recent foods, and log new food entries, utilizing state and effect hooks to manage data fetching, user interactions, and modal dialogs for adding food entries, while ensuring a responsive and user-friendly interface for tracking food intake
   const navigate = useNavigate();
   const { auth } = useAuth();
   const userId = auth ? auth.userId : null;
@@ -58,7 +58,7 @@ export default function LogFood() {
 
   const query = useMemo(() => q.trim(), [q]);
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that runs whenever the modalOpen or manualOpen state changes, responsible for preventing background scrolling when either the add food modal or manual entry modal is open by setting the body's overflow style to "hidden", and restoring it when the modals are closed, ensuring a better user experience by keeping the focus on the modal content without unintended scrolling of the background page
     if (!modalOpen && !manualOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -95,7 +95,7 @@ export default function LogFood() {
     };
   }, [query, tab]);
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook that runs whenever the selected tab or userId changes, responsible for loading the recent food entries for the user when the "Recent" tab is active, fetching the data from the API and mapping it to a format suitable for display in the recent foods list, while handling loading state, errors, and cancellation to prevent state updates on unmounted components, ensuring that users can see their recently logged foods when they switch to the "Recent" tab
     let cancelled = false;
 
     async function loadRecent() {
@@ -110,7 +110,7 @@ export default function LogFood() {
       setRecentErr("");
       setRecentLoading(true);
 
-      try {
+      try { // Fetch the recent food entry logs for the user from the API, mapping the response data to a list of recent food items with their name, weight, calories, and derived per 100g values for display in the recent foods list, while ensuring that non-numeric values are treated as 0 to prevent NaN results and providing a fallback for missing data to maintain a consistent user experience
         const res = await apiClient.get(`/api/food-entry-logs/user/${userId}`);
         const list = Array.isArray(res.data) ? res.data : Array.isArray(res.data?.items) ? res.data.items : [];
 
@@ -160,7 +160,7 @@ export default function LogFood() {
     };
   }, [tab, userId]);
 
-  const rows = useMemo(() => {
+  const rows = useMemo(() => { // Memoized preparation of the list of food items to display in the "Popular" tab, mapping the fetched items from the API to a format suitable for display in the food search results, including the food name, brand, per 100g macros, and image URL, while ensuring that non-numeric values are treated as 0 to prevent NaN results and providing fallbacks for missing data to maintain a consistent user experience when browsing popular foods
     if (tab !== "Popular") return [];
 
     return items.map((x) => {
@@ -180,15 +180,15 @@ export default function LogFood() {
     });
   }, [items, tab]);
 
-  const gramsNum = useMemo(() => {
+  const gramsNum = useMemo(() => { // Memoized calculation of the numeric value of the grams input for the add food modal, using the clampNonNeg helper function to ensure that the value is treated as 0 if it's not a valid number or if it's negative, providing a safe and consistent way to handle user input for the weight of the food being added without risking NaN results or negative values that don't make sense in this context
     const g = Number(String(grams).trim());
     if (!Number.isFinite(g)) return 0;
     if (g < 1) return 0;
     return g;
   }, [grams]);
 
-  const modalTotals = useMemo(() => {
-    if (!selected) return { kcal: 0, p: 0, c: 0, f: 0 };
+  const modalTotals = useMemo(() => { // Memoized calculation of the total calories, protein, carbs, and fat for the food entry being added in the modal, based on the selected food's per 100g values and the entered weight in grams, using the calcFromPer100 helper function to scale the per 100g values to the specified weight, and rounding the results to integers for display in the modal, while ensuring that non-numeric inputs are treated as 0 to prevent NaN results and providing a fallback of 0 for all macros if no food is selected, allowing users to see the calculated macros for the food they are adding before confirming
+    if (!selected) return { kcal: 0, p: 0, c: 0, f: 0 }; 
 
     const kcal = calcFromPer100(selected.per100.kcal, gramsNum);
     const p = calcFromPer100(selected.per100.p, gramsNum);
@@ -228,7 +228,7 @@ export default function LogFood() {
     setErr("");
   }
 
-  function closeModal() {
+  function closeModal() { // Function to close the add food modal, resetting the selected food and grams input, and ensuring that if a save operation is in progress, the modal cannot be closed to prevent interrupting the save process, providing a smoother user experience when adding food entries
     if (saving) return;
     setModalOpen(false);
     setSelected(null);
@@ -272,7 +272,7 @@ export default function LogFood() {
     }
   }
 
-  function openManual() {
+  function openManual() { // Function to open the manual entry modal, resetting all input fields and errors to their default states, allowing users to enter custom food information when they click the "Manual Entry" button, and ensuring that any previous errors or inputs do not persist when opening the modal again
     setManualErr("");
     setMName("");
     setMGrams("100");
@@ -288,7 +288,7 @@ export default function LogFood() {
     setManualOpen(false);
   }
 
-  async function confirmManual() {
+  async function confirmManual() { // Function to confirm the manual entry of a food item, validating the inputs for food name and weight, ensuring that the user is logged in before allowing the entry to be saved, and then sending a POST request to the API to create a new food entry log with the provided information, while handling loading state and errors to provide feedback to the user during the save process
     if (!userId) {
       navigate("/login");
       return;
@@ -313,7 +313,7 @@ export default function LogFood() {
     setManualSaving(true);
     setManualErr("");
 
-    try {
+    try { // Send a POST request to the API to create a new food entry log with the provided information from the manual entry modal, including the food name, weight, calories, protein, carbs, and fat, while ensuring that numeric inputs are validated and treated as 0 if they are not valid numbers, and providing feedback to the user during the save process by handling loading state and errors appropriately
       await apiClient.post("/api/food-entry-logs", {
         userId: userId,
         foodName,

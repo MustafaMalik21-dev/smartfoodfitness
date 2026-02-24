@@ -44,7 +44,6 @@ public class FoodEntryLogs {
     @Column(nullable = false)
     private Instant loggedAt;
 
-    // Audit fields.
     @Column(nullable = false)
     private Instant createdAt;
 

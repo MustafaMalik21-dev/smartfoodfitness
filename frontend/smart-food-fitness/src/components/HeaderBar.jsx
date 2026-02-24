@@ -6,7 +6,7 @@ import PFP from "../assets/PFP.png";
 import NotifBell from "../assets/NotifBell.png";
 import "./HeaderBar.css";
 
-function capCount(n) {
+function capCount(n) { // Helper function to cap the unread notifications count at a maximum of 9, accepting a number as input, converting it to a finite number, and returning 0 if the input is not a valid positive number, otherwise returning the number itself if it is 9 or less, or "9+" if it exceeds 9, allowing the application to display a user-friendly badge on the notifications icon that indicates the number of unread notifications without overwhelming the user with large numbers
   const x = Number(n);
   if (!Number.isFinite(x) || x <= 0) return 0;
   return x;
@@ -48,7 +48,7 @@ export default function HeaderBar({
 
     let cancelled = false;
 
-    async function loadUnread() {
+    async function loadUnread() { // Function to load the count of unread notifications for the user, making a GET request to the backend API endpoint for retrieving the unread notifications count based on the user's ID, and updating the state with the retrieved count while handling any potential errors by setting the count to 0 if the request fails, allowing the application to display an accurate badge on the notifications icon that reflects the number of unread notifications for the user
       try {
         const res = await apiClient.get("/api/notifications/unread-count", {
           params: { userId },
@@ -81,7 +81,7 @@ export default function HeaderBar({
 
   const badgeText = unreadCount > 9 ? "9+" : String(unreadCount);
 
-  return (
+  return ( // The HeaderBar component renders a header bar with a title and optional left and right buttons, where the left button can be either a profile icon or a back button that navigates to a specified route when clicked, and the right button can be either a notifications icon that shows a badge with the count of unread notifications for the user or a search icon, allowing for consistent navigation and access to important features like the user's profile and notifications across different pages of the application while providing visual feedback on the number of unread notifications through the badge
     <div className="headerBar">
       <div className="headerSide">
         {left === "none" ? null : left === "back" ? (

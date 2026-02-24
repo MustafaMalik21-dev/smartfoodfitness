@@ -42,7 +42,6 @@
   opacity: 0.85;
 }
 
-/* --- NEW: segmented controls (recipes-style) --- */
 .wpSegWrap {
   background: #bfbfbf;
   border-radius: 14px;
@@ -78,7 +77,6 @@
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
 }
 
-/* --- FIX: card layout (no overlap) --- */
 .wpCard {
   background: #efefef;
   border-radius: 22px;
@@ -194,7 +192,6 @@
   font-size: 12px;
 }
 
-/* Small screens: stack meta under content */
 @media (max-width: 380px) {
   .wpCard {
     grid-template-columns: 1fr;
@@ -213,7 +210,6 @@
   }
 }
 
-/* Dark mode */
 html[data-mode="dark"] .wpPage {
   background: var(--bg);
 }

@@ -67,7 +67,6 @@
   margin-top: 14px;
 }
 
-/* Dark mode */
 html[data-mode="dark"] .ogCard {
   background: var(--panel);
   box-shadow: var(--shadow);

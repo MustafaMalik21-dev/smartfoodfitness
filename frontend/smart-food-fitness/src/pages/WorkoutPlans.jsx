@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "./WorkoutPlans.css";
 
-function levelBtnClass(active) {
+function levelBtnClass(active) { // Helper function to determine the CSS class for the level filter buttons based on whether they are active or not, returning a string that includes the base class "wpSegBtn" and conditionally adds "wpSegBtnOn" if the button is active, allowing for dynamic styling of the filter buttons in the workout plans page to indicate which level is currently selected by the user.
   return active ? "wpSegBtn wpSegBtnOn" : "wpSegBtn";
 }
 
@@ -11,7 +11,7 @@ function goalBtnClass(active) {
   return active ? "wpSegBtn wpSegBtnOn" : "wpSegBtn";
 }
 
-export default function WorkoutPlans() {
+export default function WorkoutPlans() { // Main component for the workout plans page, responsible for fetching and displaying a list of workout plans based on the selected level and goal filters. The component manages the state of the workout plans, loading status, and any errors that may occur during data fetching. It also provides functionality to toggle the visibility of additional details for each workout plan and to navigate to the full plan view when a plan is selected. The component uses helper functions to determine the CSS classes for the filter buttons and to generate unique keys for toggling plan details, ensuring an interactive and user-friendly interface for browsing workout plans.
   const navigate = useNavigate();
 
   const [level, setLevel] = useState("Beginner");
@@ -30,7 +30,7 @@ export default function WorkoutPlans() {
     return p;
   }, [level, goal]);
 
-  useEffect(() => {
+  useEffect(() => { // Effect hook to load the workout plans based on the selected level and goal filters, making an API request to fetch the plans and updating the component state accordingly. The effect handles loading state, error handling, and cancellation to prevent state updates on unmounted components, ensuring a smooth user experience when filtering workout plans or when navigating away from the page before the data fetching completes.
     let cancelled = false;
 
     async function load() {

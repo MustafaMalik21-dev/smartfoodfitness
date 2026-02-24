@@ -194,7 +194,6 @@
   font-size: 12px;
 }
 
-/* Dark mode */
 html[data-mode="dark"] .wpdPage {
   background: var(--bg);
 }
