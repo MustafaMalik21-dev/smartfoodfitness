@@ -48,6 +48,18 @@ public class FoodEntryLogsService {
         entity.setProteins(request.getProteins());
         entity.setCarbs(request.getCarbs());
         entity.setFats(request.getFats());
+        entity.setFiberG(request.getFiberG());
+        entity.setSugarG(request.getSugarG());
+        entity.setSodiumMg(request.getSodiumMg());
+        entity.setPotassiumMg(request.getPotassiumMg());
+        entity.setCholesterolMg(request.getCholesterolMg());
+        entity.setSaturatedFatG(request.getSaturatedFatG());
+        entity.setVitaminAMcg(request.getVitaminAMcg());
+        entity.setVitaminCMg(request.getVitaminCMg());
+        entity.setVitaminDMcg(request.getVitaminDMcg());
+        entity.setCalciumMg(request.getCalciumMg());
+        entity.setIronMg(request.getIronMg());
+        entity.setZincMg(request.getZincMg());
         entity.setMealType(request.getMealType());
         entity.setLoggedAt(request.getLoggedAt());
 
@@ -110,6 +122,18 @@ public class FoodEntryLogsService {
         r.setProteins(saved.getProteins());
         r.setCarbs(saved.getCarbs());
         r.setFats(saved.getFats());
+        r.setFiberG(saved.getFiberG());
+        r.setSugarG(saved.getSugarG());
+        r.setSodiumMg(saved.getSodiumMg());
+        r.setPotassiumMg(saved.getPotassiumMg());
+        r.setCholesterolMg(saved.getCholesterolMg());
+        r.setSaturatedFatG(saved.getSaturatedFatG());
+        r.setVitaminAMcg(saved.getVitaminAMcg());
+        r.setVitaminCMg(saved.getVitaminCMg());
+        r.setVitaminDMcg(saved.getVitaminDMcg());
+        r.setCalciumMg(saved.getCalciumMg());
+        r.setIronMg(saved.getIronMg());
+        r.setZincMg(saved.getZincMg());
         r.setMealType(saved.getMealType());
         r.setLoggedAt(saved.getLoggedAt());
         r.setCreatedAt(saved.getCreatedAt());

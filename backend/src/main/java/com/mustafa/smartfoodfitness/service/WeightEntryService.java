@@ -32,7 +32,9 @@ public class WeightEntryService {
         if (request.getUserId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId is required.");
         }
-        if (request.getWeightValue() == null) {
+        boolean skipWeight = "scan".equalsIgnoreCase(request.getSource())
+                          || "measurement".equalsIgnoreCase(request.getSource());
+        if (!skipWeight && request.getWeightValue() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "weightValue is required.");
         }
         if (request.getWeightUnit() == null || request.getWeightUnit().isBlank()) {
@@ -44,9 +46,32 @@ public class WeightEntryService {
  
         WeightEntry e = new WeightEntry(); // create a new WeightEntry entity and populate it with data from the request, including setting the user profile, weight value, weight unit, and recorded timestamp (defaulting to the current time if not provided)
         e.setUserProfile(user);
-        e.setWeightValue(request.getWeightValue());
+        e.setWeightValue(request.getWeightValue() != null ? request.getWeightValue() : 0.0);
         e.setWeightUnit(request.getWeightUnit().trim().toLowerCase());
         e.setRecordedAt(request.getRecordedAt() != null ? request.getRecordedAt() : Instant.now());
+        e.setBodyFatPercent(request.getBodyFatPercent());
+        e.setProteinPercent(request.getProteinPercent());
+        e.setMuscleMassKg(request.getMuscleMassKg());
+        e.setVisceralFatLevel(request.getVisceralFatLevel());
+        e.setBmi(request.getBmi());
+        e.setBoneMassKg(request.getBoneMassKg());
+        e.setWaterPercent(request.getWaterPercent());
+        e.setBmr(request.getBmr());
+        e.setWaistCm(request.getWaistCm());
+        e.setHipCm(request.getHipCm());
+        e.setChestCm(request.getChestCm());
+        e.setNeckCm(request.getNeckCm());
+        e.setShoulderCm(request.getShoulderCm());
+        e.setLeftBicepCm(request.getLeftBicepCm());
+        e.setRightBicepCm(request.getRightBicepCm());
+        e.setLeftForearmCm(request.getLeftForearmCm());
+        e.setRightForearmCm(request.getRightForearmCm());
+        e.setAbdomenCm(request.getAbdomenCm());
+        e.setLeftThighCm(request.getLeftThighCm());
+        e.setRightThighCm(request.getRightThighCm());
+        e.setLeftCalfCm(request.getLeftCalfCm());
+        e.setRightCalfCm(request.getRightCalfCm());
+        e.setSource(request.getSource() != null ? request.getSource() : "manual");
 
         Instant now = Instant.now(); // set the createdAt and updatedAt timestamps to the current time
         e.setCreatedAt(now);
@@ -54,7 +79,11 @@ public class WeightEntryService {
 
         WeightEntry saved = weightEntryRepository.save(e);
 
-        syncUserProfileWeight(user, saved); // if this new weight entry is the latest for the user, update the user's profile to reflect the new weight
+        // Only sync profile weight for true weight entries (not scan/measurement placeholders)
+        String src = saved.getSource() != null ? saved.getSource().toLowerCase() : "";
+        if (!src.equals("scan") && !src.equals("measurement")) {
+            syncUserProfileWeight(user, saved);
+        }
 
         return toResponse(saved);
     }
@@ -126,6 +155,29 @@ public class WeightEntryService {
         r.setRecordedAt(e.getRecordedAt());
         r.setCreatedAt(e.getCreatedAt());
         r.setUpdatedAt(e.getUpdatedAt());
+        r.setBodyFatPercent(e.getBodyFatPercent());
+        r.setProteinPercent(e.getProteinPercent());
+        r.setMuscleMassKg(e.getMuscleMassKg());
+        r.setVisceralFatLevel(e.getVisceralFatLevel());
+        r.setBmi(e.getBmi());
+        r.setBoneMassKg(e.getBoneMassKg());
+        r.setWaterPercent(e.getWaterPercent());
+        r.setBmr(e.getBmr());
+        r.setWaistCm(e.getWaistCm());
+        r.setHipCm(e.getHipCm());
+        r.setChestCm(e.getChestCm());
+        r.setNeckCm(e.getNeckCm());
+        r.setShoulderCm(e.getShoulderCm());
+        r.setLeftBicepCm(e.getLeftBicepCm());
+        r.setRightBicepCm(e.getRightBicepCm());
+        r.setLeftForearmCm(e.getLeftForearmCm());
+        r.setRightForearmCm(e.getRightForearmCm());
+        r.setAbdomenCm(e.getAbdomenCm());
+        r.setLeftThighCm(e.getLeftThighCm());
+        r.setRightThighCm(e.getRightThighCm());
+        r.setLeftCalfCm(e.getLeftCalfCm());
+        r.setRightCalfCm(e.getRightCalfCm());
+        r.setSource(e.getSource());
         return r;
     }
 }

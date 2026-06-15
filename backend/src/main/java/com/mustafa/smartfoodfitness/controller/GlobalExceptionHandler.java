@@ -27,12 +27,12 @@ public class GlobalExceptionHandler {
     ) {
         ApiError error = new ApiError(); // create a new ApiError object to represent the error response, populating it with the current timestamp, a 409 Conflict status code, a generic error message indicating that a record with the same unique value already exists, and the path of the request that caused the error, then return this structured error response to the client when they access the relevant endpoint in the application
         error.setTimestamp(Instant.now());
-        error.setStatus(HttpStatus.CONFLICT.value());
+        error.setStatus(HttpStatus.CONFLICT.value()); // Set the HTTP status code to 409 Conflict to indicate that the request failed due to a conflict with existing data (e.g. a unique constraint violation)
         error.setError(HttpStatus.CONFLICT.getReasonPhrase());
         error.setMessage("A record with the same unique value already exists.");
         error.setPath(request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error); // Return the structured error response with a 409 Conflict status code to indicate that the request failed due to a conflict with existing data (e.g. a unique constraint violation)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class) // handle validation errors that occur when request data fails to meet the defined constraints (e.g. @NotNull, @Size) and return a structured error response with a 400 Bad Request status code, including details about which fields failed validation and the corresponding error messages, allowing clients to understand what went wrong with their request and how to fix it when they access the relevant endpoint in the application

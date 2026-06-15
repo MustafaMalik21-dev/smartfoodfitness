@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 // Define the UserProfile entity with fields for user goals reference, selected workout plan ID, email, display name, age, height value and unit, weight value and unit
 @Entity
 @Table(name = "user_profile")
-public class UserProfile {
+public class UserProfile { // Define the UserProfile entity with fields for user goals reference, selected workout plan ID, email, display name, age, height value and unit, weight value and unit
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,8 +67,23 @@ public class UserProfile {
     @Column(name = "onboarding_complete")
     private Boolean onboardingComplete;
 
-    
-    public Long getId() { 
+    @Column(name = "body_type", length = 20)
+    private String bodyType;
+
+    /** Privacy: "public" | "friends" | "private" — who can view this profile */
+    @Column(name = "profile_visibility", length = 20)
+    private String profileVisibility = "friends";
+
+    /** Whether accepted friends can see weight / body-comp data */
+    @Column(name = "share_weight")
+    private Boolean shareWeight = true;
+
+    /** Whether accepted friends can see workout activity */
+    @Column(name = "share_activity")
+    private Boolean shareActivity = true;
+
+
+    public Long getId() { // Getters and setters for all fields
         return id; 
     }
     public void setId(Long id) { 
@@ -85,7 +100,7 @@ public class UserProfile {
     public Long getSelectedWorkoutPlanId() { 
         return selectedWorkoutPlanId; 
     }
-    public void setSelectedWorkoutPlanId(Long selectedWorkoutPlanId) { 
+    public void setSelectedWorkoutPlanId(Long selectedWorkoutPlanId) {
         this.selectedWorkoutPlanId = selectedWorkoutPlanId; 
     }
 
@@ -194,11 +209,26 @@ public class UserProfile {
     }
     
     public Set<String> getAims() {
-    return aims;
+        return aims;
     }
 
     public void setAims(Set<String> aims) {
         this.aims = aims;
     }
 
+    public String getBodyType() {
+        return bodyType;
+    }
+    public void setBodyType(String bodyType) {
+        this.bodyType = bodyType;
+    }
+
+    public String getProfileVisibility() { return profileVisibility; }
+    public void setProfileVisibility(String v) { this.profileVisibility = v; }
+
+    public Boolean getShareWeight() { return shareWeight; }
+    public void setShareWeight(Boolean v) { this.shareWeight = v; }
+
+    public Boolean getShareActivity() { return shareActivity; }
+    public void setShareActivity(Boolean v) { this.shareActivity = v; }
 }

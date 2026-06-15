@@ -1,28 +1,17 @@
 package com.mustafa.smartfoodfitness.dto;
 // Define the UpdateUserProfileRequest DTO with fields for display name, age, height value and unit, weight
 import java.util.Set;
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-
-
 public class UpdateUserProfileRequest {
 
-    @NotBlank
     private String displayName;
 
-    @Min(13)
-    @Max(120)
+
     private Integer age;
 
-    @Positive
     private Double heightValue;
 
     private String heightUnit;
 
-    @Positive
     private Double weightValue;
 
     private String weightUnit;
@@ -34,7 +23,9 @@ public class UpdateUserProfileRequest {
     private String experienceLevel;
 
     private Boolean onboardingComplete;
-    
+
+    private String bodyType;
+
     private Set<String> aims;
 
 
@@ -109,10 +100,30 @@ public class UpdateUserProfileRequest {
     public void setOnboardingComplete(Boolean onboardingComplete) {
         this.onboardingComplete = onboardingComplete;
     }
-    public Set<String> getAims() { 
-        return aims; 
+    public String getBodyType() {
+        return bodyType;
     }
-    public void setAims(Set<String> aims) { 
-        this.aims = aims; 
+    public void setBodyType(String bodyType) {
+        this.bodyType = bodyType;
     }
+
+    public Set<String> getAims() {
+        return aims;
+    }
+    public void setAims(Set<String> aims) {
+        this.aims = aims;
+    }
+
+    private String profileVisibility;
+    private Boolean shareWeight;
+    private Boolean shareActivity;
+
+    public String getProfileVisibility() { return profileVisibility; }
+    public void setProfileVisibility(String v) { this.profileVisibility = v; }
+
+    public Boolean getShareWeight() { return shareWeight; }
+    public void setShareWeight(Boolean v) { this.shareWeight = v; }
+
+    public Boolean getShareActivity() { return shareActivity; }
+    public void setShareActivity(Boolean v) { this.shareActivity = v; }
 }

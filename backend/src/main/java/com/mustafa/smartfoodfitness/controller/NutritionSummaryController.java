@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mustafa.smartfoodfitness.dto.CalorieTrendResponse;
 import com.mustafa.smartfoodfitness.dto.MacroTrendResponse;
+import com.mustafa.smartfoodfitness.dto.MicroTrendResponse;
 import com.mustafa.smartfoodfitness.dto.NutritionSummaryResponse;
 import com.mustafa.smartfoodfitness.dto.NutritionSummaryVsGoalsResponse;
 import com.mustafa.smartfoodfitness.dto.NutritionTrendResponse;
@@ -61,6 +62,16 @@ public class NutritionSummaryController {
             @RequestParam(required = false) String timezone
     ) {
         return nutritionSummaryService.getMacroTrend(userId, range, date, timezone);
+    }
+
+    @GetMapping("/user/{userId}/micro-trend")
+    public MicroTrendResponse getMicroTrend(
+            @PathVariable long userId,
+            @RequestParam(required = false) String range,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String timezone
+    ) {
+        return nutritionSummaryService.getMicroTrend(userId, range, date, timezone);
     }
 
     @GetMapping("/user/{userId}/calorie-trend") // handle HTTP GET requests to retrieve calorie trend data for a specific user identified by their user ID, optionally filtered by a specified range, date, and timezone, allowing clients to view the user's calorie trends over time when they access the relevant endpoint in the application, with the ability to specify filters for more accurate and relevant results

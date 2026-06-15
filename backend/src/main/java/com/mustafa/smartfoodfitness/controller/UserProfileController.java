@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.mustafa.smartfoodfitness.dto.CreateUserProfileRequest;
+import com.mustafa.smartfoodfitness.dto.PrivacySettingsRequest;
 import com.mustafa.smartfoodfitness.dto.UpdateAimsRequest;
 import com.mustafa.smartfoodfitness.dto.UpdateSelectedWorkoutPlanRequest;
 import com.mustafa.smartfoodfitness.dto.UpdateUserProfileRequest;
@@ -70,23 +71,26 @@ public class UserProfileController {
         UserProfile userProfile = userProfileRepository.findById(id) // validate that the user profile to be updated exists by fetching it from the database using the provided ID, throwing a 404 Not Found error if it does not exist before updating the profile with data from the request and saving the updated profile back to the database
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
 
-        userProfile.setDisplayName(request.getDisplayName());
-        userProfile.setAge(request.getAge());
-        userProfile.setHeightValue(request.getHeightValue());
-        userProfile.setHeightUnit(request.getHeightUnit());
-        userProfile.setWeightValue(request.getWeightValue());
-        userProfile.setWeightUnit(request.getWeightUnit());
-        userProfile.setGender(request.getGender());
-        userProfile.setActivityLevel(request.getActivityLevel());
-        userProfile.setExperienceLevel(request.getExperienceLevel());
-        userProfile.setUpdatedAt(Instant.now());
-
+        if (request.getDisplayName() != null) userProfile.setDisplayName(request.getDisplayName());
+        if (request.getAge() != null) userProfile.setAge(request.getAge());
+        if (request.getHeightValue() != null) userProfile.setHeightValue(request.getHeightValue());
+        if (request.getHeightUnit() != null) userProfile.setHeightUnit(request.getHeightUnit());
+        if (request.getWeightValue() != null) userProfile.setWeightValue(request.getWeightValue());
+        if (request.getWeightUnit() != null) userProfile.setWeightUnit(request.getWeightUnit());
+        if (request.getGender() != null) userProfile.setGender(request.getGender());
+        if (request.getActivityLevel() != null) userProfile.setActivityLevel(request.getActivityLevel());
+        if (request.getExperienceLevel() != null) userProfile.setExperienceLevel(request.getExperienceLevel());
+        System.out.println("REQ: " + request.getAge() + " " + request.getGender());
         if (request.getOnboardingComplete() != null) {
             userProfile.setOnboardingComplete(request.getOnboardingComplete());
         }
         if (request.getAims() != null) {
             userProfile.setAims(request.getAims());
         }
+        if (request.getBodyType()          != null) userProfile.setBodyType(request.getBodyType());
+        if (request.getProfileVisibility() != null) userProfile.setProfileVisibility(request.getProfileVisibility());
+        if (request.getShareWeight()        != null) userProfile.setShareWeight(request.getShareWeight());
+        if (request.getShareActivity()      != null) userProfile.setShareActivity(request.getShareActivity());
 
         userProfile.setUpdatedAt(Instant.now());
 
@@ -164,6 +168,19 @@ public class UserProfileController {
     }
 
 
+    @PutMapping("/{id}/privacy")
+    public UserProfileResponse updatePrivacy(
+            @PathVariable @NonNull Long id,
+            @RequestBody PrivacySettingsRequest req) {
+        UserProfile p = userProfileRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
+        if (req.getProfileVisibility() != null) p.setProfileVisibility(req.getProfileVisibility());
+        if (req.getShareWeight()        != null) p.setShareWeight(req.getShareWeight());
+        if (req.getShareActivity()      != null) p.setShareActivity(req.getShareActivity());
+        p.setUpdatedAt(Instant.now());
+        return toResponse(userProfileRepository.save(p));
+    }
+
     private UserProfileResponse toResponse(UserProfile saved) { // convert a UserProfile entity to a UserProfileResponse DTO by mapping the relevant fields from the entity to the response object, allowing for a clean separation between the internal data model and the data exposed to clients when they access the relevant endpoints in the application
         UserProfileResponse response = new UserProfileResponse();
         response.setId(saved.getId());
@@ -181,7 +198,11 @@ public class UserProfileController {
         response.setUpdatedAt(saved.getUpdatedAt());
         response.setSelectedWorkoutPlanId(saved.getSelectedWorkoutPlanId());
         response.setOnboardingComplete(saved.getOnboardingComplete());
+        response.setBodyType(saved.getBodyType());
         response.setAims(saved.getAims());
+        response.setProfileVisibility(saved.getProfileVisibility());
+        response.setShareWeight(saved.getShareWeight());
+        response.setShareActivity(saved.getShareActivity());
         return response;
     }
 }

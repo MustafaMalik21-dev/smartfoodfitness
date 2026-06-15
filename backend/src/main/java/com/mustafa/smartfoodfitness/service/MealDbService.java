@@ -68,6 +68,8 @@ public class MealDbService { // Define the MealDbService class responsible for i
             s.setMealId(str(m.get("idMeal")));
             s.setName(str(m.get("strMeal")));
             s.setThumbUrl(str(m.get("strMealThumb")));
+            s.setCategory(str(m.get("strCategory")));
+            s.setArea(str(m.get("strArea")));
             out.add(s);
         }
         return out;
@@ -111,10 +113,12 @@ public class MealDbService { // Define the MealDbService class responsible for i
         return "null".equalsIgnoreCase(s) ? null : s;
     }
 
-    public static class RecipeSummary { // Define the RecipeSummary DTO representing a summary of recipe information, with fields for meal ID, name, and thumbnail URL, along with getter and setter methods for each field to facilitate data transfer of recipe summary information between the backend and frontend of the application when users access the relevant endpoints for recipe search and retrieval
+    public static class RecipeSummary { // Define the RecipeSummary DTO representing a summary of recipe information, with fields for meal ID, name, thumbnail URL, category, and area, along with getter and setter methods for each field to facilitate data transfer of recipe summary information between the backend and frontend of the application when users access the relevant endpoints for recipe search and retrieval
         private String mealId;
         private String name;
         private String thumbUrl;
+        private String category;
+        private String area;
 
         public String getMealId() { return mealId; }
         public void setMealId(String mealId) { this.mealId = mealId; }
@@ -124,6 +128,12 @@ public class MealDbService { // Define the MealDbService class responsible for i
 
         public String getThumbUrl() { return thumbUrl; }
         public void setThumbUrl(String thumbUrl) { this.thumbUrl = thumbUrl; }
+
+        public String getCategory() { return category; }
+        public void setCategory(String category) { this.category = category; }
+
+        public String getArea() { return area; }
+        public void setArea(String area) { this.area = area; }
     }
 
     public static class RecipeDetail { // Define the RecipeDetail DTO representing detailed information about a recipe, with fields for meal ID, name, category, area, instructions, thumbnail URL, tags, YouTube URL, source URL, and a list of ingredient lines, along with getter and setter methods for each field to facilitate data transfer of comprehensive recipe information between the backend and frontend of the application when users access the relevant endpoints for recipe lookup and retrieval

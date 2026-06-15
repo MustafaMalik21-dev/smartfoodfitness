@@ -18,6 +18,8 @@ import com.mustafa.smartfoodfitness.dto.CalorieTrendPointResponse;
 import com.mustafa.smartfoodfitness.dto.CalorieTrendResponse;
 import com.mustafa.smartfoodfitness.dto.MacroTrendPointResponse;
 import com.mustafa.smartfoodfitness.dto.MacroTrendResponse;
+import com.mustafa.smartfoodfitness.dto.MicroTrendPointResponse;
+import com.mustafa.smartfoodfitness.dto.MicroTrendResponse;
 import com.mustafa.smartfoodfitness.dto.NutritionSummaryResponse;
 import com.mustafa.smartfoodfitness.dto.NutritionSummaryVsGoalsResponse;
 import com.mustafa.smartfoodfitness.dto.NutritionTrendPointResponse;
@@ -159,8 +161,12 @@ public class NutritionSummaryService {
         return response;
     }
 
-    private int safeInt(Integer value) { // helper method to safely convert an Integer to a primitive int, returning 0 if the input value is null to avoid NullPointerExceptions when performing arithmetic operations on nutrient values that may be missing from some food entry logs
-        return value == null ? 0 : value; 
+    private int safeInt(Integer value) {
+        return value == null ? 0 : value;
+    }
+
+    private double safeDouble(Double value) {
+        return value == null ? 0.0 : value;
     }
 
     private int daysForRangeOrThrow(String rangeValue) { // helper method to convert a range string (e.g., "week", "month", "year") into a corresponding number of days, throwing a bad request error if the provided range value is invalid
@@ -310,6 +316,94 @@ public class NutritionSummaryService {
         }
 
         MacroTrendResponse r = new MacroTrendResponse(); // create a new MacroTrendResponse DTO and populate it with data from the input parameters and the calculated trend points, including the user ID, range, timezone, date range, and the list of macro trend points for each day within the date range
+        r.setUserId(userId);
+        r.setRange(rangeValue);
+        r.setTimezone(zoneId.getId());
+        r.setFromDate(fromDate.toString());
+        r.setToDate(toDate.toString());
+        r.setPoints(points);
+
+        return r;
+    }
+
+    public MicroTrendResponse getMicroTrend(long userId, String range, String date, String timezone) {
+        String rangeValue = (range == null || range.isBlank()) ? "week" : range.trim().toLowerCase();
+
+        ZoneId zoneId;
+        try {
+            zoneId = (timezone == null || timezone.isBlank()) ? ZoneId.systemDefault() : ZoneId.of(timezone.trim());
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid timezone.");
+        }
+
+        LocalDate baseDate;
+        try {
+            baseDate = (date == null || date.isBlank())
+                    ? LocalDate.now(zoneId)
+                    : LocalDate.parse(date.trim());
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date. Use YYYY-MM-DD.");
+        }
+
+        int days = daysForRangeOrThrow(rangeValue);
+
+        LocalDate fromDate = baseDate.minusDays(days - 1);
+        LocalDate toDate = baseDate;
+
+        Instant fromInstant = fromDate.atStartOfDay(zoneId).toInstant();
+        Instant toExclusive = toDate.plusDays(1).atStartOfDay(zoneId).toInstant();
+
+        List<FoodEntryLogs> entries =
+                foodEntryLogsRepository.findByUserProfileIdAndLoggedAtBetweenOrderByLoggedAtAsc(userId, fromInstant, toExclusive);
+
+        // indices: 0=fiber, 1=sugar, 2=sodium, 3=potassium, 4=cholesterol, 5=saturatedFat,
+        //          6=vitaminA, 7=vitaminC, 8=vitaminD, 9=calcium, 10=iron, 11=zinc
+        Map<LocalDate, double[]> totalsByDay = new HashMap<>();
+
+        for (FoodEntryLogs e : entries) {
+            Instant loggedAt = e.getLoggedAt();
+            if (loggedAt == null) continue;
+
+            LocalDate day = loggedAt.atZone(zoneId).toLocalDate();
+            double[] totals = totalsByDay.computeIfAbsent(day, k -> new double[12]);
+            totals[0]  += safeDouble(e.getFiberG());
+            totals[1]  += safeDouble(e.getSugarG());
+            totals[2]  += safeDouble(e.getSodiumMg());
+            totals[3]  += safeDouble(e.getPotassiumMg());
+            totals[4]  += safeDouble(e.getCholesterolMg());
+            totals[5]  += safeDouble(e.getSaturatedFatG());
+            totals[6]  += safeDouble(e.getVitaminAMcg());
+            totals[7]  += safeDouble(e.getVitaminCMg());
+            totals[8]  += safeDouble(e.getVitaminDMcg());
+            totals[9]  += safeDouble(e.getCalciumMg());
+            totals[10] += safeDouble(e.getIronMg());
+            totals[11] += safeDouble(e.getZincMg());
+        }
+
+        ArrayList<MicroTrendPointResponse> points = new ArrayList<>();
+
+        for (int i = 0; i < days; i++) {
+            LocalDate day = fromDate.plusDays(i);
+            double[] t = totalsByDay.getOrDefault(day, new double[12]);
+
+            MicroTrendPointResponse p = new MicroTrendPointResponse();
+            p.setDate(day.toString());
+            p.setFiberG(t[0]);
+            p.setSugarG(t[1]);
+            p.setSodiumMg(t[2]);
+            p.setPotassiumMg(t[3]);
+            p.setCholesterolMg(t[4]);
+            p.setSaturatedFatG(t[5]);
+            p.setVitaminAMcg(t[6]);
+            p.setVitaminCMg(t[7]);
+            p.setVitaminDMcg(t[8]);
+            p.setCalciumMg(t[9]);
+            p.setIronMg(t[10]);
+            p.setZincMg(t[11]);
+            points.add(p);
+        }
+
+        MicroTrendResponse r = new MicroTrendResponse();
         r.setUserId(userId);
         r.setRange(rangeValue);
         r.setTimezone(zoneId.getId());

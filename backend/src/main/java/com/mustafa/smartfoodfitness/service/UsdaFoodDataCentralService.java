@@ -70,10 +70,22 @@ public class UsdaFoodDataCentralService { // Service class responsible for handl
                     item.setBrand(brand);
 
                     Map<Integer, Double> nutrients = extractNutrients(m.get("foodNutrients"));
-                    item.setKcalPer100g(nutrients.get(1008));    // Energy (kcal)
-                    item.setProteinPer100g(nutrients.get(1003)); // Protein
-                    item.setFatPer100g(nutrients.get(1004));     // Total fat
-                    item.setCarbsPer100g(nutrients.get(1005));   // Carbohydrate
+                    item.setKcalPer100g(nutrients.get(1008));         // Energy (kcal)
+                    item.setProteinPer100g(nutrients.get(1003));      // Protein
+                    item.setFatPer100g(nutrients.get(1004));          // Total fat
+                    item.setCarbsPer100g(nutrients.get(1005));        // Carbohydrate
+                    item.setFiberPer100g(nutrients.get(1079));        // Fiber
+                    item.setSugarPer100g(nutrients.get(2000));        // Total sugars
+                    item.setSodiumPer100g(nutrients.get(1093));       // Sodium (mg)
+                    item.setPotassiumPer100g(nutrients.get(1092));    // Potassium (mg)
+                    item.setCholesterolPer100g(nutrients.get(1253));  // Cholesterol (mg)
+                    item.setSaturatedFatPer100g(nutrients.get(1258)); // Saturated fat (g)
+                    item.setVitaminAPer100g(nutrients.get(1106));     // Vitamin A (mcg RAE)
+                    item.setVitaminCPer100g(nutrients.get(1162));     // Vitamin C (mg)
+                    item.setVitaminDPer100g(nutrients.get(1114));     // Vitamin D (mcg)
+                    item.setCalciumPer100g(nutrients.get(1087));      // Calcium (mg)
+                    item.setIronPer100g(nutrients.get(1089));         // Iron (mg)
+                    item.setZincPer100g(nutrients.get(1095));         // Zinc (mg)
 
                     items.add(item);
                 }
