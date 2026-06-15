@@ -1,0 +1,10 @@
+providers = ["java"]
+
+[phases.setup]
+nixPkgs = ["jdk17_headless"]
+
+[phases.build]
+cmds = ["cd backend && ./mvnw package -DskipTests"]
+
+[start]
+cmd = "java -jar backend/target/smartfoodfitness-0.0.1-SNAPSHOT.jar"
