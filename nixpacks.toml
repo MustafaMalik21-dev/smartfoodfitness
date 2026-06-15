@@ -7,4 +7,4 @@ nixPkgs = ["jdk17_headless"]
 cmds = ["cd backend && ./mvnw package -DskipTests"]
 
 [start]
-cmd = "java -Djava.net.preferIPv4Stack=true -jar backend/target/smartfoodfitness-0.0.1-SNAPSHOT.jar"
+cmd = "java -Djava.net.preferIPv4Stack=true -Xmx256m -Xms64m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m -jar backend/target/smartfoodfitness-0.0.1-SNAPSHOT.jar"
