@@ -156,7 +156,7 @@ export default function Onboarding() { // This component renders the onboarding 
   function validateStep1() { // Function to validate the user input for the first step of the onboarding process, checking if the age is provided and within a sensible range (between
     const a = parsed.a;
     if (a == null) return "Please enter your age.";
-    if (a < 5 || a > 100) return "Please enter a sensible age (between 5 and 100).";
+    if (a < 13 || a > 100) return "Please enter a sensible age (between 13 and 100).";
     if (!gender) return "Please select your gender.";
     if (!activityLevel) return "Please select your activity level.";
     if (!experienceLevel) return "Please select your experience level.";
@@ -280,7 +280,7 @@ export default function Onboarding() { // This component renders the onboarding 
         weightValue: toNum(weightValue),
         weightUnit: String(weightUnit || "kg").toLowerCase(),
 
-        onboardingComplete: false,
+        onboardingComplete: true,
       });
 
       try { // After successfully updating the user's profile information, it attempts to save the user's calorie and macronutrient targets by making a POST request to the backend API endpoint for user goals, passing the user ID and the calculated calorie, protein, carbohydrate, and fat goals as parameters, while handling any potential errors that may occur during this process (such as a conflict error if the goals already exist) by catching the error and checking its status code, allowing the application to ensure that the user's fitness targets are stored in the backend and can be retrieved later for display in the user's dashboard and for tracking their progress towards their fitness goals
@@ -315,7 +315,7 @@ export default function Onboarding() { // This component renders the onboarding 
         email: auth.email,
         displayName: auth.displayName,
         token: auth.token,
-        onboardingComplete: false,
+        onboardingComplete: true,
       });
 
       navigate("/onboarding-guide", { replace: true }); // Navigate to the onboarding guide page after successfully saving the user's profile information and goals, allowing the user to proceed with the next steps of the onboarding process where they can learn how to use the app effectively and make the most out of its features for tracking their fitness journey
