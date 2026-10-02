@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.CreateFoodEntryLogsRequest;
 import com.mustafa.smartfoodfitness.dto.FoodEntryLogsResponse;
 import com.mustafa.smartfoodfitness.dto.UpdateFoodEntryLogsRequest;
@@ -31,6 +32,7 @@ public class FoodEntryLogsController {
 
     @PostMapping // handle HTTP POST requests to create a new food entry log, accepting a request body containing the details of the food entry log to be created, validating the input data, and returning a response DTO representing the created food entry log to the client when they access the relevant endpoint in the application
     public FoodEntryLogsResponse createFoodEntry(@Valid @RequestBody CreateFoodEntryLogsRequest request) {
+        AuthGuard.requireSelf(request.getUserId());
         return foodEntryLogsService.createFoodEntry(request);
     }
 
@@ -39,12 +41,15 @@ public class FoodEntryLogsController {
             @PathVariable long id,
             @Valid @RequestBody UpdateFoodEntryLogsRequest request
     ) {
+        AuthGuard.requireSelf(foodEntryLogsService.getFoodEntryById(id).getUserId());
         return foodEntryLogsService.updateFoodEntry(id, request);
     }
 
     @GetMapping("/{id}") // handle HTTP GET requests to retrieve a specific food entry log by its ID, validating that the entry exists and returning a response DTO representing the food entry log to the client when they access the relevant endpoint in the application
     public FoodEntryLogsResponse getFoodEntryById(@PathVariable long id) {
-        return foodEntryLogsService.getFoodEntryById(id);
+        FoodEntryLogsResponse entry = foodEntryLogsService.getFoodEntryById(id);
+        AuthGuard.requireSelf(entry.getUserId());
+        return entry;
     }
 
     @GetMapping("/user/{userId}") // handle HTTP GET requests to retrieve food entry logs for a specific user, optionally filtered by a date range specified by the "from" and "to" query parameters, allowing clients to fetch food entry logs for a user and narrow down the results based on a specific time period when they access the relevant endpoint in the application
@@ -53,6 +58,7 @@ public class FoodEntryLogsController {
             @RequestParam(required = false) Instant from,
             @RequestParam(required = false) Instant to
     ) {
+        AuthGuard.requireSelf(userId);
         return foodEntryLogsService.getFoodEntriesForUser(userId, from, to);
     }
 }

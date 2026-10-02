@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.DashboardSummaryResponse;
 import com.mustafa.smartfoodfitness.service.DashboardSummaryService;
 
@@ -25,6 +26,7 @@ public class DashboardSummaryController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String timezone
     ) {
+        AuthGuard.requireSelf(userId);
         return dashboardSummaryService.getDashboardSummary(userId, date, timezone);
     }
 }

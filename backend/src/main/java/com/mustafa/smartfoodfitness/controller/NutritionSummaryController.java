@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.CalorieTrendResponse;
 import com.mustafa.smartfoodfitness.dto.MacroTrendResponse;
 import com.mustafa.smartfoodfitness.dto.MicroTrendResponse;
@@ -31,6 +32,7 @@ public class NutritionSummaryController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String timezone
     ) {
+        AuthGuard.requireSelf(userId);
         return nutritionSummaryService.getNutritionSummary(userId, period, date, timezone);
     }
 
@@ -41,6 +43,7 @@ public class NutritionSummaryController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String timezone
     ) {
+        AuthGuard.requireSelf(userId);
         return nutritionSummaryService.getNutritionSummaryVsGoals(userId, period, date, timezone);
     }
 
@@ -51,6 +54,7 @@ public class NutritionSummaryController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String timezone
     ) {
+        AuthGuard.requireSelf(userId);
         return nutritionSummaryService.getNutritionTrend(userId, range, date, timezone);
     }
 
@@ -61,6 +65,7 @@ public class NutritionSummaryController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String timezone
     ) {
+        AuthGuard.requireSelf(userId);
         return nutritionSummaryService.getMacroTrend(userId, range, date, timezone);
     }
 
@@ -71,6 +76,7 @@ public class NutritionSummaryController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String timezone
     ) {
+        AuthGuard.requireSelf(userId);
         return nutritionSummaryService.getMicroTrend(userId, range, date, timezone);
     }
 
@@ -81,6 +87,7 @@ public class NutritionSummaryController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String timezone
     ) {
+        AuthGuard.requireSelf(userId);
         return nutritionSummaryService.getCalorieTrend(userId, range, date, timezone);
     }
 }

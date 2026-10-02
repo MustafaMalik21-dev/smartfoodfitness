@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.CreateWaterEntryRequest;
 import com.mustafa.smartfoodfitness.dto.WaterEntryResponse;
 import com.mustafa.smartfoodfitness.dto.WaterTrendResponse;
@@ -32,11 +33,13 @@ public class WaterEntryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public WaterEntryResponse logWater(@RequestBody CreateWaterEntryRequest request) {
+        AuthGuard.requireSelf(request.getUserId());
         return waterEntryService.logWater(request);
     }
 
     @GetMapping("/user/{userId}")
     public List<WaterEntryResponse> getEntriesForUser(@PathVariable long userId) {
+        AuthGuard.requireSelf(userId);
         return waterEntryService.getEntriesForUser(userId);
     }
 
@@ -44,6 +47,7 @@ public class WaterEntryController {
     public Map<String, Double> getTodayTotal(
             @PathVariable long userId,
             @RequestParam(required = false) String timezone) {
+        AuthGuard.requireSelf(userId);
         double total = waterEntryService.getTodayTotal(userId, timezone);
         return Map.of("totalMl", total);
     }
@@ -53,6 +57,7 @@ public class WaterEntryController {
             @PathVariable long userId,
             @RequestParam(required = false) String range,
             @RequestParam(required = false) String timezone) {
+        AuthGuard.requireSelf(userId);
         return waterEntryService.getWaterTrend(userId, range != null ? range : "week", timezone);
     }
 

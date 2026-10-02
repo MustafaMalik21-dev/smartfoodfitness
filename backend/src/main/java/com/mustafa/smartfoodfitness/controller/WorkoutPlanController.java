@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.WorkoutPlanResponse;
 import com.mustafa.smartfoodfitness.entity.UserProfile;
 import com.mustafa.smartfoodfitness.entity.WorkoutPlan;
@@ -84,6 +85,7 @@ public class WorkoutPlanController {
             @PathVariable @NonNull Long id,
             @RequestParam Long userId
     ) {
+        AuthGuard.requireSelf(userId);
         WorkoutPlan plan = workoutPlanRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workout plan not found."));
 

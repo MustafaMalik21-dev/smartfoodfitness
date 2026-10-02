@@ -79,6 +79,7 @@ public class NotificationService {
 
         Notification n = notificationRepository.findById(notificationId) // fetch the notification to be updated from the database using the provided notification ID, throwing a 404 Not Found error if it does not exist
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found."));
+        com.mustafa.smartfoodfitness.auth.security.AuthGuard.requireSelf(n.getUserProfile().getId());
 
         Boolean isRead = request.getIsRead(); // validate that the isRead field is provided in the request, throwing a 400 Bad Request error if it is not provided since it is required to determine whether to mark the notification as read or unread
         if (isRead == null) {

@@ -1,26 +1,19 @@
 package com.mustafa.smartfoodfitness.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
-public class SendMessageRequest {
+/** Field names are the wire contract for POST /api/friends/request — the app sends { senderId, receiverId }. */
+public class SendFriendRequestRequest {
+
     @NotNull(message = "senderId is required.")
     private Long senderId;
 
     @NotNull(message = "receiverId is required.")
     private Long receiverId;
 
-    @NotBlank(message = "Message cannot be empty.")
-    @Size(max = 2000, message = "Message cannot be longer than 2000 characters.")
-    private String content;
-
     public Long getSenderId() { return senderId; }
     public void setSenderId(Long v) { this.senderId = v; }
 
     public Long getReceiverId() { return receiverId; }
     public void setReceiverId(Long v) { this.receiverId = v; }
-
-    public String getContent() { return content; }
-    public void setContent(String v) { this.content = v; }
 }

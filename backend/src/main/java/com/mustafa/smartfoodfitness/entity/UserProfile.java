@@ -82,6 +82,13 @@ public class UserProfile { // Define the UserProfile entity with fields for user
     @Column(name = "share_activity")
     private Boolean shareActivity = true;
 
+    /**
+     * Bumped on logout / password change; a JWT carrying a lower version is rejected.
+     * Null on rows that predate this column — every read must treat null as 0.
+     */
+    @Column(name = "token_version")
+    private Integer tokenVersion = 0;
+
 
     public Long getId() { // Getters and setters for all fields
         return id; 
@@ -231,4 +238,7 @@ public class UserProfile { // Define the UserProfile entity with fields for user
 
     public Boolean getShareActivity() { return shareActivity; }
     public void setShareActivity(Boolean v) { this.shareActivity = v; }
+
+    public Integer getTokenVersion() { return tokenVersion; }
+    public void setTokenVersion(Integer v) { this.tokenVersion = v; }
 }

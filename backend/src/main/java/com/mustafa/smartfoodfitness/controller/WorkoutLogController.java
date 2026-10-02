@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.CreateWorkoutLogRequest;
 import com.mustafa.smartfoodfitness.dto.WorkoutLogResponse;
 import com.mustafa.smartfoodfitness.dto.WorkoutStreakResponse;
@@ -30,6 +31,7 @@ public class WorkoutLogController {
 
     @PostMapping // handle HTTP POST requests to create a new workout log entry, accepting a request body containing the details of the workout log to be created, validating the input data, and returning a response DTO representing the created workout log entry to the client
     public WorkoutLogResponse createWorkoutLog(@Valid @RequestBody CreateWorkoutLogRequest request) {
+        AuthGuard.requireSelf(request.getUserId());
         return workoutLogService.createWorkoutLog(request);
     }
 
@@ -39,6 +41,7 @@ public class WorkoutLogController {
             @RequestParam(required = false) Instant from,
             @RequestParam(required = false) Instant to
     ) {
+        AuthGuard.requireSelf(userId);
         return workoutLogService.getWorkoutLogsForUser(userId, from, to);
     }
 
@@ -48,6 +51,7 @@ public class WorkoutLogController {
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String timezone
     ) {
+        AuthGuard.requireSelf(userId);
         return workoutLogService.getWorkoutStreak(userId, date, timezone);
     }
 }

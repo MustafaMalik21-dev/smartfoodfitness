@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.CreateWeightEntryRequest;
 import com.mustafa.smartfoodfitness.dto.UpdateWeightEntryRequest;
 import com.mustafa.smartfoodfitness.dto.WeightEntryResponse;
@@ -31,6 +32,7 @@ public class WeightEntryController {
 
     @PostMapping
     public WeightEntryResponse createWeightEntry(@Valid @RequestBody CreateWeightEntryRequest request) {
+        AuthGuard.requireSelf(request.getUserId());
         return weightEntryService.createWeightEntry(request);
     }
 
@@ -39,12 +41,15 @@ public class WeightEntryController {
             @PathVariable long id,
             @Valid @RequestBody UpdateWeightEntryRequest request
     ) {
+        AuthGuard.requireSelf(weightEntryService.getWeightEntryById(id).getUserId());
         return weightEntryService.updateWeightEntry(id, request);
     }
 
     @GetMapping("/{id}") // handle HTTP GET requests to retrieve a specific weight entry by its ID, validating that the entry exists and returning a response DTO representing the weight entry to the client when they access the relevant endpoint in the application
     public WeightEntryResponse getWeightEntryById(@PathVariable long id) {
-        return weightEntryService.getWeightEntryById(id);
+        WeightEntryResponse entry = weightEntryService.getWeightEntryById(id);
+        AuthGuard.requireSelf(entry.getUserId());
+        return entry;
     }
 
     @GetMapping("/user/{userId}") // handle HTTP GET requests to retrieve weight entries for a specific user, optionally filtered by a date range specified by the "from" and "to" query parameters, allowing clients to fetch weight entries for a user and narrow down the results based on a specific time period when they access the relevant endpoint in the application
@@ -53,11 +58,13 @@ public class WeightEntryController {
             @RequestParam(required = false) Instant from,
             @RequestParam(required = false) Instant to
     ) {
+        AuthGuard.requireSelf(userId);
         return weightEntryService.getWeightEntriesForUser(userId, from, to);
     }
  
     @GetMapping("/user/{userId}/latest") // handle HTTP GET requests to retrieve the most recent weight entry for a specific user, validating that the entry exists and returning a response DTO representing the latest weight entry to the client when they access the relevant endpoint in the application
     public WeightEntryResponse getLatestForUser(@PathVariable long userId) {
+        AuthGuard.requireSelf(userId);
         return weightEntryService.getLatestForUser(userId);
     }
 }

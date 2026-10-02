@@ -3,6 +3,7 @@ package com.mustafa.smartfoodfitness.auth.security;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,9 +24,11 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
+  private final TokenVersionService tokenVersionService;
 
-  public JwtAuthFilter(JwtService jwtService) {
+  public JwtAuthFilter(JwtService jwtService, TokenVersionService tokenVersionService) {
     this.jwtService = jwtService;
+    this.tokenVersionService = tokenVersionService;
   }
 
   @Override
@@ -47,11 +50,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       Claims claims = jwtService.parseClaims(token);
       String email = claims.getSubject();
       String role = (String) claims.get("role");
+      Long userId = claims.get("userId", Long.class);
+      int tokenVersion = jwtService.readTokenVersion(claims);
 
-      if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+      // A token superseded by a logout or password change leaves the context
+      // unauthenticated, so Spring Security answers 401 — the signal the mobile
+      // client uses to drop stored auth and return to the login screen.
+      boolean versionCurrent;
+      try {
+        versionCurrent = tokenVersionService.isCurrent(userId, tokenVersion);
+      } catch (DataAccessException ex) {
+        // The signature and expiry already passed; this lookup is the defence-in-depth
+        // layer. A database blip must not be read as "revoked", which would sign every
+        // active user out on the client's next 401.
+        versionCurrent = true;
+      }
+
+      if (email != null
+          && SecurityContextHolder.getContext().getAuthentication() == null
+          && versionCurrent) {
         UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(
-                email,
+                new JwtPrincipal(email, userId),
                 null,
                 List.of(new SimpleGrantedAuthority("ROLE_" + (role == null ? "USER" : role)))
             );

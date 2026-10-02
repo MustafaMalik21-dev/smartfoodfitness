@@ -2,12 +2,14 @@ package com.mustafa.smartfoodfitness.auth.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
@@ -52,6 +54,15 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
             .anyRequest().authenticated()
+        )
+
+        // ── Unauthenticated requests ──────────────────────────────────────
+        // Spring's default entry point answers 403, but the mobile client only drops
+        // its stored auth and returns to the login screen on 401. A missing, malformed,
+        // expired or superseded token must therefore come back as 401. Requests that
+        // are authenticated but not permitted still fail with 403 via AuthGuard.
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
         )
 
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

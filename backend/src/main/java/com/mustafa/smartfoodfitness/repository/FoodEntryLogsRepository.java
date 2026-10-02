@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.mustafa.smartfoodfitness.entity.FoodEntryLogs;
 
@@ -21,5 +24,11 @@ public interface FoodEntryLogsRepository extends JpaRepository<FoodEntryLogs, Lo
         Instant from,
         Instant to
     );
+
+    // Deliberately not @Transactional: account deletion must roll back as one unit,
+    // so this may only run inside the caller's transaction.
+    @Modifying
+    @Query("DELETE FROM FoodEntryLogs f WHERE f.userProfile.id = :userProfileId")
+    void deleteByUserProfileId(@Param("userProfileId") Long userProfileId);
 
 }

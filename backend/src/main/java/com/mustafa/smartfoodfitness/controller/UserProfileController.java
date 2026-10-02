@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.CreateUserProfileRequest;
 import com.mustafa.smartfoodfitness.dto.PrivacySettingsRequest;
 import com.mustafa.smartfoodfitness.dto.UpdateAimsRequest;
@@ -43,6 +44,7 @@ public class UserProfileController {
 
     @PostMapping // handle HTTP POST requests to create a new user profile, accepting a request body containing the details of the user profile to be created, validating the input data, and returning a response DTO representing the created user profile to the client
     public UserProfileResponse createUserProfile(@Valid @RequestBody CreateUserProfileRequest userProfile) {
+        AuthGuard.requireSelfEmail(userProfile.getEmail());
         UserProfile entity = new UserProfile();
         entity.setEmail(userProfile.getEmail());
         entity.setDisplayName(userProfile.getDisplayName());
@@ -68,6 +70,7 @@ public class UserProfileController {
             @PathVariable @NonNull Long id,
             @Valid @RequestBody UpdateUserProfileRequest request
     ) {
+        AuthGuard.requireSelf(id);
         UserProfile userProfile = userProfileRepository.findById(id) // validate that the user profile to be updated exists by fetching it from the database using the provided ID, throwing a 404 Not Found error if it does not exist before updating the profile with data from the request and saving the updated profile back to the database
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
 
@@ -80,7 +83,6 @@ public class UserProfileController {
         if (request.getGender() != null) userProfile.setGender(request.getGender());
         if (request.getActivityLevel() != null) userProfile.setActivityLevel(request.getActivityLevel());
         if (request.getExperienceLevel() != null) userProfile.setExperienceLevel(request.getExperienceLevel());
-        System.out.println("REQ: " + request.getAge() + " " + request.getGender());
         if (request.getOnboardingComplete() != null) {
             userProfile.setOnboardingComplete(request.getOnboardingComplete());
         }
@@ -101,6 +103,7 @@ public class UserProfileController {
 
     @GetMapping("/{id}") // handle HTTP GET requests to retrieve a specific user profile by its ID, validating that the profile exists and returning a response DTO representing the user profile to the client when they access the relevant endpoint in the application
     public UserProfileResponse getUserProfileById(@PathVariable @NonNull Long id) {
+        AuthGuard.requireSelf(id);
         UserProfile userProfile = userProfileRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
         return toResponse(userProfile);
@@ -108,6 +111,7 @@ public class UserProfileController {
 
     @GetMapping // handle HTTP GET requests to retrieve a specific user profile by its email, validating that the profile exists and returning a response DTO representing the user profile to the client when they access the relevant endpoint in the application, with the email provided as a query parameter
     public UserProfileResponse getUserProfileByEmail(@RequestParam String email) {
+        AuthGuard.requireSelfEmail(email);
         UserProfile userProfile = userProfileRepository.findByEmail(email)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
         return toResponse(userProfile);
@@ -118,6 +122,7 @@ public class UserProfileController {
             @PathVariable @NonNull Long id,
             @Valid @RequestBody UpdateSelectedWorkoutPlanRequest request
     ) {
+        AuthGuard.requireSelf(id);
         UserProfile userProfile = userProfileRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
 
@@ -144,6 +149,7 @@ public class UserProfileController {
             @PathVariable @NonNull Long id,
             @RequestBody UpdateAimsRequest request
     ) {
+        AuthGuard.requireSelf(id);
         UserProfile userProfile = userProfileRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
 
@@ -172,6 +178,7 @@ public class UserProfileController {
     public UserProfileResponse updatePrivacy(
             @PathVariable @NonNull Long id,
             @RequestBody PrivacySettingsRequest req) {
+        AuthGuard.requireSelf(id);
         UserProfile p = userProfileRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
         if (req.getProfileVisibility() != null) p.setProfileVisibility(req.getProfileVisibility());

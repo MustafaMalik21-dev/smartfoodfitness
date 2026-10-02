@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.CompletedWorkoutResponse;
 import com.mustafa.smartfoodfitness.dto.CreateCompletedWorkoutRequest;
 import com.mustafa.smartfoodfitness.entity.CompletedWorkout;
@@ -53,6 +54,7 @@ public class CompletedWorkoutController {
         if (userProfileId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId is required.");
         }
+        AuthGuard.requireSelf(userProfileId);
 
         UserProfile user = userProfileRepository.findById(userProfileId) // validate that the associated user profile exists by fetching it from the database using the provided user ID, throwing a 404 Not Found error if it does not exist since a completed workout must be associated with an existing user profile before creating the new completed workout entry in the database and returning a response DTO representing the created completed workout to the client when they access the relevant endpoint in the application
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
@@ -75,6 +77,7 @@ public class CompletedWorkoutController {
 
     @GetMapping("/user/{userId}") // handle HTTP GET requests to retrieve a list of completed workouts for a specific user identified by their user ID, returning the list of completed workouts ordered by completion date in descending order, allowing clients to view the user's workout history when they access the relevant endpoint in the application
     public List<CompletedWorkoutResponse> getCompletedWorkoutsForUser(@PathVariable @NonNull Long userId) {
+        AuthGuard.requireSelf(userId);
         return completedWorkoutRepository.findByUserProfileIdOrderByCompletedAtDesc(userId)
                 .stream()
                 .map(this::toResponse)

@@ -49,19 +49,29 @@ public class FriendService {
         this.objectMapper    = objectMapper;
     }
 
-    // ── Search users by display name or email ────────────────────────────────
+    // ── Search users by display name, or by exact email ──────────────────────
     @Transactional(readOnly = true)
     public List<UserSearchResultDto> searchUsers(Long requestingUserId, String query) {
-        String q = "%" + query.toLowerCase() + "%";
-        List<UserProfile> results = profileRepo.findByDisplayNameContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
-        return results.stream()
+        String q = query == null ? "" : query.trim();
+        if (q.isEmpty()) return List.of();
+
+        // Keyed by id so a profile matching both halves is only listed once.
+        Map<Long, UserProfile> matches = new LinkedHashMap<>();
+        profileRepo.findByDisplayNameContainingIgnoreCase(q)
+            .forEach(p -> matches.putIfAbsent(p.getId(), p));
+        // Email is matched whole, never as a substring: partial input must not
+        // reveal that an address exists. Stored lowercase — see AuthService.
+        profileRepo.findByEmail(q.toLowerCase())
+            .ifPresent(p -> matches.putIfAbsent(p.getId(), p));
+
+        return matches.values().stream()
             .filter(p -> !p.getId().equals(requestingUserId))
             .limit(20)
             .map(p -> {
                 UserSearchResultDto dto = new UserSearchResultDto();
                 dto.setUserId(p.getId());
                 dto.setDisplayName(p.getDisplayName());
-                dto.setEmail(p.getEmail());
+                dto.setEmail(maskEmail(p.getEmail()));
                 Optional<FriendRequest> existing = friendRepo.findBetween(requestingUserId, p.getId());
                 if (existing.isEmpty()) {
                     dto.setFriendStatus(null);
@@ -148,7 +158,9 @@ public class FriendService {
         dto.setRequestId(fr.getId());
         dto.setUserId(other.getId());
         dto.setDisplayName(other.getDisplayName());
-        dto.setEmail(other.getEmail());
+        // Only a confirmed friend gets the real address; a pending or declined
+        // counterparty is still a stranger.
+        dto.setEmail("ACCEPTED".equals(fr.getStatus()) ? other.getEmail() : maskEmail(other.getEmail()));
         dto.setStatus(fr.getStatus());
         dto.setProfileVisibility(other.getProfileVisibility());
         dto.setShareWeight(other.getShareWeight());
@@ -194,6 +206,20 @@ public class FriendService {
             }
         }
         return dto;
+    }
+
+    // ── Helper: "mustimalik21@gmail.com" → "m***@gmail.com" ──────────────────
+    private static String maskEmail(String email) {
+        if (email == null) return null;
+        String trimmed = email.trim();
+        int at = trimmed.lastIndexOf('@');
+        if (at <= 0) return "***";
+        String local  = trimmed.substring(0, at);
+        String domain = trimmed.substring(at);
+        // A one-character local part is its own first character, so revealing it
+        // would hand over the whole address.
+        if (local.length() == 1) return "***" + domain;
+        return local.charAt(0) + "***" + domain;
     }
 
     private List<TopLiftDto> parseTopLifts(List<WorkoutLog> logs) {

@@ -3,6 +3,7 @@ package com.mustafa.smartfoodfitness.dto;
 public class UserSearchResultDto {
     private Long userId;
     private String displayName;
+    /** Always partially hidden ("m***@gmail.com") — search results never carry a real address. */
     private String email;
     /** null | PENDING_SENT | PENDING_RECEIVED | ACCEPTED */
     private String friendStatus;

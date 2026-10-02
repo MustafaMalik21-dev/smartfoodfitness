@@ -130,9 +130,9 @@ public class WaterEntryService {
 
     @Transactional
     public void deleteEntry(long id) {
-        if (!waterEntryRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Water entry not found.");
-        }
+        WaterEntry entry = waterEntryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Water entry not found."));
+        com.mustafa.smartfoodfitness.auth.security.AuthGuard.requireSelf(entry.getUserProfile().getId());
         waterEntryRepository.deleteById(id);
     }
 

@@ -20,7 +20,9 @@ public class CorsConfig {
 
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
-        cfg.setAllowCredentials(true);
+        // Auth uses Bearer tokens set by client JS, not cookies — credentialed
+        // CORS is unnecessary and dangerous combined with wildcard origins.
+        cfg.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", cfg);

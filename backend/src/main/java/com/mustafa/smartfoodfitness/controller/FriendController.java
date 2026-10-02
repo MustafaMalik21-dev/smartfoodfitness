@@ -1,13 +1,16 @@
 package com.mustafa.smartfoodfitness.controller;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.FriendDto;
+import com.mustafa.smartfoodfitness.dto.SendFriendRequestRequest;
 import com.mustafa.smartfoodfitness.dto.UserSearchResultDto;
 import com.mustafa.smartfoodfitness.service.FriendService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -24,42 +27,49 @@ public class FriendController {
     public ResponseEntity<List<UserSearchResultDto>> search(
             @RequestParam Long userId,
             @RequestParam String q) {
+        AuthGuard.requireSelf(userId);
         return ResponseEntity.ok(friendService.searchUsers(userId, q));
     }
 
     /** GET /api/friends/user/{userId} — accepted friends */
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<FriendDto>> getFriends(@PathVariable Long userId) {
+        AuthGuard.requireSelf(userId);
         return ResponseEntity.ok(friendService.getFriends(userId));
     }
 
     /** GET /api/friends/requests/user/{userId} — pending in/out */
     @GetMapping("/requests/user/{userId}")
     public ResponseEntity<List<FriendDto>> getPending(@PathVariable Long userId) {
+        AuthGuard.requireSelf(userId);
         return ResponseEntity.ok(friendService.getPendingRequests(userId));
     }
 
     /** POST /api/friends/request  body: { senderId, receiverId } */
     @PostMapping("/request")
-    public ResponseEntity<FriendDto> sendRequest(@RequestBody Map<String, Long> body) {
-        return ResponseEntity.ok(friendService.sendRequest(body.get("senderId"), body.get("receiverId")));
+    public ResponseEntity<FriendDto> sendRequest(@Valid @RequestBody SendFriendRequestRequest body) {
+        AuthGuard.requireSelf(body.getSenderId());
+        return ResponseEntity.ok(friendService.sendRequest(body.getSenderId(), body.getReceiverId()));
     }
 
     /** PUT /api/friends/{requestId}/accept?userId=2 */
     @PutMapping("/{requestId}/accept")
     public ResponseEntity<FriendDto> accept(@PathVariable Long requestId, @RequestParam Long userId) {
+        AuthGuard.requireSelf(userId);
         return ResponseEntity.ok(friendService.respondToRequest(requestId, userId, true));
     }
 
     /** PUT /api/friends/{requestId}/decline?userId=2 */
     @PutMapping("/{requestId}/decline")
     public ResponseEntity<FriendDto> decline(@PathVariable Long requestId, @RequestParam Long userId) {
+        AuthGuard.requireSelf(userId);
         return ResponseEntity.ok(friendService.respondToRequest(requestId, userId, false));
     }
 
     /** DELETE /api/friends/{requestId}?userId=1 */
     @DeleteMapping("/{requestId}")
     public ResponseEntity<Void> remove(@PathVariable Long requestId, @RequestParam Long userId) {
+        AuthGuard.requireSelf(userId);
         friendService.removeFriend(requestId, userId);
         return ResponseEntity.noContent().build();
     }

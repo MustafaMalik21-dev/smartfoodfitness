@@ -36,4 +36,15 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Transactional
     @Query("UPDATE Message m SET m.readAt = :now WHERE m.sender.id = :senderId AND m.receiver.id = :receiverId AND m.readAt IS NULL")
     void markConversationRead(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId, @Param("now") Instant now);
+
+    /** Every message this user sent or received, oldest first */
+    @Query("SELECT m FROM Message m WHERE m.sender.id = :uid OR m.receiver.id = :uid ORDER BY m.sentAt ASC")
+    List<Message> findAllForUser(@Param("uid") Long userId);
+
+    // Both directions, or the surviving side keeps a dangling FK to the deleted user.
+    // Deliberately not @Transactional: account deletion must roll back as one unit,
+    // so this may only run inside the caller's transaction.
+    @Modifying
+    @Query("DELETE FROM Message m WHERE m.sender.id = :uid OR m.receiver.id = :uid")
+    void deleteAllForUser(@Param("uid") Long userId);
 }

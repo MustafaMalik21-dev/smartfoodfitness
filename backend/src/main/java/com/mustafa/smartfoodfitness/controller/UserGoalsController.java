@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.CreateUserGoalsRequest;
 import com.mustafa.smartfoodfitness.dto.UserGoalsResponse;
 import com.mustafa.smartfoodfitness.entity.UserGoals;
@@ -40,6 +41,7 @@ public class UserGoalsController {
         if (userId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId is required.");
         }
+        AuthGuard.requireSelf(userId);
 
         UserProfile userProfile = userProfileRepository.findById(userId) // validate that the associated user profile exists by fetching it from the database using the provided user ID, throwing a 404 Not Found error if it does not exist since user goals must be associated with an existing user profile before creating the new user goals entry in the database and returning a response DTO representing the created user goals to the client when they access the relevant endpoint in the application
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User profile not found."));
@@ -63,7 +65,8 @@ public class UserGoalsController {
     public UserGoalsResponse updateUserGoals( 
             @PathVariable @NonNull Long userId,
             @Valid @RequestBody CreateUserGoalsRequest userGoals
-    ) { 
+    ) {
+        AuthGuard.requireSelf(userId);
         UserGoals goals = userGoalsRepository.findByUserProfileId(userId) // validate that the existing user goals entry for the specified user exists by fetching it from the database using the provided user ID, throwing a 404 Not Found error if it does not exist since user goals must exist for the user before they can be updated, then update the existing user goals entry with data from the request and save the updated entry back to the database before returning a response DTO representing the updated user goals to the client when they access the relevant endpoint in the application
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User goals not found."));
 
@@ -79,6 +82,7 @@ public class UserGoalsController {
 
     @GetMapping("/user/{userId}") // handle HTTP GET requests to retrieve the user goals for a specific user identified by their user ID, validating that the user goals entry exists for the specified user and returning a response DTO representing the user goals to the client when they access the relevant endpoint in the application
     public UserGoalsResponse getUserGoalsByUserId(@PathVariable @NonNull Long userId) {
+        AuthGuard.requireSelf(userId);
         UserGoals goals = userGoalsRepository.findByUserProfileId(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User goals not found."));
         return toResponse(goals);

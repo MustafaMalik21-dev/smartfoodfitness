@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mustafa.smartfoodfitness.dto.ChatResponse;
 import com.mustafa.smartfoodfitness.dto.FoodItemEstimate;
+import com.mustafa.smartfoodfitness.dto.GeneratePlanRequest;
+import com.mustafa.smartfoodfitness.dto.GeneratePlanResponse;
 import com.mustafa.smartfoodfitness.dto.WeeklyInsightResponse;
 import com.mustafa.smartfoodfitness.entity.FoodEntryLogs;
 import com.mustafa.smartfoodfitness.entity.UserGoals;
@@ -17,9 +19,11 @@ import com.mustafa.smartfoodfitness.repository.WeightEntryRepository;
 import com.mustafa.smartfoodfitness.repository.WorkoutLogRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -36,7 +40,13 @@ public class AiService {
     private static final String ANTHROPIC_VERSION = "2023-06-01";
     private static final String MODEL = "claude-haiku-4-5-20251001";
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    // Chat history is client-supplied: only these two roles are forwarded, and the rest is
+    // clipped so a direct API call cannot run up the Anthropic bill with one huge request.
+    private static final Set<String> ALLOWED_CHAT_ROLES = Set.of("user", "assistant");
+    private static final int MAX_HISTORY_MESSAGES = 20;
+    private static final int MAX_MESSAGE_CHARS = 2_000;
+
+    private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final FoodEntryLogsRepository foodRepo;
@@ -47,12 +57,21 @@ public class AiService {
 
     public AiService(FoodEntryLogsRepository foodRepo, WorkoutLogRepository workoutRepo,
                      UserProfileRepository profileRepo, UserGoalsRepository goalsRepo,
-                     WeightEntryRepository weightRepo) {
+                     WeightEntryRepository weightRepo,
+                     @Value("${anthropic.api.connectTimeoutMs:8000}") int connectTimeoutMs,
+                     @Value("${anthropic.api.readTimeoutMs:60000}") int readTimeoutMs) {
         this.foodRepo = foodRepo;
         this.workoutRepo = workoutRepo;
         this.profileRepo = profileRepo;
         this.goalsRepo = goalsRepo;
         this.weightRepo = weightRepo;
+
+        // Without these a hung api.anthropic.com socket pins a Tomcat worker forever. The read
+        // timeout has to cover a full max_tokens=2048 plan generation, hence the wide gap.
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofMillis(connectTimeoutMs));
+        factory.setReadTimeout(Duration.ofMillis(readTimeoutMs));
+        this.restTemplate = new RestTemplate(factory);
     }
 
     public List<FoodItemEstimate> analyzeFood(String base64Image, String mediaType) {
@@ -301,16 +320,40 @@ public class AiService {
 
             // Build API messages list from conversation history
             List<Map<String, Object>> apiMessages = new ArrayList<>();
-            for (Map<String, String> msg : history) {
-                Map<String, Object> m = new LinkedHashMap<>();
-                m.put("role", msg.get("role"));
-                m.put("content", msg.get("content") != null ? msg.get("content") : "");
-                apiMessages.add(m);
+            if (history != null) {
+                for (Map<String, String> msg : history) {
+                    if (msg == null) continue;
+                    String role = msg.get("role");
+                    if (role == null || !ALLOWED_CHAT_ROLES.contains(role)) continue;
+                    String content = msg.get("content");
+                    if (content == null || content.isBlank()) continue;
+                    if (content.length() > MAX_MESSAGE_CHARS) {
+                        content = content.substring(0, MAX_MESSAGE_CHARS);
+                    }
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("role", role);
+                    m.put("content", content);
+                    apiMessages.add(m);
+                }
             }
 
             // Ensure messages alternate properly — API requires user first
             if (apiMessages.isEmpty() || !"user".equals(apiMessages.get(0).get("role"))) {
                 return new ChatResponse("Please send a message to get started!");
+            }
+
+            // Keep the most recent turns — the system prompt already carries the user's data,
+            // so the oldest turns are the cheapest context to drop. Trimming can leave an
+            // assistant turn first, which the API rejects, so re-align onto a user turn.
+            if (apiMessages.size() > MAX_HISTORY_MESSAGES) {
+                apiMessages = new ArrayList<>(apiMessages.subList(
+                        apiMessages.size() - MAX_HISTORY_MESSAGES, apiMessages.size()));
+                while (!apiMessages.isEmpty() && !"user".equals(apiMessages.get(0).get("role"))) {
+                    apiMessages.remove(0);
+                }
+                if (apiMessages.isEmpty()) {
+                    return new ChatResponse("Please send a message to get started!");
+                }
             }
 
             Map<String, Object> body = new LinkedHashMap<>();
@@ -325,6 +368,106 @@ public class AiService {
         } catch (Exception e) {
             return new ChatResponse("Sorry, I'm having trouble connecting right now. Please try again in a moment.");
         }
+    }
+
+    /**
+     * Builds the workout-plan prompt server-side (mirrors the mobile app's
+     * previous client-side logic) and calls Anthropic with the server-held key.
+     * Returns the raw model text; the client parses the JSON plan from it.
+     */
+    public GeneratePlanResponse generatePlan(GeneratePlanRequest req) {
+        int daysPerWeek = req.getDaysPerWeek() != null
+                ? Math.max(1, Math.min(7, req.getDaysPerWeek())) : 3;
+        String equipment = req.getEquipment() != null ? req.getEquipment() : "Full Gym";
+        String expLevel  = req.getExperienceLevel() != null ? req.getExperienceLevel() : "Beginner";
+        String actLevel  = req.getActivityLevel() != null ? req.getActivityLevel() : "Moderate";
+        List<String> aims = req.getAims() != null
+                ? req.getAims().stream().filter(Objects::nonNull).limit(6).toList()
+                : List.of();
+        String menu = req.getExerciseMenu() != null ? req.getExerciseMenu() : "";
+        if (menu.length() > 20_000) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "exerciseMenu too large.");
+        }
+
+        String goal = derivePlanGoal(aims);
+        String split = daysPerWeek <= 3 ? "Full Body" : daysPerWeek == 4 ? "Upper/Lower" : "Push/Pull/Legs";
+
+        String repRule = switch (goal) {
+            case "Strength"    -> "3–5 reps, high weight";
+            case "Muscle Gain" -> "8–12 reps, moderate-heavy weight";
+            case "Fat Loss"    -> "12–20 reps, shorter rest";
+            default            -> "8–12 reps";
+        };
+
+        String volumeRule = switch (expLevel) {
+            case "Beginner" -> "4–5 exercises per session, compound-focused, no redundancy";
+            case "Advanced" -> "6–8 exercises per session, include isolation work";
+            default         -> "5–7 exercises per session, mix compound and isolation";
+        };
+
+        String splitRule;
+        if (daysPerWeek <= 3) {
+            splitRule = daysPerWeek + " full-body sessions labelled A/B/C. Each hits chest, back, legs, shoulders, core.";
+        } else if (daysPerWeek == 4) {
+            splitRule = "4 sessions: Upper A, Lower A, Upper B, Lower B.";
+        } else {
+            splitRule = daysPerWeek + " sessions: Push (chest/shoulders/triceps), Pull (back/biceps), Legs (quads/hamstrings/glutes/core)"
+                    + (daysPerWeek >= 5 ? ", then repeat sequence for remaining days" : "") + ".";
+        }
+
+        String cardioRule = "Fat Loss".equals(goal)
+                ? "Add 1 cardio exercise per session (e.g. Treadmill Run, Jump Rope)." : "";
+
+        String aimsStr = aims.isEmpty() ? "General Fitness" : String.join(", ", aims);
+
+        String prompt = "You are an elite personal trainer. Output ONLY valid JSON — no markdown, no prose.\n\n"
+                + "Create a " + daysPerWeek + "-day/week " + split + " workout plan.\n"
+                + "Client: " + expLevel + " · " + actLevel + " activity · Goals: " + aimsStr + " · Equipment: " + equipment + "\n\n"
+                + "AVAILABLE EXERCISES (use ONLY exact names):\n"
+                + menu + "\n\n"
+                + "Split structure: " + splitRule + "\n"
+                + "Volume: " + volumeRule + "\n"
+                + "Reps: " + repRule + "\n"
+                + cardioRule + "\n\n"
+                + "Return this JSON (no extra fields):\n"
+                + "{\n"
+                + "  \"name\": \"short catchy plan name\",\n"
+                + "  \"goal\": \"" + goal + "\",\n"
+                + "  \"description\": \"one personalised sentence max 120 chars\",\n"
+                + "  \"sessions\": [\n"
+                + "    {\n"
+                + "      \"title\": \"Session title\",\n"
+                + "      \"exercises\": [{ \"name\": \"exact name\", \"sets\": 4, \"reps\": \"8-10\" }]\n"
+                + "    }\n"
+                + "  ]\n"
+                + "}";
+
+        try {
+            Map<String, Object> message = new LinkedHashMap<>();
+            message.put("role", "user");
+            message.put("content", prompt);
+
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("model", MODEL);
+            body.put("max_tokens", 2048);
+            body.put("messages", List.of(message));
+
+            return new GeneratePlanResponse(callApi(body).trim());
+        } catch (Exception e) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_GATEWAY, "AI plan generation failed. Try again.");
+        }
+    }
+
+    private static String derivePlanGoal(List<String> aims) {
+        List<String> strength = List.of("Build Strength", "Increase 1RM", "Improve Power", "Deadlift Goal", "Squat Goal", "Bench Press Goal");
+        List<String> muscle   = List.of("Gain Muscle", "Build Mass", "Muscle Definition", "Improve Symmetry", "Hit Protein Goal", "Track Macros");
+        List<String> fatLoss  = List.of("Lose Weight", "Lose Body Fat", "Get Toned", "Reduce Waist", "Get Fitter", "Improve Endurance", "Run a 5K", "Run a 10K");
+        if (aims.stream().anyMatch(strength::contains)) return "Strength";
+        if (aims.stream().anyMatch(muscle::contains))   return "Muscle Gain";
+        if (aims.stream().anyMatch(fatLoss::contains))  return "Fat Loss";
+        return "General Fitness";
     }
 
     private String callApi(Map<String, Object> body) throws Exception {

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mustafa.smartfoodfitness.auth.security.AuthGuard;
 import com.mustafa.smartfoodfitness.dto.OnboardingRequest;
 import com.mustafa.smartfoodfitness.dto.OnboardingResponse;
 import com.mustafa.smartfoodfitness.service.OnboardingService;
@@ -23,6 +24,7 @@ public class OnboardingController {
 
   @PostMapping("/complete") // handle HTTP POST requests to complete the onboarding process, accepting a request body containing the necessary information to complete onboarding, validating the input data, and returning a response DTO representing the result of the onboarding process to the client when they access the relevant endpoint in the application
   public OnboardingResponse complete(@Valid @RequestBody OnboardingRequest req) {
+    AuthGuard.requireSelf(req.getUserId());
     return onboardingService.complete(req);
   }
 }

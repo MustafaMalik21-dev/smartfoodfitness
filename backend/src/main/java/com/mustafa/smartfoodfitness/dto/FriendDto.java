@@ -6,7 +6,7 @@ public class FriendDto {
     private Long requestId;
     private Long userId;
     private String displayName;
-    private String email;
+    private String email;        // real address only when status is ACCEPTED, otherwise partially hidden
     private String status;       // PENDING | ACCEPTED
     private String direction;    // INCOMING | OUTGOING (for pending requests)
     private String profileVisibility;
